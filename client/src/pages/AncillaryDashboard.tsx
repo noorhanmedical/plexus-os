@@ -100,8 +100,8 @@ export function AncillaryDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-lg bg-sky-600/10">
-                <FileText className="h-6 w-6 text-sky-500" />
+              <div className="p-3 rounded-lg bg-[#3d2e1a]/40">
+                <FileText className="h-6 w-6 text-[#c4a35a]" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{categories.length}</p>
@@ -113,8 +113,8 @@ export function AncillaryDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-lg bg-emerald-600/10">
-                <Activity className="h-6 w-6 text-emerald-500" />
+              <div className="p-3 rounded-lg bg-[#1a3d2e]/40">
+                <Activity className="h-6 w-6 text-[#4a9a7c]" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{filteredCatalog.length}</p>
@@ -126,8 +126,8 @@ export function AncillaryDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-lg bg-violet-600/10">
-                <Clock className="h-6 w-6 text-violet-500" />
+              <div className="p-3 rounded-lg bg-[#3d1a1a]/40">
+                <Clock className="h-6 w-6 text-[#a35a5a]" />
               </div>
               <div>
                 <p className="text-2xl font-bold">Active</p>

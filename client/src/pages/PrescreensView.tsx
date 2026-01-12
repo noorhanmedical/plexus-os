@@ -68,13 +68,13 @@ export function PrescreensView() {
   const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case "eligible": 
-      case "completed": return "bg-emerald-600/20 text-emerald-500 border-emerald-600/30";
+      case "completed": return "bg-[#1a3d2e]/40 text-[#4a9a7c] border-[#1a3d2e]";
       case "needs review":
-      case "pending": return "bg-amber-600/20 text-amber-500 border-amber-600/30";
+      case "pending": return "bg-[#3d2e1a]/40 text-[#c4a35a] border-[#3d2e1a]";
       case "not eligible":
-      case "disqualified": return "bg-rose-600/20 text-rose-500 border-rose-600/30";
-      case "scheduled": return "bg-sky-600/20 text-sky-500 border-sky-600/30";
-      default: return "bg-slate-600/20 text-slate-400 border-slate-600/30";
+      case "disqualified": return "bg-[#3d1a1a]/40 text-[#a35a5a] border-[#3d1a1a]";
+      case "scheduled": return "bg-slate-700/30 text-slate-400 border-slate-700";
+      default: return "bg-slate-700/30 text-slate-400 border-slate-700";
     }
   };
 
