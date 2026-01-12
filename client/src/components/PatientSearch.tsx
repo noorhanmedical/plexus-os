@@ -51,17 +51,16 @@ export function PatientSearch({ onPatientSelect, selectedPatientId }: PatientSea
   }, [query, searchPatients]);
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="font-semibold text-gray-900 mb-3">Patient Search</h3>
+    <div className="flex flex-col h-full">
+      <div className="p-4 border-b border-border">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             data-testid="input-patient-search"
             placeholder="Search patients..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+            className="pl-10"
           />
         </div>
       </div>
@@ -69,24 +68,24 @@ export function PatientSearch({ onPatientSelect, selectedPatientId }: PatientSea
       <ScrollArea className="flex-1">
         {isLoading && (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         )}
 
         {error && (
-          <div className="p-4 text-sm text-red-600">
+          <div className="p-4 text-sm text-destructive">
             {error}
           </div>
         )}
 
         {!isLoading && !error && patients.length === 0 && query && (
-          <div className="p-4 text-sm text-gray-500 text-center">
+          <div className="p-4 text-sm text-muted-foreground text-center">
             No patients found
           </div>
         )}
 
         {!isLoading && !error && patients.length === 0 && !query && (
-          <div className="p-4 text-sm text-gray-500 text-center">
+          <div className="p-4 text-sm text-muted-foreground text-center">
             Type to search patients
           </div>
         )}
@@ -97,27 +96,27 @@ export function PatientSearch({ onPatientSelect, selectedPatientId }: PatientSea
               key={patient.patient_uuid}
               data-testid={`button-patient-${patient.patient_uuid}`}
               onClick={() => onPatientSelect(patient)}
-              className={`w-full text-left p-3 rounded-md mb-1 transition-colors border ${
+              className={`w-full text-left p-3 rounded-md mb-1 transition-colors hover-elevate ${
                 selectedPatientId === patient.patient_uuid
-                  ? "bg-blue-50 border-blue-300"
-                  : "border-transparent hover:bg-gray-50"
+                  ? "bg-accent"
+                  : ""
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <User className="h-4 w-4 text-blue-600" />
+                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <User className="h-4 w-4 text-primary" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium text-gray-900 truncate">
+                  <p className="font-medium truncate">
                     {patient.first_name} {patient.last_name}
                   </p>
                   {patient.mrn && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       MRN: {patient.mrn}
                     </p>
                   )}
                   {patient.date_of_birth && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       DOB: {patient.date_of_birth}
                     </p>
                   )}
