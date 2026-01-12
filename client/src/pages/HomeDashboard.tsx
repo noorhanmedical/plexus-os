@@ -73,20 +73,12 @@ export function HomeDashboard() {
     }
   };
 
-  const getScheduleRowStyle = (status: ScheduleItem["status"]) => {
-    switch (status) {
-      case "completed": return "bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm";
-      case "in-progress": return "bg-[#3d2e1a]/50 border border-[#c4a35a]/50 backdrop-blur-sm";
-      case "scheduled": return "bg-slate-700/50 border border-slate-500/50 backdrop-blur-sm";
-    }
+  const getScheduleRowStyle = () => {
+    return "bg-white border border-slate-200 shadow-sm";
   };
 
-  const getAncillaryRowStyle = (status: AncillaryItem["status"]) => {
-    switch (status) {
-      case "completed": return "bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm";
-      case "due-soon": return "bg-[#3d2e1a]/50 border border-[#c4a35a]/50 backdrop-blur-sm";
-      case "overdue": return "bg-[#3d1a1a]/50 border border-[#a35a5a]/50 backdrop-blur-sm";
-    }
+  const getAncillaryRowStyle = () => {
+    return "bg-white border border-slate-200 shadow-sm";
   };
 
   return (
@@ -107,11 +99,11 @@ export function HomeDashboard() {
               <div
                 key={item.id}
                 data-testid={`schedule-item-${item.id}`}
-                className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getScheduleRowStyle(item.status)}`}
+                className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getScheduleRowStyle()}`}
               >
                 <div className="space-y-1">
-                  <p className="font-medium text-sm text-white">{item.patientName}</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-300">
+                  <p className="font-medium text-sm text-black">{item.patientName}</p>
+                  <div className="flex items-center gap-2 text-xs text-slate-600">
                     <Clock className="h-3 w-3" />
                     <span>{item.time}</span>
                     <span>-</span>
@@ -141,17 +133,17 @@ export function HomeDashboard() {
               <div
                 key={item.id}
                 data-testid={`ancillary-item-${item.id}`}
-                className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getAncillaryRowStyle(item.status)}`}
+                className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getAncillaryRowStyle()}`}
               >
                 <div className="space-y-1">
-                  <p className="font-medium text-sm text-white">{item.patientName}</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-300">
+                  <p className="font-medium text-sm text-black">{item.patientName}</p>
+                  <div className="flex items-center gap-2 text-xs text-slate-600">
                     {item.status === "completed" ? (
-                      <CheckCircle2 className="h-3 w-3 text-[#6fcf97]" />
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
                     ) : item.status === "overdue" ? (
-                      <AlertCircle className="h-3 w-3 text-[#eb5757]" />
+                      <AlertCircle className="h-3 w-3 text-red-600" />
                     ) : (
-                      <AlertCircle className="h-3 w-3 text-[#f2c94c]" />
+                      <AlertCircle className="h-3 w-3 text-amber-600" />
                     )}
                     <span>{item.service}</span>
                     <span>-</span>
@@ -177,40 +169,40 @@ export function HomeDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-slate-300">Today's Revenue</p>
-                <p className="text-2xl font-bold text-[#6fcf97]">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 shadow-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-500">Today's Revenue</p>
+                <p className="text-2xl font-bold text-green-600">
                   ${financeSummary.todayRevenue.toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-[#3d2e1a]/50 border border-[#c4a35a]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-slate-300">Pending Claims</p>
-                <p className="text-2xl font-bold text-[#f2c94c]">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 shadow-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-500">Pending Claims</p>
+                <p className="text-2xl font-bold text-amber-600">
                   {financeSummary.pendingClaims}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-slate-300">Approved Claims</p>
-                <p className="text-2xl font-bold text-[#6fcf97]">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 shadow-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-500">Approved Claims</p>
+                <p className="text-2xl font-bold text-green-600">
                   {financeSummary.approvedClaims}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-[#3d1a1a]/50 border border-[#a35a5a]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-slate-300">Outstanding</p>
-                <p className="text-2xl font-bold text-[#eb5757]">
+              <div className="p-4 rounded-lg bg-white border border-slate-200 shadow-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-500">Outstanding</p>
+                <p className="text-2xl font-bold text-red-600">
                   ${financeSummary.totalOutstanding.toLocaleString()}
                 </p>
               </div>
             </div>
-            <div className="p-4 rounded-lg bg-slate-700/50 border border-slate-500/50 backdrop-blur-sm">
-              <p className="text-sm font-medium text-white">Quick Stats</p>
+            <div className="p-4 rounded-lg bg-white border border-slate-200 shadow-sm">
+              <p className="text-sm font-medium text-black">Quick Stats</p>
               <div className="flex items-center justify-between mt-2 text-sm">
-                <span className="text-slate-300">Collection Rate</span>
-                <span className="font-medium text-[#6fcf97]">94.2%</span>
+                <span className="text-slate-500">Collection Rate</span>
+                <span className="font-medium text-green-600">94.2%</span>
               </div>
               <div className="flex items-center justify-between mt-1 text-sm">
-                <span className="text-slate-300">Avg Days to Pay</span>
-                <span className="font-medium text-white">18 days</span>
+                <span className="text-slate-500">Avg Days to Pay</span>
+                <span className="font-medium text-black">18 days</span>
               </div>
             </div>
           </CardContent>
