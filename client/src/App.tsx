@@ -122,7 +122,7 @@ function AppSidebar({
   );
 }
 
-function App() {
+function MainContent() {
   const [mainTab, setMainTab] = useState<MainTab>("home");
   const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -217,11 +217,9 @@ function App() {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <SidebarProvider style={style as React.CSSProperties}>
-          <div className="flex h-screen w-full bg-background">
-            <AppSidebar activeTab={sidebarTab} onTabChange={handleSidebarTabChange} onClearSidebar={handleClearSidebar} />
+    <SidebarProvider style={style as React.CSSProperties}>
+      <div className="flex h-screen w-full bg-background">
+        <AppSidebar activeTab={sidebarTab} onTabChange={handleSidebarTabChange} onClearSidebar={handleClearSidebar} />
             
             <main className="flex-1 flex flex-col overflow-hidden">
               <header className="bg-slate-900 text-white shadow-lg relative overflow-hidden">
@@ -337,7 +335,17 @@ function App() {
             </main>
           </div>
         </SidebarProvider>
-        <Toaster />
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <>
+          <MainContent />
+          <Toaster />
+        </>
       </TooltipProvider>
     </QueryClientProvider>
   );
