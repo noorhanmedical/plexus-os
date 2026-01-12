@@ -75,17 +75,17 @@ export function HomeDashboard() {
 
   const getScheduleRowStyle = (status: ScheduleItem["status"]) => {
     switch (status) {
-      case "completed": return "bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm";
-      case "in-progress": return "bg-[#3d2e1a]/20 border border-[#3d2e1a]/40 backdrop-blur-sm";
-      case "scheduled": return "bg-white/5 border border-white/10 backdrop-blur-sm";
+      case "completed": return "bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm";
+      case "in-progress": return "bg-[#3d2e1a]/50 border border-[#c4a35a]/50 backdrop-blur-sm";
+      case "scheduled": return "bg-slate-700/50 border border-slate-500/50 backdrop-blur-sm";
     }
   };
 
   const getAncillaryRowStyle = (status: AncillaryItem["status"]) => {
     switch (status) {
-      case "completed": return "bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm";
-      case "due-soon": return "bg-[#3d2e1a]/20 border border-[#3d2e1a]/40 backdrop-blur-sm";
-      case "overdue": return "bg-[#3d1a1a]/20 border border-[#3d1a1a]/40 backdrop-blur-sm";
+      case "completed": return "bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm";
+      case "due-soon": return "bg-[#3d2e1a]/50 border border-[#c4a35a]/50 backdrop-blur-sm";
+      case "overdue": return "bg-[#3d1a1a]/50 border border-[#a35a5a]/50 backdrop-blur-sm";
     }
   };
 
@@ -110,8 +110,8 @@ export function HomeDashboard() {
                 className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getScheduleRowStyle(item.status)}`}
               >
                 <div className="space-y-1">
-                  <p className="font-medium text-sm">{item.patientName}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <p className="font-medium text-sm text-white">{item.patientName}</p>
+                  <div className="flex items-center gap-2 text-xs text-slate-300">
                     <Clock className="h-3 w-3" />
                     <span>{item.time}</span>
                     <span>-</span>
@@ -144,14 +144,14 @@ export function HomeDashboard() {
                 className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getAncillaryRowStyle(item.status)}`}
               >
                 <div className="space-y-1">
-                  <p className="font-medium text-sm">{item.patientName}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <p className="font-medium text-sm text-white">{item.patientName}</p>
+                  <div className="flex items-center gap-2 text-xs text-slate-300">
                     {item.status === "completed" ? (
-                      <CheckCircle2 className="h-3 w-3 text-[#4a9a7c]" />
+                      <CheckCircle2 className="h-3 w-3 text-[#6fcf97]" />
                     ) : item.status === "overdue" ? (
-                      <AlertCircle className="h-3 w-3 text-[#a35a5a]" />
+                      <AlertCircle className="h-3 w-3 text-[#eb5757]" />
                     ) : (
-                      <AlertCircle className="h-3 w-3 text-[#c4a35a]" />
+                      <AlertCircle className="h-3 w-3 text-[#f2c94c]" />
                     )}
                     <span>{item.service}</span>
                     <span>-</span>
@@ -177,40 +177,40 @@ export function HomeDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-muted-foreground">Today's Revenue</p>
-                <p className="text-2xl font-bold text-[#4a9a7c]">
+              <div className="p-4 rounded-lg bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-300">Today's Revenue</p>
+                <p className="text-2xl font-bold text-[#6fcf97]">
                   ${financeSummary.todayRevenue.toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-[#3d2e1a]/20 border border-[#3d2e1a]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-muted-foreground">Pending Claims</p>
-                <p className="text-2xl font-bold text-[#c4a35a]">
+              <div className="p-4 rounded-lg bg-[#3d2e1a]/50 border border-[#c4a35a]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-300">Pending Claims</p>
+                <p className="text-2xl font-bold text-[#f2c94c]">
                   {financeSummary.pendingClaims}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-muted-foreground">Approved Claims</p>
-                <p className="text-2xl font-bold text-[#4a9a7c]">
+              <div className="p-4 rounded-lg bg-[#1a3d2e]/50 border border-[#4a9a7c]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-300">Approved Claims</p>
+                <p className="text-2xl font-bold text-[#6fcf97]">
                   {financeSummary.approvedClaims}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-[#3d1a1a]/20 border border-[#3d1a1a]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
-                <p className="text-xs text-muted-foreground">Outstanding</p>
-                <p className="text-2xl font-bold text-[#a35a5a]">
+              <div className="p-4 rounded-lg bg-[#3d1a1a]/50 border border-[#a35a5a]/50 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
+                <p className="text-xs text-slate-300">Outstanding</p>
+                <p className="text-2xl font-bold text-[#eb5757]">
                   ${financeSummary.totalOutstanding.toLocaleString()}
                 </p>
               </div>
             </div>
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm">
-              <p className="text-sm font-medium">Quick Stats</p>
+            <div className="p-4 rounded-lg bg-slate-700/50 border border-slate-500/50 backdrop-blur-sm">
+              <p className="text-sm font-medium text-white">Quick Stats</p>
               <div className="flex items-center justify-between mt-2 text-sm">
-                <span className="text-muted-foreground">Collection Rate</span>
-                <span className="font-medium text-[#4a9a7c]">94.2%</span>
+                <span className="text-slate-300">Collection Rate</span>
+                <span className="font-medium text-[#6fcf97]">94.2%</span>
               </div>
               <div className="flex items-center justify-between mt-1 text-sm">
-                <span className="text-muted-foreground">Avg Days to Pay</span>
-                <span className="font-medium">18 days</span>
+                <span className="text-slate-300">Avg Days to Pay</span>
+                <span className="font-medium text-white">18 days</span>
               </div>
             </div>
           </CardContent>
