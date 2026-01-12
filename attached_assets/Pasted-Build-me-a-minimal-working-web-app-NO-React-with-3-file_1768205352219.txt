@@ -1,0 +1,51 @@
+Build me a minimal working web app (NO React) with 3 files: index.html, api.js, app.js.
+
+GOAL: A simple “Clinical Prescreen Dashboard” that talks to my Google Apps Script Web App API.
+
+UI layout:
+- Left panel: Patient search input + clickable list of matching patients.
+- Middle panel: Prescreens list for the selected patient.
+- Right panel: Prescreen detail editor with Save button.
+
+API details:
+- Base URL: I will paste it into api.js as API_URL.
+- API key: I will paste it into api.js as API_KEY.
+- All requests must include header: x-api-key: API_KEY.
+- GET endpoints use query params: ?action=...
+- POST endpoints send JSON: { action: "...", ... }.
+
+Endpoints to use:
+GET:
+- action=patients.search with params { query, limit }
+- action=patients.get with params { patient_uuid }
+- action=prescreen.list with params { status (optional), limit }
+
+POST:
+- action=prescreen.get with body { prescreen_id } (or allow patient_uuid + requested_ancillary_code)
+- action=prescreen.update with body { prescreen_id, updates: { scheduled_datetime, assigned_staff, location, notes } }
+- action=prescreen.updateStatus with body { prescreen_id, status }  (this sets eligibility_status_final in Sheets)
+- action=prescreen.create with body { patient_uuid, requested_ancillary_code }
+
+Requirements:
+1) index.html: simple CSS, 3-column layout. Include inputs and containers with ids:
+   - #patientSearch, #patientList
+   - #prescreenList
+   - #detailPanel
+2) api.js: implement apiGet(action, params) and apiPost(action, payload) helpers. Return parsed JSON. Handle errors (if response ok:false show alert).
+3) app.js:
+   - On typing in patientSearch (debounced 300ms), call patients.search and render results.
+   - Clicking a patient loads prescreens list by calling prescreen.list (limit 200), then filter client-side by patient_uuid and render.
+   - Clicking a prescreen calls prescreen.get and renders detail editor fields:
+       scheduled_datetime, assigned_staff, location, notes
+     plus a dropdown to change eligibility status (options: “Needs Review”, “Eligible”, “Not Eligible”, “Scheduled”, “Completed”).
+   - Save button calls prescreen.update (for fields) and prescreen.updateStatus (for dropdown) only if changed.
+   - Add a “Create prescreen” button in the prescreen list panel: requires selecting an ancillary code (simple input) and calls prescreen.create, then refresh the list.
+
+Behavior:
+- Use prescreen_id everywhere if available.
+- Show loading indicators in each panel.
+- Keep it working even if some fields are blank.
+
+Output:
+Generate all three files with complete code and clear inline comments where needed.
+Do not use any external libraries.
