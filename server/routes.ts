@@ -224,5 +224,15 @@ export async function registerRoutes(
     }
   });
 
+  // Get ancillary catalog
+  app.get("/api/ancillary/catalog", async (_req, res) => {
+    try {
+      const data = await plexusGet("ancillary.catalog");
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to get ancillary catalog" });
+    }
+  });
+
   return httpServer;
 }

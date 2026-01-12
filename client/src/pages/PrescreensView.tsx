@@ -11,15 +11,23 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Search, ClipboardList, ChevronRight, Save, RefreshCw } from "lucide-react";
 import type { Prescreen } from "@shared/schema";
 
+interface PrescreensResponse {
+  ok: boolean;
+  data?: Prescreen[];
+  error?: string;
+}
+
 export function PrescreensView() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPrescreen, setSelectedPrescreen] = useState<Prescreen | null>(null);
   const [editedPrescreen, setEditedPrescreen] = useState<Partial<Prescreen>>({});
   const { toast } = useToast();
 
-  const { data: prescreens, isLoading } = useQuery<Prescreen[]>({
+  const { data: response, isLoading } = useQuery<PrescreensResponse>({
     queryKey: ["/api/prescreens?limit=200"],
   });
+  
+  const prescreens = response?.data || [];
 
   const updateMutation = useMutation({
     mutationFn: async (data: { prescreen_id: string; updates: Partial<Prescreen> }) => {
@@ -36,7 +44,7 @@ export function PrescreensView() {
     },
   });
 
-  const filteredPrescreens = prescreens?.filter((p) => {
+  const filteredPrescreens = prescreens.filter((p) => {
     const search = searchTerm.toLowerCase();
     return (
       p.patient_uuid?.toLowerCase().includes(search) ||

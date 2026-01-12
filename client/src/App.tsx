@@ -144,19 +144,19 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <SidebarProvider style={style as React.CSSProperties}>
-          <div className="flex h-screen w-full starfield">
+          <div className="flex h-screen w-full bg-background">
             <AppSidebar activeTab={sidebarTab} onTabChange={handleSidebarTabChange} onClearSidebar={handleClearSidebar} />
             
             <main className="flex-1 flex flex-col overflow-hidden">
-              <header className="h-14 px-4 flex items-center justify-between gap-4 border-b border-border bg-card/50 backdrop-blur-sm">
+              <header className="h-14 px-4 flex items-center justify-between gap-4 border-b border-sidebar-border bg-sidebar starfield">
                 <div className="flex items-center gap-4">
-                  <SidebarTrigger className="text-foreground" data-testid="button-sidebar-toggle" />
-                  <h2 className="text-lg font-semibold glow-text">
+                  <SidebarTrigger className="text-sidebar-foreground" data-testid="button-sidebar-toggle" />
+                  <h2 className="text-lg font-semibold text-sidebar-foreground glow-text">
                     {getCurrentTitle()}
                   </h2>
                 </div>
                 
-                <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-1 p-1 rounded-lg bg-sidebar-accent/50">
                   {mainTabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = !sidebarTab && mainTab === tab.id;
@@ -167,7 +167,7 @@ function App() {
                         size="sm"
                         data-testid={`tab-${tab.id}`}
                         onClick={() => handleMainTabChange(tab.id)}
-                        className="gap-2"
+                        className={`gap-2 ${!isActive ? "text-sidebar-foreground hover:text-sidebar-foreground" : ""}`}
                       >
                         <Icon className="h-4 w-4" />
                         <span className="hidden sm:inline">{tab.label}</span>
@@ -176,7 +176,7 @@ function App() {
                   })}
                 </div>
 
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-sidebar-foreground/70">
                   {new Date().toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -185,7 +185,7 @@ function App() {
                 </div>
               </header>
 
-              <div className="flex-1 overflow-auto p-6">
+              <div className="flex-1 overflow-auto p-6 bg-background">
                 {renderContent()}
               </div>
             </main>

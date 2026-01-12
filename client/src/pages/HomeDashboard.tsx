@@ -4,6 +4,12 @@ import { Calendar, Clock, DollarSign, Activity, AlertCircle, CheckCircle2 } from
 import { useQuery } from "@tanstack/react-query";
 import type { Prescreen } from "@shared/schema";
 
+interface PrescreensResponse {
+  ok: boolean;
+  data?: Prescreen[];
+  error?: string;
+}
+
 interface ScheduleItem {
   id: string;
   patientName: string;
@@ -22,9 +28,11 @@ interface AncillaryItem {
 }
 
 export function HomeDashboard() {
-  const { data: prescreens } = useQuery<Prescreen[]>({
+  const { data: response } = useQuery<PrescreensResponse>({
     queryKey: ["/api/prescreens?limit=50"],
   });
+  
+  const prescreens = response?.data || [];
 
   const todaySchedule: ScheduleItem[] = [
     { id: "1", patientName: "John Smith", time: "9:00 AM", type: "Initial Consult", status: "completed" },
