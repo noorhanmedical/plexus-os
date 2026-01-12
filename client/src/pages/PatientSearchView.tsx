@@ -2,11 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, User, Loader2, Phone, Mail, MapPin, Calendar } from "lucide-react";
+import { Search, User, Loader2, Phone, Mail, MapPin, Calendar, ExternalLink } from "lucide-react";
 import type { Patient } from "@shared/schema";
 
-export function PatientSearchView() {
+interface PatientSearchViewProps {
+  onPatientSelect?: (patient: Patient) => void;
+}
+
+export function PatientSearchView({ onPatientSelect }: PatientSearchViewProps) {
   const [query, setQuery] = useState("");
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -149,7 +154,7 @@ export function PatientSearchView() {
                         <Badge variant="outline">MRN: {selectedPatient.mrn}</Badge>
                       )}
                       {selectedPatient.record_status && (
-                        <Badge className={selectedPatient.record_status === "Active" ? "bg-green-500/20 text-green-400" : "bg-muted text-muted-foreground"}>
+                        <Badge className={selectedPatient.record_status === "Active" ? "bg-[#1a3d2e]/40 text-[#4a9a7c] border-[#1a3d2e]" : "bg-slate-700/30 text-slate-400 border-slate-700"}>
                           {selectedPatient.record_status}
                         </Badge>
                       )}
@@ -234,6 +239,17 @@ export function PatientSearchView() {
                     <h3 className="font-medium text-sm text-muted-foreground">Notes</h3>
                     <p className="p-3 rounded-lg bg-muted/50 text-sm">{selectedPatient.notes}</p>
                   </div>
+                )}
+
+                {onPatientSelect && (
+                  <Button 
+                    onClick={() => onPatientSelect(selectedPatient)}
+                    className="w-full bg-[#3d2e1a] hover:bg-[#5a4528] text-white"
+                    data-testid="button-open-patient-profile"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open Full Patient Chart
+                  </Button>
                 )}
               </div>
             </ScrollArea>
