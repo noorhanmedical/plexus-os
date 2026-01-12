@@ -59,17 +59,17 @@ export function HomeDashboard() {
 
   const getStatusColor = (status: ScheduleItem["status"]) => {
     switch (status) {
-      case "completed": return "bg-green-500/20 text-green-400";
-      case "in-progress": return "bg-blue-500/20 text-blue-400";
-      case "scheduled": return "bg-muted text-muted-foreground";
+      case "completed": return "bg-emerald-600/20 text-emerald-500 border-emerald-600/30";
+      case "in-progress": return "bg-sky-600/20 text-sky-500 border-sky-600/30";
+      case "scheduled": return "bg-slate-600/20 text-slate-400 border-slate-600/30";
     }
   };
 
   const getAncillaryStatusColor = (status: AncillaryItem["status"]) => {
     switch (status) {
-      case "completed": return "bg-green-500/20 text-green-400";
-      case "due-soon": return "bg-yellow-500/20 text-yellow-400";
-      case "overdue": return "bg-red-500/20 text-red-400";
+      case "completed": return "bg-emerald-600/20 text-emerald-500 border-emerald-600/30";
+      case "due-soon": return "bg-amber-600/20 text-amber-500 border-amber-600/30";
+      case "overdue": return "bg-rose-600/20 text-rose-500 border-rose-600/30";
     }
   };
 

@@ -1,0 +1,56 @@
+{/* Top Banner / Header */}
+<div className="bg-slate-900 text-white shadow-lg relative overflow-hidden">
+  {/* Night Sky Animation */}
+  <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gradient-to-tl from-slate-800 via-transparent to-transparent opacity-40"></div>
+    <div className="absolute bottom-10 right-10 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_2px_rgba(255,255,255,0.8)]"></div>
+    <div className="absolute bottom-24 right-32 w-0.5 h-0.5 bg-white rounded-full animate-[pulse_3s_ease-in-out_infinite] opacity-70"></div>
+    <div className="absolute bottom-40 right-16 w-1 h-1 bg-white rounded-full animate-[pulse_4s_ease-in-out_infinite] opacity-50"></div>
+    <div className="absolute bottom-16 right-64 w-0.5 h-0.5 bg-white rounded-full animate-[pulse_2.5s_ease-in-out_infinite] opacity-80"></div>
+    <div className="absolute bottom-48 right-52 w-1 h-1 bg-white rounded-full animate-[pulse_5s_ease-in-out_infinite] opacity-60"></div>
+    <div className="absolute -bottom-4 right-24 w-32 h-32 bg-[#4c1d95] rounded-full mix-blend-screen filter blur-[60px] opacity-10 animate-[pulse_6s_ease-in-out_infinite]"></div>
+  </div>
+  
+  <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+  
+  <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 relative z-10">
+    <div className="flex justify-between items-end">
+      {/* Left Side - Branding */}
+      <div>
+        <p className="text-slate-400 text-xs font-bold tracking-[0.2em] uppercase mb-3">New Wave Physician Group</p>
+        <h1 className="text-2xl md:text-3xl font-light tracking-tight text-white font-sans">Ancillary Service Management</h1>
+      </div>
+      
+      {/* Right Side - Status & Buttons */}
+      <div className="text-right hidden md:block">
+        {/* System Active Indicator */}
+        <div className="flex items-center justify-end space-x-2 text-slate-400 mb-4">
+          <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></div>
+          <span className="text-xs uppercase tracking-wider font-medium">System Active</span>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex justify-end items-center space-x-3">
+          {/* Calendar Button */}
+          <button 
+            onClick={() => setShowCalendar(true)}
+            className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-sm group"
+            title="Scheduling Calendar"
+          >
+            <Calendar className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+            <span className="text-xs font-medium tracking-wide text-slate-200 group-hover:text-white uppercase">Calendar</span>
+          </button>
+          
+          {/* Plexus Admin Button */}
+          <button 
+            onClick={() => setShowAdmin(true)}
+            className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-sm group"
+          >
+            <div className="w-4 h-4 rounded-full bg-slate-400 group-hover:bg-white transition-colors"></div>
+            <span className="text-xs font-medium tracking-wide text-slate-200 group-hover:text-white uppercase">Plexus Admin</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
