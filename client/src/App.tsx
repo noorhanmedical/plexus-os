@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/not-found";
 import { Activity } from "lucide-react";
+import bannerBg from "@assets/banner-bg.png";
 
 function Router() {
   return (
@@ -21,17 +22,33 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="flex flex-col h-screen bg-background">
-          <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 flex-shrink-0">
+        <div 
+          className="flex flex-col h-screen"
+          style={{
+            backgroundImage: `url(${bannerBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <header 
+            className="h-16 flex items-center justify-between px-6 flex-shrink-0"
+            style={{
+              backgroundImage: `url(${bannerBg})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'top center',
+            }}
+          >
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-                <Activity className="h-4 w-4 text-primary-foreground" />
+              <div className="h-9 w-9 rounded-md bg-white/90 flex items-center justify-center shadow-sm">
+                <Activity className="h-5 w-5 text-gray-800" />
               </div>
-              <h1 className="font-semibold text-lg">Plexus Clinical</h1>
+              <h1 className="font-semibold text-xl text-white drop-shadow-md">Plexus Clinical</h1>
             </div>
-            <ThemeToggle />
+            <div className="bg-white/90 rounded-md shadow-sm">
+              <ThemeToggle />
+            </div>
           </header>
-          <main className="flex-1 overflow-hidden">
+          <main className="flex-1 overflow-hidden p-4">
             <Router />
           </main>
         </div>

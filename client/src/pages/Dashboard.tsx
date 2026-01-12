@@ -23,15 +23,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="w-80 border-r border-border bg-card flex-shrink-0">
+    <div className="flex h-full gap-4">
+      <div className="w-80 bg-white rounded-lg shadow-lg flex-shrink-0 overflow-hidden border border-gray-200">
         <PatientSearch
           onPatientSelect={handlePatientSelect}
           selectedPatientId={selectedPatient?.patient_uuid}
         />
       </div>
 
-      <div className="w-96 border-r border-border bg-background flex-shrink-0">
+      <div className="w-96 bg-white rounded-lg shadow-lg flex-shrink-0 overflow-hidden border border-gray-200">
         <PrescreenList
           patient={selectedPatient}
           onPrescreenSelect={handlePrescreenSelect}
@@ -40,7 +40,7 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="flex-1 bg-background min-w-0">
+      <div className="flex-1 bg-white rounded-lg shadow-lg min-w-0 overflow-hidden border border-gray-200">
         <PrescreenDetail
           prescreen={selectedPrescreen}
           onSave={handlePrescreenSave}

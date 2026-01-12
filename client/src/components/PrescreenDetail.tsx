@@ -115,20 +115,20 @@ export function PrescreenDetail({ prescreen, onSave }: PrescreenDetailProps) {
 
   if (!prescreen) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+      <div className="flex flex-col items-center justify-center h-full text-gray-400 bg-white">
         <ClipboardList className="h-12 w-12 mb-4 opacity-50" />
-        <p className="text-sm">Select a prescreen to view details</p>
+        <p className="text-sm text-gray-500">Select a prescreen to view details</p>
       </div>
     );
   }
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-full bg-white">
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Prescreen Details</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-xl font-semibold text-gray-900">Prescreen Details</h2>
+            <p className="text-sm text-gray-500">
               {prescreen.requested_ancillary_code || "N/A"}
             </p>
           </div>
@@ -136,6 +136,7 @@ export function PrescreenDetail({ prescreen, onSave }: PrescreenDetailProps) {
             onClick={handleSave}
             disabled={!hasChanges || isSaving}
             data-testid="button-save-prescreen"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -146,57 +147,57 @@ export function PrescreenDetail({ prescreen, onSave }: PrescreenDetailProps) {
           </Button>
         </div>
 
-        <Card>
+        <Card className="bg-white border-gray-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Eligibility Information</CardTitle>
+            <CardTitle className="text-base text-gray-900">Eligibility Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-xs text-muted-foreground">Current Status</Label>
+                <Label className="text-xs text-gray-500">Current Status</Label>
                 <div className="mt-1">
                   <Badge 
-                    variant="secondary" 
-                    className={`${getStatusColor(prescreen.eligibility_status_final || prescreen.prescreen_status || "")}`}
+                    variant="outline" 
+                    className={`${getStatusColor(prescreen.eligibility_status_final || prescreen.prescreen_status || "")} border`}
                   >
                     {prescreen.eligibility_status_final || prescreen.prescreen_status || "Not Set"}
                   </Badge>
                 </div>
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Eligibility Reason</Label>
-                <p className="text-sm mt-1">{prescreen.eligibility_reason || "—"}</p>
+                <Label className="text-xs text-gray-500">Eligibility Reason</Label>
+                <p className="text-sm mt-1 text-gray-900">{prescreen.eligibility_reason || "—"}</p>
               </div>
             </div>
 
             {prescreen.eligible_after_date && (
               <div>
-                <Label className="text-xs text-muted-foreground">Eligible After</Label>
-                <p className="text-sm mt-1">{prescreen.eligible_after_date}</p>
+                <Label className="text-xs text-gray-500">Eligible After</Label>
+                <p className="text-sm mt-1 text-gray-900">{prescreen.eligible_after_date}</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Update Status</CardTitle>
+            <CardTitle className="text-base text-gray-900">Update Status</CardTitle>
           </CardHeader>
           <CardContent>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger data-testid="select-status">
+              <SelectTrigger data-testid="select-status" className="bg-white border-gray-300 text-gray-900">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {PRESCREEN_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s} data-testid={`option-status-${s}`}>
+                  <SelectItem key={s} value={s} data-testid={`option-status-${s}`} className="text-gray-900">
                     {s}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {hasStatusChange && (
-              <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center gap-1">
+              <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
                 <AlertCircle className="h-3 w-3" />
                 Unsaved change
               </p>
@@ -204,51 +205,54 @@ export function PrescreenDetail({ prescreen, onSave }: PrescreenDetailProps) {
           </CardContent>
         </Card>
 
-        <Separator />
+        <Separator className="bg-gray-200" />
 
-        <Card>
+        <Card className="bg-white border-gray-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Scheduling</CardTitle>
+            <CardTitle className="text-base text-gray-900">Scheduling</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="scheduled_datetime">Scheduled Date/Time</Label>
+              <Label htmlFor="scheduled_datetime" className="text-gray-700">Scheduled Date/Time</Label>
               <Input
                 id="scheduled_datetime"
                 data-testid="input-scheduled-datetime"
                 type="datetime-local"
                 value={formData.scheduled_datetime ? formData.scheduled_datetime.slice(0, 16) : ""}
                 onChange={(e) => setFormData({ ...formData, scheduled_datetime: e.target.value })}
+                className="bg-white border-gray-300 text-gray-900"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location" className="text-gray-700">Location</Label>
               <Input
                 id="location"
                 data-testid="input-location"
                 placeholder="Enter location"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="bg-white border-gray-300 text-gray-900"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="assigned_staff">Assigned Staff</Label>
+              <Label htmlFor="assigned_staff" className="text-gray-700">Assigned Staff</Label>
               <Input
                 id="assigned_staff"
                 data-testid="input-assigned-staff"
                 placeholder="Enter staff name"
                 value={formData.assigned_staff}
                 onChange={(e) => setFormData({ ...formData, assigned_staff: e.target.value })}
+                className="bg-white border-gray-300 text-gray-900"
               />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Notes</CardTitle>
+            <CardTitle className="text-base text-gray-900">Notes</CardTitle>
           </CardHeader>
           <CardContent>
             <Textarea
@@ -256,17 +260,17 @@ export function PrescreenDetail({ prescreen, onSave }: PrescreenDetailProps) {
               placeholder="Add notes..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="min-h-[120px] resize-none"
+              className="min-h-[120px] resize-none bg-white border-gray-300 text-gray-900"
             />
           </CardContent>
         </Card>
 
         {hasChanges && (
-          <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm py-4 border-t border-border -mx-6 px-6">
+          <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm py-4 border-t border-gray-200 -mx-6 px-6">
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="w-full"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
               data-testid="button-save-prescreen-footer"
             >
               {isSaving ? (
@@ -285,11 +289,11 @@ export function PrescreenDetail({ prescreen, onSave }: PrescreenDetailProps) {
 
 function getStatusColor(status: string): string {
   const colors: Record<string, string> = {
-    "Needs Review": "bg-amber-500/15 text-amber-700 dark:text-amber-400",
-    "Eligible": "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
-    "Not Eligible": "bg-red-500/15 text-red-700 dark:text-red-400",
-    "Scheduled": "bg-blue-500/15 text-blue-700 dark:text-blue-400",
-    "Completed": "bg-slate-500/15 text-slate-700 dark:text-slate-400",
+    "Needs Review": "bg-amber-100 text-amber-800 border-amber-200",
+    "Eligible": "bg-emerald-100 text-emerald-800 border-emerald-200",
+    "Not Eligible": "bg-red-100 text-red-800 border-red-200",
+    "Scheduled": "bg-blue-100 text-blue-800 border-blue-200",
+    "Completed": "bg-gray-100 text-gray-800 border-gray-200",
   };
-  return colors[status] || "bg-muted text-muted-foreground";
+  return colors[status] || "bg-gray-100 text-gray-600 border-gray-200";
 }

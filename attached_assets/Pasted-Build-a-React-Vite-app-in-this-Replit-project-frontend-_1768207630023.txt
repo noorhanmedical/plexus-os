@@ -1,0 +1,91 @@
+Build a React + Vite app in this Replit project (frontend only) for an EMR-style dashboard.
+
+I already have a Google Apps Script Web App API working (API key protected). You must wire the app to it.
+
+REQUIREMENTS
+
+1) App shell + navigation
+- Left sidebar with tabs: Calendar, Patient Profile, Billing, Finance
+- Main content area
+- Minimal clean styling (Tailwind if already configured, otherwise simple CSS)
+
+2) API integration
+Create a single file in client/src called api.js with:
+- export const API_URL = "PASTE_HERE"
+- export const API_KEY = "PASTE_HERE"
+- export async function apiGet(action, params)
+- export async function apiPost(action, payload)
+All requests must include header x-api-key: API_KEY.
+GET uses query params ?action=...
+POST sends JSON { action, ...payload }
+If response.ok is false, show a visible error in the UI.
+
+Endpoints:
+GET:
+- patients.search (query, limit)
+- patients.get (patient_uuid)
+- prescreen.list (status optional, limit)
+POST:
+- prescreen.get (prescreen_id OR patient_uuid+requested_ancillary_code)
+- prescreen.create (patient_uuid, requested_ancillary_code)
+- prescreen.update (prescreen_id, updates: { scheduled_datetime, assigned_staff, location, notes, prescreen_status, cleared_by, eligibility_reason, eligible_after_date, eligibility_status })
+- prescreen.updateStatus (prescreen_id, status)
+
+3) CALENDAR TAB (MAIN FEATURE)
+Calendar is NOT time blocks. It is a “Daily Prescreen Roster” for a selected date (default today).
+
+Top:
+- Date picker (default today)
+- Button “Add patient to today” opens a patient search modal
+
+Roster:
+Show a list/table of today’s scheduled patients (store schedule locally for now using browser localStorage keyed by date).
+Each row shows:
+- Patient name
+- DOB
+- Room (editable input)
+- PMH (pulled from patient.get if available; if field missing, show “Not available”)
+- Med list (pulled from patient.get if available; if field missing, show “Not available”)
+- Ancillaries multi-select dropdown (choose multiple)
+- Small status label “Candidate (not ordered)”
+
+Ancillaries dropdown:
+- Hardcode the ancillary catalog in code for now as an array of objects:
+  { code, name, interval_rule } where interval_rule is "none" | "6mo" | "12mo"
+Include at least these example codes: 93880, 93306, 93975, plus a few placeholders.
+
+When ancillaries are selected for a patient:
+- For each selected ancillary, check if allowed based on prior history:
+  - Use prescreen.list to fetch prior prescreens for that patient and ancillary code.
+  - Treat rows where prescreen_status is “Completed” (or if no such column, treat any row with scheduled_datetime in past) as completed history.
+  - Determine last completed date and compute next eligible date for 6mo/12mo.
+- Display eligibility badge per selected ancillary: Allowed / Allowed after [date]
+
+Row expand:
+Clicking a patient row expands it and shows:
+- A “Reasoning” section with a text area per selected ancillary (editable)
+- A “History” line showing last completed date + next eligible date
+- Button “Save candidates”:
+    - For each selected ancillary, create or update a prescreen row via API:
+      - If prescreen exists already for patient_uuid + code, call prescreen.update with notes/reasoning and scheduled_datetime blank
+      - Else call prescreen.create
+    - Then call prescreen.updateStatus to set status to “Needs Review”
+- Button “Convert to Order” (disabled placeholder)
+
+4) PATIENT PROFILE TAB
+- Patient search input using patients.search
+- Select patient loads patients.get
+- Show demographics + PMH + meds if available
+- Show prescreens for that patient using prescreen.list filtered client-side
+- Allow editing a selected prescreen using prescreen.get + prescreen.update + prescreen.updateStatus
+
+5) BILLING TAB + FINANCE TAB
+Just build placeholders with tables and summary cards (no API wiring yet)
+
+IMPORTANT IMPLEMENTATION NOTES
+- Keep it robust if PMH/meds fields do not exist; just show “Not available”
+- Use optimistic UI where possible but refresh after saves
+- Make sure the app runs immediately in Replit
+- Tell me what files you created/modified in client/src
+
+After building, leave API_URL and API_KEY as placeholders for me to paste.
