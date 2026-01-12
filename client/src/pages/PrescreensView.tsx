@@ -27,7 +27,7 @@ export function PrescreensView() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) => 
-        query.queryKey[0]?.toString().startsWith("/api/prescreens")
+        query.queryKey[0]?.toString().startsWith("/api/prescreens") ?? false
       });
       toast({ title: "Prescreen updated successfully" });
     },
@@ -147,7 +147,7 @@ export function PrescreensView() {
                 onClick={() => {
                   setEditedPrescreen({});
                   queryClient.invalidateQueries({ predicate: (query) => 
-                    query.queryKey[0]?.toString().startsWith("/api/prescreens")
+                    query.queryKey[0]?.toString().startsWith("/api/prescreens") ?? false
                   });
                 }}
                 data-testid="button-refresh-prescreen"
