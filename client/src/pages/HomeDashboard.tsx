@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, DollarSign, Activity, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, DollarSign, Activity, AlertCircle, CheckCircle2, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Prescreen } from "@shared/schema";
 
@@ -57,19 +57,27 @@ export function HomeDashboard() {
     totalOutstanding: 45200,
   };
 
+  const invoicingData = {
+    pendingInvoices: 12,
+    sentThisWeek: 8,
+    paidThisWeek: 15,
+    overdueInvoices: 3,
+    totalPending: 28750,
+  };
+
   const getStatusColor = (status: ScheduleItem["status"]) => {
     switch (status) {
-      case "completed": return "bg-[#1a3d2e]/40 text-[#4a9a7c] border-[#1a3d2e]";
-      case "in-progress": return "bg-[#3d2e1a]/40 text-[#c4a35a] border-[#3d2e1a]";
-      case "scheduled": return "bg-slate-700/30 text-slate-400 border-slate-700";
+      case "completed": return "bg-green-100 text-black border-green-300";
+      case "in-progress": return "bg-amber-100 text-black border-amber-300";
+      case "scheduled": return "bg-slate-100 text-black border-slate-300";
     }
   };
 
   const getAncillaryStatusColor = (status: AncillaryItem["status"]) => {
     switch (status) {
-      case "completed": return "bg-[#1a3d2e]/40 text-[#4a9a7c] border-[#1a3d2e]";
-      case "due-soon": return "bg-[#3d2e1a]/40 text-[#c4a35a] border-[#3d2e1a]";
-      case "overdue": return "bg-[#3d1a1a]/40 text-[#a35a5a] border-[#3d1a1a]";
+      case "completed": return "bg-green-100 text-black border-green-300";
+      case "due-soon": return "bg-amber-100 text-black border-amber-300";
+      case "overdue": return "bg-red-100 text-black border-red-300";
     }
   };
 
@@ -203,6 +211,35 @@ export function HomeDashboard() {
               <div className="flex items-center justify-between mt-1 text-sm">
                 <span className="text-slate-500">Avg Days to Pay</span>
                 <span className="font-medium text-black">18 days</span>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-lg bg-white border border-slate-200 shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <FileText className="h-4 w-4 text-blue-600" />
+                <p className="text-sm font-medium text-black">Invoicing</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center p-2 rounded bg-slate-50 border border-slate-100">
+                  <p className="text-lg font-bold text-black">{invoicingData.pendingInvoices}</p>
+                  <p className="text-xs text-slate-500">Pending</p>
+                </div>
+                <div className="text-center p-2 rounded bg-slate-50 border border-slate-100">
+                  <p className="text-lg font-bold text-green-600">{invoicingData.paidThisWeek}</p>
+                  <p className="text-xs text-slate-500">Paid This Week</p>
+                </div>
+                <div className="text-center p-2 rounded bg-slate-50 border border-slate-100">
+                  <p className="text-lg font-bold text-blue-600">{invoicingData.sentThisWeek}</p>
+                  <p className="text-xs text-slate-500">Sent This Week</p>
+                </div>
+                <div className="text-center p-2 rounded bg-slate-50 border border-slate-100">
+                  <p className="text-lg font-bold text-red-600">{invoicingData.overdueInvoices}</p>
+                  <p className="text-xs text-slate-500">Overdue</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 text-sm">
+                <span className="text-slate-500">Total Pending Amount</span>
+                <span className="font-medium text-black">${invoicingData.totalPending.toLocaleString()}</span>
               </div>
             </div>
           </CardContent>
