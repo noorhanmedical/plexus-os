@@ -41,12 +41,41 @@ interface Patient {
 }
 
 const mainTabs = [
-  { id: "home" as MainTab, label: "Home", icon: Home },
+  { id: "home" as MainTab, label: "Plexus Clinical EMR Home", icon: Home },
   { id: "schedule" as MainTab, label: "Schedule", icon: Calendar },
   { id: "prescreens" as MainTab, label: "Prescreens", icon: ClipboardList },
   { id: "ancillary" as MainTab, label: "Ancillary", icon: Activity },
   { id: "finance" as MainTab, label: "Finance", icon: DollarSign },
 ];
+
+function MountainSilhouette() {
+  return (
+    <svg 
+      viewBox="0 0 200 80" 
+      className="w-full h-20 opacity-30"
+      preserveAspectRatio="xMidYMax slice"
+    >
+      <defs>
+        <linearGradient id="mountainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+        </linearGradient>
+      </defs>
+      {/* Back mountain range */}
+      <path 
+        d="M0 80 L20 45 L35 55 L55 30 L75 50 L95 25 L115 45 L130 35 L150 50 L170 40 L185 55 L200 45 L200 80 Z" 
+        fill="url(#mountainGrad)"
+        opacity="0.5"
+      />
+      {/* Front mountain range */}
+      <path 
+        d="M0 80 L15 60 L30 70 L50 50 L70 65 L90 45 L110 60 L125 50 L145 65 L165 55 L180 65 L200 55 L200 80 Z" 
+        fill="url(#mountainGrad)"
+        opacity="0.8"
+      />
+    </svg>
+  );
+}
 
 const sidebarTabs = [
   { id: "patient" as SidebarTab, label: "Patient Search", icon: User },
@@ -78,11 +107,10 @@ function AppSidebar({
 }) {
   return (
     <Sidebar className="bg-slate-900 border-r border-slate-800">
-      <SidebarHeader className="p-4 border-b border-slate-800 relative overflow-hidden">
-        <TwinklingStars />
+      <SidebarHeader className="p-4 border-b border-slate-800 flex-1 flex flex-col justify-start">
         <button
           onClick={onClearSidebar}
-          className="flex items-center gap-3 w-full text-left hover-elevate rounded-lg p-1 -m-1 relative z-10"
+          className="flex items-center gap-3 w-full text-left hover-elevate rounded-lg p-1 -m-1"
           data-testid="nav-home-logo"
         >
           <div className="h-10 w-10 rounded-lg bg-[#1a3d2e]/60 flex items-center justify-center border border-[#2d5a47]/50">
@@ -95,9 +123,8 @@ function AppSidebar({
         </button>
       </SidebarHeader>
 
-      <SidebarContent className="p-3 bg-slate-900 relative">
-        <TwinklingStars />
-        <SidebarMenu className="relative z-10">
+      <SidebarContent className="p-3 bg-slate-900">
+        <SidebarMenu>
           {sidebarTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -118,6 +145,11 @@ function AppSidebar({
           })}
         </SidebarMenu>
       </SidebarContent>
+
+      {/* Mountain silhouette at bottom */}
+      <div className="mt-auto">
+        <MountainSilhouette />
+      </div>
     </Sidebar>
   );
 }
