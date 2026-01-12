@@ -73,6 +73,22 @@ export function HomeDashboard() {
     }
   };
 
+  const getScheduleRowStyle = (status: ScheduleItem["status"]) => {
+    switch (status) {
+      case "completed": return "bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm";
+      case "in-progress": return "bg-[#3d2e1a]/20 border border-[#3d2e1a]/40 backdrop-blur-sm";
+      case "scheduled": return "bg-white/5 border border-white/10 backdrop-blur-sm";
+    }
+  };
+
+  const getAncillaryRowStyle = (status: AncillaryItem["status"]) => {
+    switch (status) {
+      case "completed": return "bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm";
+      case "due-soon": return "bg-[#3d2e1a]/20 border border-[#3d2e1a]/40 backdrop-blur-sm";
+      case "overdue": return "bg-[#3d1a1a]/20 border border-[#3d1a1a]/40 backdrop-blur-sm";
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -91,7 +107,7 @@ export function HomeDashboard() {
               <div
                 key={item.id}
                 data-testid={`schedule-item-${item.id}`}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover-elevate"
+                className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getScheduleRowStyle(item.status)}`}
               >
                 <div className="space-y-1">
                   <p className="font-medium text-sm">{item.patientName}</p>
@@ -125,15 +141,17 @@ export function HomeDashboard() {
               <div
                 key={item.id}
                 data-testid={`ancillary-item-${item.id}`}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover-elevate"
+                className={`flex items-center justify-between p-3 rounded-lg transition-all hover:scale-[1.01] cursor-pointer ${getAncillaryRowStyle(item.status)}`}
               >
                 <div className="space-y-1">
                   <p className="font-medium text-sm">{item.patientName}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     {item.status === "completed" ? (
-                      <CheckCircle2 className="h-3 w-3 text-green-400" />
+                      <CheckCircle2 className="h-3 w-3 text-[#4a9a7c]" />
+                    ) : item.status === "overdue" ? (
+                      <AlertCircle className="h-3 w-3 text-[#a35a5a]" />
                     ) : (
-                      <AlertCircle className="h-3 w-3 text-yellow-400" />
+                      <AlertCircle className="h-3 w-3 text-[#c4a35a]" />
                     )}
                     <span>{item.service}</span>
                     <span>-</span>
@@ -159,36 +177,36 @@ export function HomeDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-muted/50 space-y-1">
+              <div className="p-4 rounded-lg bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
                 <p className="text-xs text-muted-foreground">Today's Revenue</p>
-                <p className="text-2xl font-bold text-green-400">
+                <p className="text-2xl font-bold text-[#4a9a7c]">
                   ${financeSummary.todayRevenue.toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-muted/50 space-y-1">
+              <div className="p-4 rounded-lg bg-[#3d2e1a]/20 border border-[#3d2e1a]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
                 <p className="text-xs text-muted-foreground">Pending Claims</p>
-                <p className="text-2xl font-bold text-yellow-400">
+                <p className="text-2xl font-bold text-[#c4a35a]">
                   {financeSummary.pendingClaims}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-muted/50 space-y-1">
+              <div className="p-4 rounded-lg bg-[#1a3d2e]/20 border border-[#1a3d2e]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
                 <p className="text-xs text-muted-foreground">Approved Claims</p>
-                <p className="text-2xl font-bold text-primary">
+                <p className="text-2xl font-bold text-[#4a9a7c]">
                   {financeSummary.approvedClaims}
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-muted/50 space-y-1">
+              <div className="p-4 rounded-lg bg-[#3d1a1a]/20 border border-[#3d1a1a]/40 backdrop-blur-sm space-y-1 transition-all hover:scale-[1.02] cursor-pointer">
                 <p className="text-xs text-muted-foreground">Outstanding</p>
-                <p className="text-2xl font-bold text-red-400">
+                <p className="text-2xl font-bold text-[#a35a5a]">
                   ${financeSummary.totalOutstanding.toLocaleString()}
                 </p>
               </div>
             </div>
-            <div className="p-4 rounded-lg bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30">
+            <div className="p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm">
               <p className="text-sm font-medium">Quick Stats</p>
               <div className="flex items-center justify-between mt-2 text-sm">
                 <span className="text-muted-foreground">Collection Rate</span>
-                <span className="font-medium text-green-400">94.2%</span>
+                <span className="font-medium text-[#4a9a7c]">94.2%</span>
               </div>
               <div className="flex items-center justify-between mt-1 text-sm">
                 <span className="text-muted-foreground">Avg Days to Pay</span>
