@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Clock, TestTube, User, Brain, Heart } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Clock, TestTube, Brain, Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { UltrasoundProbeIcon } from "@/components/service-icons";
 
@@ -303,13 +303,13 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
                 <p className="text-xs text-purple-600">Brain</p>
               </div>
-              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-violet-100/50 border border-violet-200/30">
-                <p className="text-2xl font-bold text-violet-700">{ultrasoundCount}</p>
-                <p className="text-xs text-violet-600">Ultra</p>
+              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-blue-100/50 border border-blue-200/30">
+                <p className="text-2xl font-bold text-blue-700">{ultrasoundCount}</p>
+                <p className="text-xs text-blue-600">Ultra</p>
               </div>
-              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-indigo-100/50 border border-indigo-200/30">
-                <p className="text-2xl font-bold text-indigo-700">{vitalwaveCount}</p>
-                <p className="text-xs text-indigo-600">Vital</p>
+              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-red-100/50 border border-red-200/30">
+                <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
+                <p className="text-xs text-red-600">Vital</p>
               </div>
             </div>
             <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
@@ -364,9 +364,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
                       {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-purple-600" /> :
-                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-violet-600" /> :
-                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-indigo-600" /> :
-                       <User className="h-5 w-5 text-purple-600" />}
+                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" /> :
+                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-red-600" /> :
+                       <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" />}
                     </div>
                     <div>
                       <p className="font-medium text-[#1a0a28]">{patient.name}</p>
@@ -470,11 +470,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                        <UltrasoundProbeIcon className="h-6 w-6 text-violet-600" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <UltrasoundProbeIcon className="h-6 w-6 text-blue-600" />
                       </div>
                       <div className="flex-1">
-                        <Badge className="backdrop-blur-sm bg-violet-100/70 text-violet-700 border-violet-200/50">{ultrasoundCount} records</Badge>
+                        <Badge className="backdrop-blur-sm bg-blue-100/70 text-blue-700 border-blue-200/50">{ultrasoundCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -498,11 +498,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                        <Heart className="h-6 w-6 text-indigo-600" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <Heart className="h-6 w-6 text-red-600" />
                       </div>
                       <div className="flex-1">
-                        <Badge className="backdrop-blur-sm bg-indigo-100/70 text-indigo-700 border-indigo-200/50">{vitalwaveCount} records</Badge>
+                        <Badge className="backdrop-blur-sm bg-red-100/70 text-red-700 border-red-200/50">{vitalwaveCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
