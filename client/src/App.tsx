@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
 import { HomeDashboard } from "@/pages/HomeDashboard";
 import { PatientSearchView } from "@/pages/PatientSearchView";
 import { PrescreensView } from "@/pages/PrescreensView";
@@ -12,7 +11,7 @@ import { BillingView } from "@/pages/BillingView";
 import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientProfile } from "@/pages/PatientProfile";
-import { Home, User, ClipboardList, Activity, CreditCard, DollarSign, Calendar, Search, X, Loader2 } from "lucide-react";
+import { Home, User, ClipboardList, Activity, CreditCard, DollarSign, Calendar } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -126,33 +125,6 @@ function MainContent() {
   const [mainTab, setMainTab] = useState<MainTab>("home");
   const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  const { data: searchResults, isFetching } = useQuery<{ ok: boolean; data?: Patient[] }>({
-    queryKey: ["/api/patients/search", debouncedQuery],
-    enabled: debouncedQuery.length >= 1,
-    staleTime: 30000,
-  });
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowSearchResults(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleSidebarTabChange = (tab: SidebarTab) => {
     setSidebarTab(sidebarTab === tab ? null : tab);
@@ -171,8 +143,6 @@ function MainContent() {
 
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
-    setSearchQuery("");
-    setShowSearchResults(false);
     setMainTab("home");
     setSidebarTab(null);
   };
@@ -218,132 +188,76 @@ function MainContent() {
     return mainTabs.find((t) => t.id === mainTab)?.label || "Home";
   };
 
-  const patients = searchResults?.data || [];
-
   const style = {
     "--sidebar-width": "14rem",
     "--sidebar-width-icon": "3rem",
   };
 
   return (
-    <SidebarProvider style={style as React.CSSProperties}>
-      <div className="flex h-screen w-full bg-background">
-        <AppSidebar activeTab={sidebarTab} onTabChange={handleSidebarTabChange} onClearSidebar={handleClearSidebar} />
-            
-            <main className="flex-1 flex flex-col overflow-hidden">
-              <header className="bg-slate-900 text-white shadow-lg relative overflow-hidden">
-                <TwinklingStars />
-                <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
-                
-                <div className="px-4 md:px-6 py-4 md:py-5 relative z-10">
-                  <div className="flex justify-between items-center gap-4">
-                    <div className="flex items-center gap-4">
-                      <SidebarTrigger className="text-slate-400 hover:text-white" data-testid="button-sidebar-toggle" />
-                      <div>
-                        <p className="text-slate-500 text-[10px] font-bold tracking-[0.2em] uppercase">Clinical EMR</p>
-                        <h2 className="text-xl md:text-2xl font-light tracking-tight text-white">
-                          {getCurrentTitle()}
-                        </h2>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3">
-                      <div ref={searchRef} className="relative">
-                        <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1.5 backdrop-blur-sm">
-                          <Search className="h-4 w-4 text-slate-400" />
-                          <Input
-                            data-testid="input-header-search"
-                            type="text"
-                            placeholder="Search patients..."
-                            value={searchQuery}
-                            onChange={(e) => {
-                              setSearchQuery(e.target.value);
-                              setShowSearchResults(true);
-                            }}
-                            onFocus={() => setShowSearchResults(true)}
-                            className="w-40 md:w-56 bg-transparent border-0 p-0 h-auto text-sm text-white placeholder:text-slate-400 focus-visible:ring-0"
-                          />
-                          {searchQuery && (
-                            <button 
-                              onClick={() => { setSearchQuery(""); setShowSearchResults(false); }}
-                              className="text-slate-400 hover:text-white"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          )}
-                          {isFetching && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
-                        </div>
-                        
-                        {showSearchResults && searchQuery.length >= 1 && (
-                          <div className="absolute top-full mt-2 left-0 right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 max-h-64 overflow-auto">
-                            {patients.length === 0 ? (
-                              <div className="p-3 text-sm text-slate-400 text-center">
-                                {isFetching ? "Searching..." : "No patients found"}
-                              </div>
-                            ) : (
-                              patients.map((patient) => (
-                                <button
-                                  key={patient.patient_uuid}
-                                  data-testid={`search-result-${patient.patient_uuid}`}
-                                  onClick={() => handlePatientSelect(patient)}
-                                  className="w-full p-3 text-left hover:bg-slate-700 transition-colors flex items-center gap-3 border-b border-slate-700/50 last:border-0"
-                                >
-                                  <div className="h-8 w-8 rounded-full bg-[#3d2e1a]/40 flex items-center justify-center">
-                                    <User className="h-4 w-4 text-[#c4a35a]" />
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-white">
-                                      {patient.last_name}, {patient.first_name}
-                                    </p>
-                                    <p className="text-xs text-slate-400">
-                                      {patient.dob && `DOB: ${patient.dob}`}
-                                      {patient.mrn && ` | MRN: ${patient.mrn}`}
-                                    </p>
-                                  </div>
-                                </button>
-                              ))
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-                        {mainTabs.map((tab) => {
-                          const Icon = tab.icon;
-                          const isActive = !sidebarTab && mainTab === tab.id;
-                          return (
-                            <button
-                              key={tab.id}
-                              data-testid={`tab-${tab.id}`}
-                              onClick={() => handleMainTabChange(tab.id)}
-                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
-                                isActive 
-                                  ? "bg-white/20 text-white" 
-                                  : "text-slate-300 hover:text-white hover:bg-white/10"
-                              }`}
-                            >
-                              <Icon className="h-3.5 w-3.5" />
-                              <span className="hidden lg:inline">{tab.label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                      
-                      <div className="flex items-center gap-2 text-slate-400">
-                        <div className="w-2 h-2 rounded-full bg-[#4a9a7c] animate-pulse"></div>
-                        <span className="text-xs uppercase tracking-wider font-medium hidden md:inline">Active</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </header>
-
-              <div className="flex-1 overflow-auto p-6 bg-background">
-                {renderContent()}
+    <div className="flex flex-col h-screen w-full">
+      <header className="bg-slate-900 text-white shadow-lg relative overflow-hidden z-50">
+        <TwinklingStars />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div className="px-4 md:px-6 py-4 md:py-5 relative z-10">
+          <div className="flex justify-between items-center gap-4">
+            <div className="flex items-center gap-4">
+              <div>
+                <p className="text-slate-500 text-[10px] font-bold tracking-[0.2em] uppercase">Clinical EMR</p>
+                <h2 className="text-xl md:text-2xl font-light tracking-tight text-white">
+                  {getCurrentTitle()}
+                </h2>
               </div>
-            </main>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+                {mainTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = !sidebarTab && mainTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      data-testid={`tab-${tab.id}`}
+                      onClick={() => handleMainTabChange(tab.id)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
+                        isActive 
+                          ? "bg-white/20 text-white" 
+                          : "text-slate-300 hover:text-white hover:bg-white/10"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span className="hidden lg:inline">{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <div className="flex items-center gap-2 text-slate-400">
+                <div className="w-2 h-2 rounded-full bg-[#4a9a7c] animate-pulse"></div>
+                <span className="text-xs uppercase tracking-wider font-medium hidden md:inline">Active</span>
+              </div>
+            </div>
           </div>
-        </SidebarProvider>
+        </div>
+      </header>
+
+      <SidebarProvider style={style as React.CSSProperties}>
+        <div className="flex flex-1 w-full overflow-hidden">
+          <AppSidebar activeTab={sidebarTab} onTabChange={handleSidebarTabChange} onClearSidebar={handleClearSidebar} />
+          
+          <main className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex items-center gap-2 p-2 border-b border-slate-800 bg-slate-900/50">
+              <SidebarTrigger className="text-slate-400 hover:text-white" data-testid="button-sidebar-toggle" />
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6 bg-background">
+              {renderContent()}
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
+    </div>
   );
 }
 
