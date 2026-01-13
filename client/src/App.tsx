@@ -70,75 +70,86 @@ function MountainSilhouette() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       <div 
-        className="absolute bottom-0 left-0 right-0 h-full"
+        className="absolute inset-0"
         style={{
           background: `
-            linear-gradient(to top, rgba(10, 15, 25, 0.95) 0%, rgba(15, 23, 42, 0.7) 30%, transparent 60%)
+            radial-gradient(ellipse at 50% 90%, rgba(45, 25, 55, 0.4) 0%, transparent 50%),
+            linear-gradient(to top, #080810 0%, #0d1020 20%, #121828 40%, #0f1525 70%, #0a0d18 100%)
           `
         }}
       />
+      
+      <div className="absolute top-0 left-0 right-0 h-1/2">
+        {[...Array(35)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white"
+            style={{
+              width: `${Math.random() * 2 + 0.5}px`,
+              height: `${Math.random() * 2 + 0.5}px`,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.6 + 0.2,
+              animation: `pulse ${3 + Math.random() * 4}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 3}s`
+            }}
+          />
+        ))}
+      </div>
+
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[85%] opacity-30"
+        className="absolute bottom-0 left-0 w-full h-[75%]"
         viewBox="0 0 200 100" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,100 L0,75 L8,72 L12,68 L18,70 L25,55 L30,58 L35,52 L42,48 L48,50 L55,35 L60,38 L65,32 L72,28 L78,30 L85,22 L90,25 L95,20 L100,18 L105,22 L110,28 L118,32 L125,38 L130,42 L138,48 L145,52 L152,58 L160,62 L168,68 L175,72 L182,75 L190,78 L200,80 L200,100 Z" 
+          d="M0,100 L0,70 L5,68 L10,65 L12,62 L15,58 L18,55 L20,52 L22,48 L25,42 L28,38 L30,35 L32,32 L35,28 L38,25 L40,22 L42,20 L45,18 L48,22 L50,26 L52,30 L55,34 L58,38 L60,42 L62,45 L65,48 L68,52 L70,55 L72,52 L75,48 L78,44 L80,40 L82,36 L85,32 L88,28 L90,24 L92,20 L95,16 L98,12 L100,10 L102,12 L105,16 L108,20 L110,24 L112,28 L115,32 L118,36 L120,40 L122,44 L125,48 L128,52 L130,56 L132,52 L135,48 L138,44 L140,40 L142,36 L145,32 L148,28 L150,25 L152,28 L155,32 L158,36 L160,40 L162,44 L165,48 L168,52 L170,56 L172,60 L175,64 L178,68 L180,72 L182,76 L185,80 L188,84 L190,88 L195,92 L200,95 L200,100 Z" 
           fill="url(#mountainGradientFar)"
         />
         <defs>
           <linearGradient id="mountainGradientFar" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1e293b" />
-            <stop offset="60%" stopColor="#0f172a" />
-            <stop offset="100%" stopColor="#0a0f19" />
+            <stop offset="0%" stopColor="#1a1a2e" />
+            <stop offset="50%" stopColor="#12121f" />
+            <stop offset="100%" stopColor="#080810" />
           </linearGradient>
         </defs>
       </svg>
+
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[70%] opacity-50"
+        className="absolute bottom-0 left-0 w-full h-[55%]"
         viewBox="0 0 200 100" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,100 L0,82 L5,80 L10,78 L15,75 L20,72 L25,68 L28,65 L32,62 L35,58 L40,55 L43,52 L48,48 L52,45 L55,42 L58,38 L62,35 L65,32 L68,35 L72,38 L75,42 L78,45 L82,48 L85,52 L88,55 L92,58 L95,62 L100,65 L105,68 L108,72 L112,75 L118,78 L125,82 L132,85 L140,88 L150,90 L160,92 L175,95 L190,97 L200,98 L200,100 Z" 
+          d="M0,100 L0,55 L3,52 L6,48 L9,45 L12,42 L15,38 L18,35 L20,32 L22,35 L25,38 L28,42 L30,45 L32,42 L35,38 L38,34 L40,30 L42,26 L45,22 L48,18 L50,15 L52,18 L55,22 L58,26 L60,30 L62,34 L65,38 L68,42 L70,46 L72,50 L75,54 L78,58 L80,62 L82,58 L85,54 L88,50 L90,46 L92,42 L95,38 L98,35 L100,38 L102,42 L105,46 L108,50 L110,54 L112,58 L115,62 L118,66 L120,70 L125,74 L130,78 L140,82 L150,86 L165,90 L180,94 L200,98 L200,100 Z" 
           fill="url(#mountainGradientMid)"
         />
         <defs>
           <linearGradient id="mountainGradientMid" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#334155" />
-            <stop offset="40%" stopColor="#1e293b" />
-            <stop offset="100%" stopColor="#0f172a" />
+            <stop offset="0%" stopColor="#16162a" />
+            <stop offset="50%" stopColor="#0e0e1a" />
+            <stop offset="100%" stopColor="#080810" />
           </linearGradient>
         </defs>
       </svg>
+
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[45%] opacity-70"
+        className="absolute bottom-0 left-0 w-full h-[35%]"
         viewBox="0 0 200 100" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,100 L0,65 L8,62 L15,58 L22,55 L28,52 L32,48 L38,45 L42,42 L48,38 L52,35 L55,32 L58,30 L62,32 L65,35 L68,38 L72,42 L78,48 L82,52 L88,55 L95,58 L102,62 L110,65 L120,68 L130,72 L142,75 L155,78 L170,82 L185,88 L200,92 L200,100 Z" 
-          fill="url(#mountainGradientNear)"
+          d="M0,100 L0,45 L5,42 L10,38 L15,35 L18,32 L20,28 L22,25 L25,22 L28,25 L30,28 L32,32 L35,35 L38,38 L40,42 L42,45 L45,48 L48,52 L50,55 L52,58 L55,62 L60,66 L70,72 L85,78 L100,84 L120,88 L145,92 L175,96 L200,100 Z" 
+          fill="#050508"
         />
-        <defs>
-          <linearGradient id="mountainGradientNear" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#475569" />
-            <stop offset="30%" stopColor="#334155" />
-            <stop offset="70%" stopColor="#1e293b" />
-            <stop offset="100%" stopColor="#0f172a" />
-          </linearGradient>
-        </defs>
       </svg>
+
       <div 
-        className="absolute bottom-0 left-0 right-0 h-20"
+        className="absolute bottom-0 left-0 right-0 h-12"
         style={{
-          background: 'linear-gradient(to top, rgba(10, 15, 25, 1), rgba(15, 23, 42, 0.8), transparent)'
+          background: 'linear-gradient(to top, #050508, transparent)'
         }}
       />
-      <div className="absolute top-6 left-6 w-0.5 h-0.5 bg-white/50 rounded-full animate-[pulse_4s_ease-in-out_infinite]"></div>
-      <div className="absolute top-10 right-8 w-0.5 h-0.5 bg-white/30 rounded-full animate-[pulse_3s_ease-in-out_infinite]"></div>
-      <div className="absolute top-16 left-10 w-1 h-1 bg-white/20 rounded-full animate-[pulse_5s_ease-in-out_infinite]"></div>
-      <div className="absolute top-20 right-4 w-0.5 h-0.5 bg-white/40 rounded-full animate-[pulse_6s_ease-in-out_infinite]"></div>
     </div>
   );
 }
