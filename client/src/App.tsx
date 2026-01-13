@@ -73,52 +73,72 @@ function MountainSilhouette() {
         className="absolute bottom-0 left-0 right-0 h-full"
         style={{
           background: `
-            linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, transparent 40%),
-            linear-gradient(135deg, transparent 60%, rgba(30, 41, 59, 0.6) 60%, rgba(30, 41, 59, 0.4) 100%)
+            linear-gradient(to top, rgba(10, 15, 25, 0.95) 0%, rgba(15, 23, 42, 0.7) 30%, transparent 60%)
           `
         }}
       />
       <svg 
-        className="absolute bottom-0 left-0 w-full h-3/4 opacity-40"
-        viewBox="0 0 100 100" 
+        className="absolute bottom-0 left-0 w-full h-[85%] opacity-30"
+        viewBox="0 0 200 100" 
         preserveAspectRatio="none"
       >
-        <polygon 
-          points="0,100 15,45 30,70 50,30 70,55 85,25 100,60 100,100" 
-          fill="url(#mountainGradient1)"
+        <path 
+          d="M0,100 L0,75 L8,72 L12,68 L18,70 L25,55 L30,58 L35,52 L42,48 L48,50 L55,35 L60,38 L65,32 L72,28 L78,30 L85,22 L90,25 L95,20 L100,18 L105,22 L110,28 L118,32 L125,38 L130,42 L138,48 L145,52 L152,58 L160,62 L168,68 L175,72 L182,75 L190,78 L200,80 L200,100 Z" 
+          fill="url(#mountainGradientFar)"
         />
         <defs>
-          <linearGradient id="mountainGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient id="mountainGradientFar" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#1e293b" />
+            <stop offset="60%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#0a0f19" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <svg 
+        className="absolute bottom-0 left-0 w-full h-[70%] opacity-50"
+        viewBox="0 0 200 100" 
+        preserveAspectRatio="none"
+      >
+        <path 
+          d="M0,100 L0,82 L5,80 L10,78 L15,75 L20,72 L25,68 L28,65 L32,62 L35,58 L40,55 L43,52 L48,48 L52,45 L55,42 L58,38 L62,35 L65,32 L68,35 L72,38 L75,42 L78,45 L82,48 L85,52 L88,55 L92,58 L95,62 L100,65 L105,68 L108,72 L112,75 L118,78 L125,82 L132,85 L140,88 L150,90 L160,92 L175,95 L190,97 L200,98 L200,100 Z" 
+          fill="url(#mountainGradientMid)"
+        />
+        <defs>
+          <linearGradient id="mountainGradientMid" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#334155" />
+            <stop offset="40%" stopColor="#1e293b" />
             <stop offset="100%" stopColor="#0f172a" />
           </linearGradient>
         </defs>
       </svg>
       <svg 
-        className="absolute bottom-0 left-0 w-full h-1/2 opacity-60"
-        viewBox="0 0 100 100" 
+        className="absolute bottom-0 left-0 w-full h-[45%] opacity-70"
+        viewBox="0 0 200 100" 
         preserveAspectRatio="none"
       >
-        <polygon 
-          points="0,100 10,60 25,80 40,50 55,70 75,40 90,65 100,50 100,100" 
-          fill="url(#mountainGradient2)"
+        <path 
+          d="M0,100 L0,65 L8,62 L15,58 L22,55 L28,52 L32,48 L38,45 L42,42 L48,38 L52,35 L55,32 L58,30 L62,32 L65,35 L68,38 L72,42 L78,48 L82,52 L88,55 L95,58 L102,62 L110,65 L120,68 L130,72 L142,75 L155,78 L170,82 L185,88 L200,92 L200,100 Z" 
+          fill="url(#mountainGradientNear)"
         />
         <defs>
-          <linearGradient id="mountainGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#334155" />
-            <stop offset="100%" stopColor="#1e293b" />
+          <linearGradient id="mountainGradientNear" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="30%" stopColor="#334155" />
+            <stop offset="70%" stopColor="#1e293b" />
+            <stop offset="100%" stopColor="#0f172a" />
           </linearGradient>
         </defs>
       </svg>
       <div 
-        className="absolute bottom-0 left-0 right-0 h-16"
+        className="absolute bottom-0 left-0 right-0 h-20"
         style={{
-          background: 'linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent)'
+          background: 'linear-gradient(to top, rgba(10, 15, 25, 1), rgba(15, 23, 42, 0.8), transparent)'
         }}
       />
-      <div className="absolute top-4 left-4 w-0.5 h-0.5 bg-white/60 rounded-full animate-[pulse_4s_ease-in-out_infinite]"></div>
-      <div className="absolute top-8 right-6 w-0.5 h-0.5 bg-white/40 rounded-full animate-[pulse_3s_ease-in-out_infinite]"></div>
-      <div className="absolute top-12 left-8 w-0.5 h-0.5 bg-white/50 rounded-full animate-[pulse_5s_ease-in-out_infinite]"></div>
+      <div className="absolute top-6 left-6 w-0.5 h-0.5 bg-white/50 rounded-full animate-[pulse_4s_ease-in-out_infinite]"></div>
+      <div className="absolute top-10 right-8 w-0.5 h-0.5 bg-white/30 rounded-full animate-[pulse_3s_ease-in-out_infinite]"></div>
+      <div className="absolute top-16 left-10 w-1 h-1 bg-white/20 rounded-full animate-[pulse_5s_ease-in-out_infinite]"></div>
+      <div className="absolute top-20 right-4 w-0.5 h-0.5 bg-white/40 rounded-full animate-[pulse_6s_ease-in-out_infinite]"></div>
     </div>
   );
 }
