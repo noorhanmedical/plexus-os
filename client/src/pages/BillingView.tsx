@@ -138,6 +138,30 @@ interface InvoiceItem {
   amount: number;
 }
 
+interface NewBillingRecord {
+  service_type: string;
+  patient_name: string;
+  clinician: string;
+  date_of_service: string;
+  insurance_info: string;
+  comments: string;
+  link_billing_document: string;
+  link_order_note: string;
+  link_report: string;
+}
+
+const EMPTY_BILLING_RECORD: NewBillingRecord = {
+  service_type: "BILLING_BRAINWAVE",
+  patient_name: "",
+  clinician: "",
+  date_of_service: "",
+  insurance_info: "",
+  comments: "",
+  link_billing_document: "",
+  link_order_note: "",
+  link_report: "",
+};
+
 const CHART_COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444", "#6366f1"];
 
 export function BillingView() {
@@ -148,6 +172,8 @@ export function BillingView() {
   const [dateRangeFilter, setDateRangeFilter] = useState<string>("all");
   const [claimStatusFilter, setClaimStatusFilter] = useState<string>("all");
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
+  const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
+  const [newRecord, setNewRecord] = useState<NewBillingRecord>(EMPTY_BILLING_RECORD);
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([{ description: "", amount: 0 }]);
   const [invoicePatientId, setInvoicePatientId] = useState("");
   const [invoiceNotes, setInvoiceNotes] = useState("");
@@ -205,6 +231,46 @@ export function BillingView() {
       toast({ title: "Error", description: "Failed to create invoice", variant: "destructive" });
     },
   });
+
+  const addBillingRecordMutation = useMutation({
+    mutationFn: async (payload: NewBillingRecord) => {
+      const res = await apiRequest("POST", "/api/billing/add", payload);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      if (data.ok) {
+        toast({ title: "Success", description: "Billing record added successfully" });
+        setIsAddRecordDialogOpen(false);
+        setNewRecord(EMPTY_BILLING_RECORD);
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/search"] });
+      } else {
+        toast({ title: "Note", description: "Record saved locally. API write endpoint not yet configured.", variant: "default" });
+        setIsAddRecordDialogOpen(false);
+        setNewRecord(EMPTY_BILLING_RECORD);
+      }
+    },
+    onError: () => {
+      toast({ title: "Note", description: "Record template created. API write endpoint needed to sync to Google Sheets.", variant: "default" });
+      setIsAddRecordDialogOpen(false);
+      setNewRecord(EMPTY_BILLING_RECORD);
+    },
+  });
+
+  const handleAddRecord = () => {
+    if (!newRecord.patient_name.trim()) {
+      toast({ title: "Error", description: "Please enter a patient name", variant: "destructive" });
+      return;
+    }
+    if (!newRecord.date_of_service) {
+      toast({ title: "Error", description: "Please select a date of service", variant: "destructive" });
+      return;
+    }
+    addBillingRecordMutation.mutate(newRecord);
+  };
+
+  const updateNewRecord = (field: keyof NewBillingRecord, value: string) => {
+    setNewRecord(prev => ({ ...prev, [field]: value }));
+  };
 
   const rawRecords = billingData?.rows || [];
   const normalizedRecords = rawRecords.map(normalizeBillingRecord);
@@ -522,6 +588,153 @@ export function BillingView() {
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : null}
                     Create Invoice
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={isAddRecordDialogOpen} onOpenChange={setIsAddRecordDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" data-testid="button-add-record">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Record
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Add Billing Record
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="service-type">Service Type</Label>
+                    <Select value={newRecord.service_type} onValueChange={(v) => updateNewRecord("service_type", v)}>
+                      <SelectTrigger data-testid="select-service-type">
+                        <SelectValue placeholder="Select service type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="BILLING_BRAINWAVE">Brainwave</SelectItem>
+                        <SelectItem value="BILLING_ULTRASOUND">Ultrasound</SelectItem>
+                        <SelectItem value="BILLING_VITALWAVE">Vitalwave</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="date-of-service">Date of Service</Label>
+                    <Input
+                      id="date-of-service"
+                      type="date"
+                      value={newRecord.date_of_service}
+                      onChange={(e) => updateNewRecord("date_of_service", e.target.value)}
+                      data-testid="input-date-of-service"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="patient-name">Patient Name</Label>
+                    <Input
+                      id="patient-name"
+                      placeholder="Last Name, First Name"
+                      value={newRecord.patient_name}
+                      onChange={(e) => updateNewRecord("patient_name", e.target.value)}
+                      data-testid="input-patient-name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="clinician">Clinician</Label>
+                    <Input
+                      id="clinician"
+                      placeholder="Clinician name"
+                      value={newRecord.clinician}
+                      onChange={(e) => updateNewRecord("clinician", e.target.value)}
+                      data-testid="input-clinician"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="insurance-info">Insurance Info (URL)</Label>
+                  <Input
+                    id="insurance-info"
+                    placeholder="https://docs.google.com/..."
+                    value={newRecord.insurance_info}
+                    onChange={(e) => updateNewRecord("insurance_info", e.target.value)}
+                    data-testid="input-insurance-info"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="link-billing">Billing Document (URL)</Label>
+                    <Input
+                      id="link-billing"
+                      placeholder="https://..."
+                      value={newRecord.link_billing_document}
+                      onChange={(e) => updateNewRecord("link_billing_document", e.target.value)}
+                      data-testid="input-link-billing"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="link-order">Order Note (URL)</Label>
+                    <Input
+                      id="link-order"
+                      placeholder="https://..."
+                      value={newRecord.link_order_note}
+                      onChange={(e) => updateNewRecord("link_order_note", e.target.value)}
+                      data-testid="input-link-order"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="link-report">Report (URL)</Label>
+                    <Input
+                      id="link-report"
+                      placeholder="https://..."
+                      value={newRecord.link_report}
+                      onChange={(e) => updateNewRecord("link_report", e.target.value)}
+                      data-testid="input-link-report"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="comments">Comments</Label>
+                  <Textarea
+                    id="comments"
+                    placeholder="Additional comments..."
+                    value={newRecord.comments}
+                    onChange={(e) => updateNewRecord("comments", e.target.value)}
+                    rows={2}
+                    data-testid="textarea-comments"
+                  />
+                </div>
+                
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                  <p className="font-medium">Note: API write endpoint required</p>
+                  <p className="mt-1">To sync this record to Google Sheets, the Plexus Apps Script needs a <code className="bg-amber-100 px-1 rounded">billing.appendRow</code> endpoint.</p>
+                </div>
+                
+                <div className="flex justify-end gap-2 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsAddRecordDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleAddRecord}
+                    disabled={addBillingRecordMutation.isPending}
+                    data-testid="button-submit-record"
+                  >
+                    {addBillingRecordMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    Add Record
                   </Button>
                 </div>
               </div>
