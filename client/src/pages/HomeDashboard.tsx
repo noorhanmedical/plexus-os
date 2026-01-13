@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Clock, TestTube, User } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Clock, TestTube, User, Brain, Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { serviceConfig } from "@/components/service-icons";
+import { UltrasoundProbeIcon } from "@/components/service-icons";
 
 interface BillingRecord {
   source_tab?: string;
@@ -83,12 +83,12 @@ function normalizeBillingRecord(record: BillingRecord): BillingRecord {
 }
 
 function getStatusColor(status: string | undefined): string {
-  if (!status) return "bg-slate-500/20 text-slate-300 border-slate-400/30";
+  if (!status) return "bg-slate-100 text-slate-700 border-slate-200";
   const s = status.toLowerCase();
-  if (s.includes("complete") || s.includes("done")) return "bg-emerald-500/20 text-emerald-300 border-emerald-400/30";
-  if (s.includes("schedule") || s.includes("pending")) return "bg-amber-500/20 text-amber-300 border-amber-400/30";
-  if (s.includes("eligible") || s.includes("ready")) return "bg-blue-500/20 text-blue-300 border-blue-400/30";
-  return "bg-slate-500/20 text-slate-300 border-slate-400/30";
+  if (s.includes("complete") || s.includes("done")) return "bg-emerald-100 text-emerald-700 border-emerald-200";
+  if (s.includes("schedule") || s.includes("pending")) return "bg-amber-100 text-amber-700 border-amber-200";
+  if (s.includes("eligible") || s.includes("ready")) return "bg-blue-100 text-blue-700 border-blue-200";
+  return "bg-slate-100 text-slate-700 border-slate-200";
 }
 
 export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
@@ -125,14 +125,18 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const rawRecords = billingData?.rows || [];
   const records = rawRecords.map(normalizeBillingRecord);
   
-  const brainwaveCount = rawRecords.filter(r => r.source_tab?.includes("BRAINWAVE")).length;
-  const ultrasoundCount = rawRecords.filter(r => r.source_tab?.includes("ULTRASOUND")).length;
-  const vitalwaveCount = rawRecords.filter(r => r.source_tab?.includes("VITALWAVE")).length;
+  const brainwaveRecords = rawRecords.filter(r => r.source_tab?.includes("BRAINWAVE")).map(normalizeBillingRecord);
+  const ultrasoundRecords = rawRecords.filter(r => r.source_tab?.includes("ULTRASOUND")).map(normalizeBillingRecord);
+  const vitalwaveRecords = rawRecords.filter(r => r.source_tab?.includes("VITALWAVE")).map(normalizeBillingRecord);
+  
+  const brainwaveCount = brainwaveRecords.length;
+  const ultrasoundCount = ultrasoundRecords.length;
+  const vitalwaveCount = vitalwaveRecords.length;
   const totalCount = records.length;
 
-  const recentBrainwave = rawRecords.filter(r => r.source_tab?.includes("BRAINWAVE")).slice(0, 2).map(normalizeBillingRecord);
-  const recentUltrasound = rawRecords.filter(r => r.source_tab?.includes("ULTRASOUND")).slice(0, 2).map(normalizeBillingRecord);
-  const recentVitalwave = rawRecords.filter(r => r.source_tab?.includes("VITALWAVE")).slice(0, 2).map(normalizeBillingRecord);
+  const last3Brainwave = brainwaveRecords.slice(0, 3);
+  const last3Ultrasound = ultrasoundRecords.slice(0, 3);
+  const last3Vitalwave = vitalwaveRecords.slice(0, 3);
 
   const handleViewAllBilling = () => {
     if (onNavigate) {
@@ -146,12 +150,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     }
   };
 
-  const glassCardStyle = "backdrop-blur-xl bg-white/70 dark:bg-slate-900/70 border border-white/30 dark:border-white/20 shadow-xl rounded-3xl overflow-hidden";
-  const glassButtonStyle = "backdrop-blur-md bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/15 transition-all duration-300 rounded-2xl";
-
-  const BrainWaveIcon = serviceConfig.brainwave.Icon;
-  const VitalWaveIcon = serviceConfig.vitalwave.Icon;
-  const UltrasoundIcon = serviceConfig.ultrasound.Icon;
+  const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden";
+  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 hover:bg-white/90 transition-all duration-300 rounded-2xl";
 
   return (
     <div className="space-y-8 p-2">
@@ -161,27 +161,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400/30 to-orange-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <Calendar className="h-10 w-10 text-amber-500" />
+          <p className="text-[#1a0a28] font-bold text-lg">Schedule</p>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <Calendar className="h-8 w-8 text-amber-600" />
           </div>
-          <div className="text-center">
-            <p className="text-[#1a0a28] dark:text-white font-semibold text-lg">Schedule</p>
-            <p className="text-slate-600 dark:text-white/60 text-sm">Daily appointments</p>
-          </div>
-        </button>
-
-        <button
-          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-4 min-h-[180px] cursor-pointer group`}
-          onClick={() => onNavigate?.("ancillary")}
-          data-testid="button-ancillary"
-        >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pink-400/30 to-rose-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <TestTube className="h-10 w-10 text-pink-500" />
-          </div>
-          <div className="text-center">
-            <p className="text-[#1a0a28] dark:text-white font-semibold text-lg">Ancillary</p>
-            <p className="text-slate-600 dark:text-white/60 text-sm">Service timelines</p>
-          </div>
+          <p className="text-slate-600 text-sm">Daily appointments</p>
         </button>
 
         <button
@@ -189,13 +173,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-400/30 to-blue-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <Sparkles className="h-10 w-10 text-cyan-500" />
+          <p className="text-[#1a0a28] font-bold text-lg">Prescreens</p>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <Sparkles className="h-8 w-8 text-cyan-600" />
           </div>
-          <div className="text-center">
-            <p className="text-[#1a0a28] dark:text-white font-semibold text-lg">Prescreens</p>
-            <p className="text-slate-600 dark:text-white/60 text-sm">Patient eligibility</p>
-          </div>
+          <p className="text-slate-600 text-sm">Patient eligibility</p>
         </button>
 
         <button
@@ -203,13 +185,34 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400/30 to-teal-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <DollarSign className="h-10 w-10 text-emerald-500" />
+          <p className="text-[#1a0a28] font-bold text-lg">Finance</p>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <DollarSign className="h-8 w-8 text-emerald-600" />
           </div>
-          <div className="text-center">
-            <p className="text-[#1a0a28] dark:text-white font-semibold text-lg">Finance</p>
-            <p className="text-slate-600 dark:text-white/60 text-sm">{totalCount} records</p>
+          <p className="text-slate-600 text-sm">{totalCount} total records</p>
+        </button>
+
+        <button
+          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-3 min-h-[180px] cursor-pointer group`}
+          onClick={handleViewAllBilling}
+          data-testid="button-billing-overview"
+        >
+          <p className="text-[#1a0a28] font-bold text-lg">Billing</p>
+          <div className="flex items-center gap-3">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
+              <p className="text-xs text-slate-600">Brain</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-700">{ultrasoundCount}</p>
+              <p className="text-xs text-slate-600">Ultra</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
+              <p className="text-xs text-slate-600">Vital</p>
+            </div>
           </div>
+          <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
         </button>
       </div>
 
@@ -217,18 +220,18 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-400/30 to-rose-500/30 flex items-center justify-center">
-                <Clock className="h-7 w-7 text-pink-500" />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-100 to-rose-200 flex items-center justify-center">
+                <Clock className="h-7 w-7 text-pink-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-[#1a0a28] dark:text-white">Ancillary Service Timelines</h2>
-                <p className="text-slate-600 dark:text-white/60 text-sm">Patient test schedules & status</p>
+                <h2 className="text-xl font-bold text-[#1a0a28]">Ancillary Service Timelines</h2>
+                <p className="text-slate-600 text-sm">Patient test schedules & status</p>
               </div>
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-[#1a0a28] dark:text-white/70 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl"
+              className="text-[#1a0a28] hover:bg-slate-100 rounded-xl"
               onClick={() => onNavigate?.("ancillary")}
               data-testid="button-view-all-ancillary"
             >
@@ -238,18 +241,18 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
           {catalogLoading || ancillaryLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-slate-400 dark:text-white/40" />
+              <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
             </div>
           ) : ancillaryError ? (
             <div className="text-center py-12">
-              <AlertTriangle className="h-10 w-10 mx-auto text-amber-400 mb-3" />
-              <p className="text-slate-600 dark:text-white/60">Failed to load ancillary data</p>
+              <AlertTriangle className="h-10 w-10 mx-auto text-amber-500 mb-3" />
+              <p className="text-slate-600">Failed to load ancillary data</p>
             </div>
           ) : ancillaryPatients.length === 0 ? (
             <div className="text-center py-12">
-              <TestTube className="h-10 w-10 mx-auto text-slate-300 dark:text-white/30 mb-3" />
-              <p className="text-slate-600 dark:text-white/60">No ancillary patients found</p>
-              <p className="text-slate-500 dark:text-white/40 text-sm mt-1">Select a service in the Ancillary dashboard</p>
+              <TestTube className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+              <p className="text-slate-600">No ancillary patients found</p>
+              <p className="text-slate-500 text-sm mt-1">Select a service in the Ancillary dashboard</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -259,12 +262,12 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   className={`${glassButtonStyle} p-4 flex items-center justify-between`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400/20 to-rose-500/20 flex items-center justify-center">
-                      <User className="h-5 w-5 text-pink-500" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-200 flex items-center justify-center">
+                      <User className="h-5 w-5 text-pink-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-[#1a0a28] dark:text-white">{patient.first_name} {patient.last_name}</p>
-                      <p className="text-sm text-slate-600 dark:text-white/60">
+                      <p className="font-medium text-[#1a0a28]">{patient.first_name} {patient.last_name}</p>
+                      <p className="text-sm text-slate-600">
                         {patient.mrn && <span className="mr-2">MRN: {patient.mrn}</span>}
                         {patient.eligibility_reason && <span>{patient.eligibility_reason}</span>}
                       </p>
@@ -272,7 +275,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="flex items-center gap-3">
                     {patient.scheduled_date && (
-                      <span className="text-sm text-slate-600 dark:text-white/60">{formatDate(patient.scheduled_date)}</span>
+                      <span className="text-sm text-slate-600">{formatDate(patient.scheduled_date)}</span>
                     )}
                     <Badge className={getStatusColor(patient.status)}>
                       {patient.status || "Pending"}
@@ -282,7 +285,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               ))}
               
               <Button 
-                className="w-full bg-[#1a0a28] hover:bg-[#2a1a38] text-white border border-[#1a0a28] rounded-2xl h-12 text-base font-medium mt-4" 
+                className="w-full bg-[#1a0a28] hover:bg-[#2a1a38] text-white rounded-2xl h-12 text-base font-medium mt-4" 
                 onClick={() => onNavigate?.("ancillary")}
                 data-testid="button-go-to-ancillary"
               >
@@ -297,18 +300,18 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-400/30 to-purple-500/30 flex items-center justify-center">
-                <DollarSign className="h-7 w-7 text-violet-500" />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-100 to-purple-200 flex items-center justify-center">
+                <DollarSign className="h-7 w-7 text-violet-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-[#1a0a28] dark:text-white">Billing Overview</h2>
-                <p className="text-slate-600 dark:text-white/60 text-sm">Recent activity by service</p>
+                <h2 className="text-xl font-bold text-[#1a0a28]">Billing Overview</h2>
+                <p className="text-slate-600 text-sm">Last 3 patients by service (DOS)</p>
               </div>
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-[#1a0a28] dark:text-white/70 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl"
+              className="text-[#1a0a28] hover:bg-slate-100 rounded-xl"
               onClick={handleViewAllBilling}
               data-testid="button-view-all-billing"
             >
@@ -318,15 +321,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
           {billingLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-slate-400 dark:text-white/40" />
+              <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
             </div>
           ) : billingError ? (
             <div className="text-center py-12">
-              <AlertTriangle className="h-10 w-10 mx-auto text-amber-400 mb-3" />
-              <p className="text-slate-600 dark:text-white/60">Failed to load billing data</p>
+              <AlertTriangle className="h-10 w-10 mx-auto text-amber-500 mb-3" />
+              <p className="text-slate-600">Failed to load billing data</p>
             </div>
           ) : records.length === 0 ? (
-            <p className="text-slate-600 dark:text-white/60 text-center py-12">No billing records</p>
+            <p className="text-slate-600 text-center py-12">No billing records</p>
           ) : (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -336,18 +339,21 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   data-testid="button-billing-brainwave"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${serviceConfig.brainwave.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <BrainWaveIcon className="h-7 w-7 text-violet-600" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Brain className="h-6 w-6 text-purple-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-[#1a0a28] dark:text-white">{serviceConfig.brainwave.name}</p>
-                      <Badge className={serviceConfig.brainwave.badgeClass}>{brainwaveCount} records</Badge>
+                      <p className="font-bold text-[#1a0a28]">BrainWave</p>
+                      <Badge className="bg-purple-100 text-purple-700 border-purple-200">{brainwaveCount} records</Badge>
                     </div>
                   </div>
-                  <div className="space-y-2 pl-1">
-                    {recentBrainwave.length > 0 ? recentBrainwave.map((r, i) => (
-                      <p key={i} className="text-sm text-slate-600 dark:text-white/60 truncate">{r.patient_name || "Unknown"} • {formatDate(r.date)}</p>
-                    )) : <p className="text-sm text-slate-500 dark:text-white/40">No recent records</p>}
+                  <div className="space-y-2">
+                    {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
+                      <div key={i} className="flex justify-between items-center text-sm">
+                        <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
+                        <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                      </div>
+                    )) : <p className="text-sm text-slate-500">No recent records</p>}
                   </div>
                 </button>
                 
@@ -357,18 +363,21 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   data-testid="button-billing-ultrasound"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${serviceConfig.ultrasound.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <UltrasoundIcon className="h-7 w-7 text-purple-600" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <UltrasoundProbeIcon className="h-6 w-6 text-green-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-[#1a0a28] dark:text-white">{serviceConfig.ultrasound.name}</p>
-                      <Badge className={serviceConfig.ultrasound.badgeClass}>{ultrasoundCount} records</Badge>
+                      <p className="font-bold text-[#1a0a28]">Ultrasound</p>
+                      <Badge className="bg-green-100 text-green-700 border-green-200">{ultrasoundCount} records</Badge>
                     </div>
                   </div>
-                  <div className="space-y-2 pl-1">
-                    {recentUltrasound.length > 0 ? recentUltrasound.map((r, i) => (
-                      <p key={i} className="text-sm text-slate-600 dark:text-white/60 truncate">{r.patient_name || "Unknown"} • {formatDate(r.date)}</p>
-                    )) : <p className="text-sm text-slate-500 dark:text-white/40">No recent records</p>}
+                  <div className="space-y-2">
+                    {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
+                      <div key={i} className="flex justify-between items-center text-sm">
+                        <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
+                        <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                      </div>
+                    )) : <p className="text-sm text-slate-500">No recent records</p>}
                   </div>
                 </button>
                 
@@ -378,24 +387,27 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   data-testid="button-billing-vitalwave"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${serviceConfig.vitalwave.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <VitalWaveIcon className="h-7 w-7 text-red-600" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Heart className="h-6 w-6 text-red-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-[#1a0a28] dark:text-white">{serviceConfig.vitalwave.name}</p>
-                      <Badge className={serviceConfig.vitalwave.badgeClass}>{vitalwaveCount} records</Badge>
+                      <p className="font-bold text-[#1a0a28]">VitalWave</p>
+                      <Badge className="bg-red-100 text-red-700 border-red-200">{vitalwaveCount} records</Badge>
                     </div>
                   </div>
-                  <div className="space-y-2 pl-1">
-                    {recentVitalwave.length > 0 ? recentVitalwave.map((r, i) => (
-                      <p key={i} className="text-sm text-slate-600 dark:text-white/60 truncate">{r.patient_name || "Unknown"} • {formatDate(r.date)}</p>
-                    )) : <p className="text-sm text-slate-500 dark:text-white/40">No recent records</p>}
+                  <div className="space-y-2">
+                    {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
+                      <div key={i} className="flex justify-between items-center text-sm">
+                        <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
+                        <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                      </div>
+                    )) : <p className="text-sm text-slate-500">No recent records</p>}
                   </div>
                 </button>
               </div>
               
               <Button 
-                className="w-full bg-[#1a0a28] hover:bg-[#2a1a38] text-white border border-[#1a0a28] rounded-2xl h-12 text-base font-medium" 
+                className="w-full bg-[#1a0a28] hover:bg-[#2a1a38] text-white rounded-2xl h-12 text-base font-medium" 
                 onClick={handleViewAllBilling}
                 data-testid="button-view-billing"
               >
