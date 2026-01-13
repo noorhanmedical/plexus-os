@@ -180,17 +180,44 @@ export function BillingView() {
   const [activeTab, setActiveTab] = useState("overview");
   const autoRebuildAttempted = useRef(false);
 
-  const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[] }>({
-    queryKey: ["/api/billing/search"],
+  const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[]; header?: string[] }>({
+    queryKey: ["/api/billing/list"],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set("limit", "500");
-      const res = await fetch(`/api/billing/search?${params.toString()}`);
+      params.set("cursor", "0");
+      const res = await fetch(`/api/billing/list?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch billing data");
       return res.json();
     },
     staleTime: 30000,
   });
+
+  // Column definitions for spreadsheet view - ordered like the actual sheet
+  const SPREADSHEET_COLUMNS = [
+    { key: "source_tab", label: "Source", width: "w-[100px]" },
+    { key: "date_of_service", label: "Date of Service", width: "w-[110px]" },
+    { key: "patient", label: "Patient", width: "w-[180px]" },
+    { key: "clinician", label: "Clinician", width: "w-[150px]" },
+    { key: "billing_status", label: "Billing Status", width: "w-[120px]", isLink: true },
+    { key: "insurance_info", label: "Insurance Info", width: "w-[120px]", isLink: true },
+    { key: "claim_submitted", label: "Claim Submitted", width: "w-[120px]", isLink: true },
+    { key: "claim_submitted_date", label: "Submitted Date", width: "w-[110px]" },
+    { key: "claim_adjudicated", label: "Claim Adjudicated", width: "w-[130px]", isLink: true },
+    { key: "claim_adjudicated_date", label: "Adjudicated Date", width: "w-[110px]" },
+    { key: "claim_paid_amount", label: "Paid Amount", width: "w-[100px]", isCurrency: true },
+    { key: "claim_paid_date", label: "Paid Date", width: "w-[100px]" },
+    { key: "patient_responsibility", label: "Patient Resp.", width: "w-[100px]", isCurrency: true },
+    { key: "secondary_payment", label: "Secondary Pmt", width: "w-[100px]", isCurrency: true },
+    { key: "comments", label: "Comments", width: "w-[200px]" },
+    { key: "biller_comments", label: "Biller Comments", width: "w-[200px]" },
+    { key: "link_screening", label: "Screening", width: "w-[90px]", isLink: true },
+    { key: "link_order_note", label: "Order Note", width: "w-[90px]", isLink: true },
+    { key: "link_report", label: "Report", width: "w-[90px]", isLink: true },
+    { key: "link_procedure_note", label: "Procedure Note", width: "w-[100px]", isLink: true },
+    { key: "link_billing_document", label: "Billing Doc", width: "w-[90px]", isLink: true },
+    { key: "link_problem_list", label: "Problem List", width: "w-[90px]", isLink: true },
+  ];
 
   const rebuildIndexMutation = useMutation({
     mutationFn: async () => {
@@ -199,7 +226,8 @@ export function BillingView() {
     },
     onSuccess: (data) => {
       if (data.ok) {
-        toast({ title: "Success", description: "Billing index rebuilt successfully" });
+        toast({ title: "Success", description: "Billing index rebuilt - includes all sheets" });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list"] });
         refetch();
       } else {
         toast({ title: "Error", description: data.error || "Failed to rebuild index", variant: "destructive" });
@@ -222,7 +250,7 @@ export function BillingView() {
         setInvoiceItems([{ description: "", amount: 0 }]);
         setInvoicePatientId("");
         setInvoiceNotes("");
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/search"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list"] });
       } else {
         toast({ title: "Error", description: data.error || "Failed to create invoice", variant: "destructive" });
       }
@@ -242,7 +270,7 @@ export function BillingView() {
         toast({ title: "Success", description: "Billing record added successfully" });
         setIsAddRecordDialogOpen(false);
         setNewRecord(EMPTY_BILLING_RECORD);
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/search"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list"] });
       } else {
         toast({ title: "Note", description: "Record saved locally. API write endpoint not yet configured.", variant: "default" });
         setIsAddRecordDialogOpen(false);
@@ -992,12 +1020,15 @@ export function BillingView() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-4 pb-4">
-              <CardTitle>Billing Records</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Billing Spreadsheet
+              </CardTitle>
               <span className="text-sm text-muted-foreground">
                 Showing {records.length} of {normalizedRecords.length} records
               </span>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {records.length === 0 ? (
                 <div className="text-center py-10 text-slate-500">
                   {hasActiveFilters
@@ -1005,88 +1036,110 @@ export function BillingView() {
                     : "No billing records found"}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Patient</TableHead>
-                        <TableHead>Service</TableHead>
-                        <TableHead>Clinician</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Documents</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {records.slice(0, 100).map((record, index) => {
-                        const docLinks = [
-                          { label: "Billing", url: record.link_billing_document || record.billing_status },
-                          { label: "Report", url: record.link_report },
-                          { label: "Order", url: record.link_order_note },
-                        ].filter(link => isValidUrl(link.url));
-                        
-                        const hasSubmitted = isValidUrl(record.claim_submitted);
-                        const hasAdjudicated = isValidUrl(record.claim_adjudicated);
-                        const hasPaid = record.claim_paid_amount && parseFloat(String(record.claim_paid_amount)) > 0;
-                        
-                        let statusBadge: { label: string; variant: "default" | "secondary" | "outline" | "destructive" } = { label: "Pending", variant: "secondary" };
-                        if (hasPaid) statusBadge = { label: "Paid", variant: "default" };
-                        else if (hasAdjudicated) statusBadge = { label: "Adjudicated", variant: "outline" };
-                        else if (hasSubmitted) statusBadge = { label: "Submitted", variant: "outline" };
-                        
-                        return (
-                          <TableRow key={index} data-testid={`row-billing-${index}`}>
-                            <TableCell className="font-medium max-w-[180px] truncate">
-                              {record.patient_name || "-"}
+                <div className="overflow-x-auto border-t">
+                  <div className="min-w-[2400px]">
+                    <Table>
+                      <TableHeader className="sticky top-0 bg-slate-100 z-10">
+                        <TableRow>
+                          <TableHead className="w-[50px] text-center font-bold text-slate-700">#</TableHead>
+                          {SPREADSHEET_COLUMNS.map((col) => (
+                            <TableHead 
+                              key={col.key} 
+                              className={`${col.width} font-bold text-slate-700 text-xs whitespace-nowrap`}
+                            >
+                              {col.label}
+                            </TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {records.slice(0, 200).map((record, index) => (
+                          <TableRow 
+                            key={index} 
+                            data-testid={`row-billing-${index}`}
+                            className="hover:bg-slate-50"
+                          >
+                            <TableCell className="text-center text-xs text-muted-foreground font-mono">
+                              {index + 1}
                             </TableCell>
-                            <TableCell>
-                              <Badge 
-                                variant="outline" 
-                                className={
-                                  record.source_tab?.includes("BRAINWAVE") ? "bg-blue-50 text-blue-700 border-blue-200" :
-                                  record.source_tab?.includes("ULTRASOUND") ? "bg-purple-50 text-purple-700 border-purple-200" :
-                                  record.source_tab?.includes("VITALWAVE") ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                                  "bg-slate-100 text-slate-700 border-slate-200"
-                                }
-                              >
-                                {record.service || "-"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-muted-foreground max-w-[150px] truncate">
-                              {record.clinician?.replace(/"/g, "") || "-"}
-                            </TableCell>
-                            <TableCell className="whitespace-nowrap">{formatDate(record.date)}</TableCell>
-                            <TableCell>
-                              <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
-                            </TableCell>
-                            <TableCell>
-                              {docLinks.length > 0 ? (
-                                <div className="flex gap-2">
-                                  {docLinks.map((link, i) => (
+                            {SPREADSHEET_COLUMNS.map((col) => {
+                              const rawValue = (record as any)[col.key];
+                              const value = rawValue ?? "";
+                              
+                              // Render link columns
+                              if (col.isLink && isValidUrl(value)) {
+                                return (
+                                  <TableCell key={col.key} className={`${col.width} p-1`}>
                                     <a
-                                      key={i}
-                                      href={link.url}
+                                      href={value}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-2 py-1 rounded"
                                     >
                                       <ExternalLink className="h-3 w-3" />
-                                      {link.label}
+                                      Link
                                     </a>
-                                  ))}
-                                </div>
-                              ) : (
-                                <span className="text-muted-foreground">-</span>
-                              )}
-                            </TableCell>
+                                  </TableCell>
+                                );
+                              }
+                              
+                              // Render currency columns
+                              if (col.isCurrency) {
+                                const numVal = parseFloat(String(value));
+                                const formatted = !isNaN(numVal) && numVal > 0 ? `$${numVal.toFixed(2)}` : "-";
+                                return (
+                                  <TableCell key={col.key} className={`${col.width} text-xs font-mono`}>
+                                    <span className={numVal > 0 ? "text-emerald-600 font-medium" : "text-muted-foreground"}>
+                                      {formatted}
+                                    </span>
+                                  </TableCell>
+                                );
+                              }
+                              
+                              // Render source_tab with badge
+                              if (col.key === "source_tab") {
+                                const displayValue = formatServiceType(value);
+                                return (
+                                  <TableCell key={col.key} className={`${col.width} p-1`}>
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-[10px] ${
+                                        value?.includes("BRAINWAVE") ? "bg-blue-50 text-blue-700 border-blue-200" :
+                                        value?.includes("ULTRASOUND") ? "bg-purple-50 text-purple-700 border-purple-200" :
+                                        value?.includes("VITALWAVE") ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                        "bg-slate-100 text-slate-700 border-slate-200"
+                                      }`}
+                                    >
+                                      {displayValue}
+                                    </Badge>
+                                  </TableCell>
+                                );
+                              }
+                              
+                              // Render text columns
+                              const displayValue = typeof value === "string" ? value.replace(/"/g, "") : String(value);
+                              const isComment = col.key === "comments" || col.key === "biller_comments";
+                              
+                              return (
+                                <TableCell 
+                                  key={col.key} 
+                                  className={`${col.width} text-xs ${isComment ? "max-w-[200px]" : ""}`}
+                                  title={isComment ? displayValue : undefined}
+                                >
+                                  <span className={`${isComment ? "line-clamp-2" : "truncate block"}`}>
+                                    {displayValue || "-"}
+                                  </span>
+                                </TableCell>
+                              );
+                            })}
                           </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                  {records.length > 100 && (
-                    <p className="text-center text-sm text-muted-foreground mt-4">
-                      Showing first 100 records. Use filters to narrow results.
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  {records.length > 200 && (
+                    <p className="text-center text-sm text-muted-foreground py-4 border-t">
+                      Showing first 200 records. Use filters to narrow results.
                     </p>
                   )}
                 </div>

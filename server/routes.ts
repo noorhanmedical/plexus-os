@@ -352,7 +352,7 @@ export async function registerRoutes(
     });
   }
 
-  // Search billing records
+  // Search billing records (uses billing.search for filtered queries)
   app.get("/api/billing/search", async (req, res) => {
     try {
       const validation = billingSearchSchema.safeParse(req.query);
@@ -369,7 +369,7 @@ export async function registerRoutes(
       // Transform header/rows format to array of objects
       if (data.ok && data.header && data.rows) {
         const rows = convertRowsToObjects(data.header, data.rows);
-        res.json({ ok: true, rows });
+        res.json({ ok: true, rows, header: data.header });
       } else {
         res.json(data);
       }
@@ -379,10 +379,37 @@ export async function registerRoutes(
     }
   });
 
-  // Rebuild billing index (uses GET as Plexus API expects action in query params)
+  // List all billing records with pagination (uses billing.list for full data)
+  app.get("/api/billing/list", async (req, res) => {
+    try {
+      const limit = req.query.limit?.toString() || "200";
+      const cursor = req.query.cursor?.toString() || "0";
+      
+      const data = await plexusGet("billing.list", { limit, cursor });
+      
+      // Transform header/rows format to array of objects
+      if (data.ok && data.header && data.rows) {
+        const rows = convertRowsToObjects(data.header, data.rows);
+        res.json({ 
+          ok: true, 
+          rows, 
+          header: data.header,
+          nextCursor: data.nextCursor,
+          hasMore: data.hasMore 
+        });
+      } else {
+        res.json(data);
+      }
+    } catch (error) {
+      console.error("[billing] List failed:", error);
+      res.status(500).json({ ok: false, error: "Failed to list billing records" });
+    }
+  });
+
+  // Rebuild billing index - use FULL rebuild for all sheets
   app.post("/api/billing/rebuild-index", async (_req, res) => {
     try {
-      const data = await plexusGet("billing.rebuildIndex", {});
+      const data = await plexusGet("billing.rebuildIndexFull", {});
       res.json(data);
     } catch (error) {
       console.error("[billing] Rebuild index failed:", error);
