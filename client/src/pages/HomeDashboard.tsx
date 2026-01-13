@@ -92,9 +92,9 @@ export function HomeDashboard() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="glow-border">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
+        <Card className="glow-border overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 bg-slate-800 rounded-t-lg">
+            <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
               <Calendar className="h-5 w-5 text-primary" />
               Daily Schedule
             </CardTitle>
@@ -126,13 +126,13 @@ export function HomeDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="glow-border">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
+        <Card className="glow-border overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 bg-slate-800 rounded-t-lg">
+            <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
               <Activity className="h-5 w-5 text-secondary" />
               Ancillary Services
             </CardTitle>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs border-slate-600 text-slate-300">
               {ancillaryItems.filter(i => i.status === "overdue").length} overdue
             </Badge>
           </CardHeader>
@@ -168,9 +168,9 @@ export function HomeDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="glow-border">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
+        <Card className="glow-border overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 bg-slate-800 rounded-t-lg">
+            <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
               <DollarSign className="h-5 w-5 text-chart-4" />
               Finance Overview
             </CardTitle>
