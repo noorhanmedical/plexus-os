@@ -1,0 +1,344 @@
+import React, { useState } from 'react';
+import { Calendar, ChevronDown, Info } from 'lucide-react';
+
+// Types
+interface SchedulingRow {
+  id: number;
+  name: string;
+  age: number;
+  gender: string;
+  tests: string[];
+  callStatus: string;
+  callAttempts: { first: string | null; second: string | null };
+  apptDate: string;
+  dx: string;
+  recommend: string;
+  insurance: string;
+}
+
+// Data
+const initialSchedulingData: SchedulingRow[] = [
+  { id: 1, name: 'DENNIS, CANDICE', age: 53, gender: 'FEMALE', tests: [], callStatus: '', callAttempts: { first: null, second: null }, apptDate: '', dx: 'HTN, DM, HLD', recommend: '', insurance: '' },
+  { id: 2, name: 'DIAZ, TINA', age: 74, gender: 'FEMALE', tests: [], callStatus: '', callAttempts: { first: null, second: null }, apptDate: '', dx: 'Memory problems, Dizziness', recommend: '', insurance: '' },
+  { id: 3, name: 'LOPEZ TAFOYA, MARIA', age: 49, gender: 'FEMALE', tests: [], callStatus: '', callAttempts: { first: null, second: null }, apptDate: '', dx: 'Leg swelling, HTN', recommend: '', insurance: '' },
+  { id: 4, name: 'BERNAL ESQUIBEL, RIGOBERTO', age: 47, gender: 'MALE', tests: [], callStatus: '', callAttempts: { first: null, second: null }, apptDate: '', dx: 'CAD, DM, Anxiety', recommend: '', insurance: '' },
+  { id: 5, name: 'FLORES, JUAN M', age: 41, gender: 'MALE', tests: [], callStatus: '', callAttempts: { first: null, second: null }, apptDate: '', dx: 'Headaches, HTN', recommend: '', insurance: '' },
+  { id: 6, name: 'AZIZ, HASHIM', age: 69, gender: 'MALE', tests: [], callStatus: '', callAttempts: { first: null, second: null }, apptDate: '', dx: 'Syncope, Fatigue', recommend: '', insurance: '' },
+];
+
+const availableAncillaries = [
+  'BrainWave', 'VitalWave', 'PGx',
+  'Carotid US', 'Echo', 'Renal artery US', 'AAA US',
+  'Lower ext arterial US', 'Upper ext arterial US',
+  'Lower ext venous US', 'Upper ext venous US',
+  'Stress Echo', 'Abdominal artery US', 'IVC US', 'Liver US'
+];
+
+const ancillaryInfo: Record<string, { qualification: string; presentation: string }> = {
+  'BrainWave': {
+    qualification: 'Patient qualifies based on cognitive symptoms (memory problems, confusion, headaches), mood disorders (anxiety, depression), or neurological conditions.',
+    presentation: '"Based on your symptoms, Dr. [Clinician] would like to get a better understanding of how your brain is functioning. This is a simple, non-invasive test that measures brain activity."'
+  },
+  'VitalWave': {
+    qualification: 'Patient qualifies based on autonomic symptoms (dizziness, syncope, orthostatic hypotension), diabetic neuropathy, or cardiovascular concerns.',
+    presentation: '"Your provider noticed some symptoms that could be related to how your nervous system controls your heart and blood vessels. This test helps us understand how your body regulates blood pressure."'
+  },
+  'PGx': {
+    qualification: 'Patient qualifies if taking medications on the PGx trigger list, has history of adverse drug reactions, or is starting new psychiatric/cardiac medications.',
+    presentation: '"This simple cheek swab test tells us how your body processes medications so we can make sure you\'re on the right dose."'
+  },
+  'Carotid US': {
+    qualification: 'Patient qualifies based on stroke risk factors (HTN, DM, HLD, smoking, CAD), history of TIA/stroke, or carotid bruit on exam.',
+    presentation: '"This ultrasound checks the blood flow in the arteries that supply blood to your brain. It helps us catch any blockages early."'
+  },
+  'Echo': {
+    qualification: 'Patient qualifies based on cardiac symptoms (chest pain, shortness of breath, palpitations), heart failure risk, or murmur detected.',
+    presentation: '"This is an ultrasound of your heart - no radiation, completely safe. It shows us how well your heart is pumping."'
+  },
+  'Renal artery US': {
+    qualification: 'Patient qualifies based on resistant hypertension, renal insufficiency with HTN, or abdominal bruit.',
+    presentation: '"This simple ultrasound can help us find treatable causes of high blood pressure."'
+  },
+  'AAA US': {
+    qualification: 'Patient qualifies if male >65 with smoking history, or has risk factors like HTN, family history of aneurysm.',
+    presentation: '"This is a quick ultrasound that checks the main blood vessel in your abdomen."'
+  },
+  'Lower ext arterial US': {
+    qualification: 'Patient qualifies based on claudication, leg pain with walking, non-healing wounds, or abnormal pulses.',
+    presentation: '"This ultrasound checks the arteries in your legs and helps us understand if there\'s any blockage."'
+  },
+  'Lower ext venous US': {
+    qualification: 'Patient qualifies based on leg swelling, DVT risk factors, leg pain/tenderness, or history of blood clots.',
+    presentation: '"This ultrasound checks the veins in your legs to make sure there isn\'t a blood clot."'
+  },
+  'Stress Echo': {
+    qualification: 'Patient qualifies based on chest pain, shortness of breath with exertion, CAD evaluation.',
+    presentation: '"This stress test with ultrasound helps us detect any areas of your heart not getting enough blood flow."'
+  }
+};
+
+const callStatusOptions = [
+  { value: '', label: 'Select Status', color: 'bg-gray-100 text-gray-500' },
+  { value: 'Contacted and Scheduled', label: 'Contacted and Scheduled', color: 'bg-emerald-700 text-white' },
+  { value: 'LVM / Left Voice Mail', label: 'LVM / Left Voice Mail', color: 'bg-amber-600 text-white' },
+  { value: 'No Answer', label: 'No Answer', color: 'bg-slate-500 text-white' },
+  { value: 'Declined', label: 'Declined', color: 'bg-rose-700 text-white' },
+  { value: 'Callback Requested', label: 'Callback Requested', color: 'bg-slate-600 text-white' },
+];
+
+export default function SchedulingView() {
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
+  const [schedulingData, setSchedulingData] = useState(initialSchedulingData);
+
+  const getTestColor = (test: string) => {
+    if (test.includes('VitalWave')) return 'bg-rose-800 text-rose-100';
+    if (test.includes('BrainWave')) return 'bg-violet-800 text-violet-100';
+    if (test.includes('PGx')) return 'bg-amber-700 text-amber-100';
+    if (test.includes('Carotid')) return 'bg-teal-700 text-teal-100';
+    if (test.includes('Echo')) return 'bg-fuchsia-800 text-fuchsia-100';
+    if (test.includes('Stress')) return 'bg-pink-800 text-pink-100';
+    if (test.includes('Renal')) return 'bg-cyan-800 text-cyan-100';
+    if (test.includes('AAA')) return 'bg-orange-800 text-orange-100';
+    if (test.includes('arterial')) return 'bg-red-900 text-red-100';
+    if (test.includes('venous')) return 'bg-sky-800 text-sky-100';
+    if (test.includes('Abdominal')) return 'bg-slate-700 text-slate-100';
+    if (test.includes('IVC')) return 'bg-indigo-800 text-indigo-100';
+    if (test.includes('Liver')) return 'bg-emerald-800 text-emerald-100';
+    return 'bg-gray-600 text-gray-100';
+  };
+
+  const getStatusColor = (status: string) => {
+    const opt = callStatusOptions.find(o => o.value === status);
+    return opt?.color || 'bg-gray-100 text-gray-600';
+  };
+
+  const toggleAncillary = (rowId: number, test: string) => {
+    setSchedulingData(prev => prev.map(row => {
+      if (row.id === rowId) {
+        const hasTest = row.tests.includes(test);
+        const newTests = hasTest ? row.tests.filter(t => t !== test) : [...row.tests, test];
+        return { ...row, tests: newTests };
+      }
+      return row;
+    }));
+  };
+
+  const updateSchedulingRow = (id: number, field: string, value: any) => {
+    setSchedulingData(prev => prev.map(row => row.id === id ? { ...row, [field]: value } : row));
+  };
+
+  const toggleCallAttempt = (id: number, attempt: 'first' | 'second') => {
+    setSchedulingData(prev => prev.map(row => {
+      if (row.id === id) {
+        const currentValue = row.callAttempts[attempt];
+        const newValue = currentValue ? null : (attempt === 'first' ? '1st Attempt' : '2nd Attempt');
+        return { ...row, callAttempts: { ...row.callAttempts, [attempt]: newValue } };
+      }
+      return row;
+    }));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <div className="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div>
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Scheduling & Call Tracking
+            </h2>
+            <p className="text-slate-400 text-sm">Manage patient appointments and follow-ups</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="p-6 overflow-x-auto">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Name</th>
+                <th className="text-center px-3 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Age</th>
+                <th className="text-center px-3 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Gender</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide min-w-[300px]">Qualifying Tests</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide min-w-[180px]">Call Status</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Appt Date</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Attempts</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Dx</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Recommend</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 uppercase text-xs tracking-wide">Insurance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {schedulingData.map((row) => (
+                <React.Fragment key={row.id}>
+                  <tr 
+                    className={`border-b border-gray-100 hover:bg-slate-50 transition-colors cursor-pointer ${expandedRowId === row.id ? 'bg-slate-100' : ''}`}
+                    onClick={() => setExpandedRowId(expandedRowId === row.id ? null : row.id)}
+                  >
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      <div className="flex items-center gap-2">
+                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedRowId === row.id ? 'rotate-180' : ''}`} />
+                        {row.name}
+                      </div>
+                    </td>
+                    <td className="px-3 py-3 text-center text-gray-600">{row.age}</td>
+                    <td className="px-3 py-3 text-center text-gray-600">{row.gender}</td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-wrap gap-1">
+                        {row.tests.map((test, idx) => (
+                          <span 
+                            key={idx} 
+                            className={`px-2 py-0.5 rounded text-xs font-medium cursor-pointer hover:opacity-80 ${getTestColor(test)}`}
+                            onClick={() => toggleAncillary(row.id, test)}
+                            title="Click to remove"
+                          >
+                            {test} ×
+                          </span>
+                        ))}
+                        <select
+                          className="px-2 py-0.5 rounded text-xs border border-dashed border-gray-300 bg-white text-gray-500 cursor-pointer"
+                          value=""
+                          onChange={(e) => {
+                            if (e.target.value && !row.tests.includes(e.target.value)) {
+                              toggleAncillary(row.id, e.target.value);
+                            }
+                            e.target.value = '';
+                          }}
+                        >
+                          <option value="">+ Add</option>
+                          {availableAncillaries.filter(a => !row.tests.includes(a)).map(a => (
+                            <option key={a} value={a}>{a}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <select
+                        value={row.callStatus}
+                        onChange={(e) => updateSchedulingRow(row.id, 'callStatus', e.target.value)}
+                        className={`w-full px-2 py-1.5 rounded text-xs font-medium border-0 cursor-pointer ${getStatusColor(row.callStatus)}`}
+                      >
+                        {callStatusOptions.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="date"
+                        value={row.apptDate}
+                        onChange={(e) => updateSchedulingRow(row.id, 'apptDate', e.target.value)}
+                        className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      />
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex gap-1 justify-center">
+                        <button
+                          onClick={() => toggleCallAttempt(row.id, 'first')}
+                          className={`px-2 py-1 rounded text-xs font-medium transition-colors ${row.callAttempts.first ? 'bg-amber-100 text-amber-700 border border-amber-300' : 'bg-gray-100 text-gray-400 border border-gray-200'}`}
+                        >
+                          1st
+                        </button>
+                        <button
+                          onClick={() => toggleCallAttempt(row.id, 'second')}
+                          className={`px-2 py-1 rounded text-xs font-medium transition-colors ${row.callAttempts.second ? 'bg-orange-100 text-orange-700 border border-orange-300' : 'bg-gray-100 text-gray-400 border border-gray-200'}`}
+                        >
+                          2nd
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="text"
+                        value={row.dx}
+                        onChange={(e) => updateSchedulingRow(row.id, 'dx', e.target.value)}
+                        placeholder="Diagnosis..."
+                        className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      />
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="text"
+                        value={row.recommend}
+                        onChange={(e) => updateSchedulingRow(row.id, 'recommend', e.target.value)}
+                        placeholder="Recommendations..."
+                        className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      />
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="text"
+                        value={row.insurance}
+                        onChange={(e) => updateSchedulingRow(row.id, 'insurance', e.target.value)}
+                        placeholder="Insurance..."
+                        className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      />
+                    </td>
+                  </tr>
+                  
+                  {/* Expandable Row */}
+                  <tr className="bg-slate-50">
+                    <td colSpan={10} className="p-0 overflow-hidden">
+                      <div 
+                        className="transition-all duration-500 ease-in-out overflow-hidden"
+                        style={{ 
+                          maxHeight: expandedRowId === row.id ? '1000px' : '0px',
+                          opacity: expandedRowId === row.id ? 1 : 0,
+                          transform: expandedRowId === row.id ? 'translateY(0)' : 'translateY(-10px)'
+                        }}
+                      >
+                        <div className="px-6 py-4 space-y-4">
+                          <div className="flex items-center gap-2 text-slate-700 font-semibold text-sm border-b border-slate-200 pb-2">
+                            <Info className="w-4 h-4" />
+                            Qualification & Presentation Guide for {row.name}
+                          </div>
+                          {row.tests.length === 0 ? (
+                            <p className="text-sm text-gray-500 italic py-2">No ancillaries selected. Use the "+ Add" dropdown to add tests.</p>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-3">
+                              {row.tests.map((test) => {
+                                const info = ancillaryInfo[test];
+                                if (!info) return (
+                                  <div key={test} className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                    <div className={`inline-block px-2 py-0.5 rounded text-xs font-bold mb-2 ${getTestColor(test)}`}>
+                                      {test}
+                                    </div>
+                                    <p className="text-xs text-gray-400 italic">No info available.</p>
+                                  </div>
+                                );
+                                return (
+                                  <div key={test} className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                    <div className={`inline-block px-2 py-0.5 rounded text-xs font-bold mb-2 ${getTestColor(test)}`}>
+                                      {test}
+                                    </div>
+                                    <div className="space-y-2">
+                                      <div>
+                                        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Qualifies</h4>
+                                        <p className="text-xs text-gray-600 leading-snug line-clamp-3">{info.qualification}</p>
+                                      </div>
+                                      <div>
+                                        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Present</h4>
+                                        <p className="text-xs text-gray-600 leading-snug italic bg-slate-50 p-2 rounded border-l-2 border-slate-300 line-clamp-3">{info.presentation}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
