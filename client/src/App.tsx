@@ -202,8 +202,26 @@ function AppSidebar({
 }
 
 function MainContent() {
-  const [mainTab, setMainTab] = useState<MainTab>("home");
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [mainTab, setMainTab] = useState<MainTab>(() => {
+    const saved = localStorage.getItem("plexus_main_tab");
+    return (saved as MainTab) || "home";
+  });
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(() => {
+    const saved = localStorage.getItem("plexus_selected_patient");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("plexus_main_tab", mainTab);
+  }, [mainTab]);
+
+  useEffect(() => {
+    if (selectedPatient) {
+      localStorage.setItem("plexus_selected_patient", JSON.stringify(selectedPatient));
+    } else {
+      localStorage.removeItem("plexus_selected_patient");
+    }
+  }, [selectedPatient]);
 
   const handleMainTabChange = (tab: MainTab) => {
     setMainTab(tab);
