@@ -194,70 +194,65 @@ function MainContent() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-full">
-      <header className="bg-slate-900 text-white shadow-lg relative overflow-hidden z-50">
-        <TwinklingStars />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
-        
-        <div className="px-4 md:px-6 py-4 md:py-5 relative z-10">
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex items-center gap-4">
-              <div>
-                <p className="text-slate-500 text-[10px] font-bold tracking-[0.2em] uppercase">Clinical EMR</p>
-                <h2 className="text-xl md:text-2xl font-light tracking-tight text-white">
-                  {getCurrentTitle()}
-                </h2>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-                {mainTabs.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = !sidebarTab && mainTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      data-testid={`tab-${tab.id}`}
-                      onClick={() => handleMainTabChange(tab.id)}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
-                        isActive 
-                          ? "bg-white/20 text-white" 
-                          : "text-slate-300 hover:text-white hover:bg-white/10"
-                      }`}
-                    >
-                      <Icon className="h-3.5 w-3.5" />
-                      <span className="hidden lg:inline">{tab.label}</span>
-                    </button>
-                  );
-                })}
+    <SidebarProvider style={style as React.CSSProperties}>
+      <div className="flex flex-col h-screen w-full">
+        <header className="bg-slate-900 text-white shadow-lg relative overflow-hidden z-50">
+          <TwinklingStars />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+          
+          <div className="px-4 md:px-6 py-4 md:py-5 relative z-10">
+            <div className="flex justify-between items-center gap-4">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger className="text-slate-400 hover:text-white" data-testid="button-sidebar-toggle" />
+                <div>
+                  <p className="text-slate-500 text-[10px] font-bold tracking-[0.2em] uppercase">Clinical EMR</p>
+                  <h2 className="text-xl md:text-2xl font-light tracking-tight text-white">
+                    {getCurrentTitle()}
+                  </h2>
+                </div>
               </div>
               
-              <div className="flex items-center gap-2 text-slate-400">
-                <div className="w-2 h-2 rounded-full bg-[#4a9a7c] animate-pulse"></div>
-                <span className="text-xs uppercase tracking-wider font-medium hidden md:inline">Active</span>
+              <div className="flex items-center gap-3">
+                <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+                  {mainTabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = !sidebarTab && mainTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        data-testid={`tab-${tab.id}`}
+                        onClick={() => handleMainTabChange(tab.id)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
+                          isActive 
+                            ? "bg-white/20 text-white" 
+                            : "text-slate-300 hover:text-white hover:bg-white/10"
+                        }`}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        <span className="hidden lg:inline">{tab.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <div className="flex items-center gap-2 text-slate-400">
+                  <div className="w-2 h-2 rounded-full bg-[#4a9a7c] animate-pulse"></div>
+                  <span className="text-xs uppercase tracking-wider font-medium hidden md:inline">Active</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <SidebarProvider style={style as React.CSSProperties}>
         <div className="flex flex-1 w-full overflow-hidden">
           <AppSidebar activeTab={sidebarTab} onTabChange={handleSidebarTabChange} onClearSidebar={handleClearSidebar} />
           
-          <main className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex items-center gap-2 p-2 border-b border-slate-800 bg-slate-900/50">
-              <SidebarTrigger className="text-slate-400 hover:text-white" data-testid="button-sidebar-toggle" />
-            </div>
-            
-            <div className="flex-1 overflow-auto p-6 bg-background">
-              {renderContent()}
-            </div>
+          <main className="flex-1 overflow-auto p-6 bg-background">
+            {renderContent()}
           </main>
         </div>
-      </SidebarProvider>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 }
 
