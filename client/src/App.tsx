@@ -127,12 +127,21 @@ function MainContent() {
   const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const { data: searchResults, isLoading: isSearching } = useQuery<{ ok: boolean; data?: Patient[] }>({
-    queryKey: ["/api/patients/search", searchQuery],
-    enabled: searchQuery.length >= 2,
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const { data: searchResults, isFetching } = useQuery<{ ok: boolean; data?: Patient[] }>({
+    queryKey: ["/api/patients/search", debouncedQuery],
+    enabled: debouncedQuery.length >= 1,
+    staleTime: 30000,
   });
 
   useEffect(() => {
@@ -262,14 +271,14 @@ function MainContent() {
                               <X className="h-4 w-4" />
                             </button>
                           )}
-                          {isSearching && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
+                          {isFetching && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
                         </div>
                         
-                        {showSearchResults && searchQuery.length >= 2 && (
+                        {showSearchResults && searchQuery.length >= 1 && (
                           <div className="absolute top-full mt-2 left-0 right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 max-h-64 overflow-auto">
                             {patients.length === 0 ? (
                               <div className="p-3 text-sm text-slate-400 text-center">
-                                {isSearching ? "Searching..." : "No patients found"}
+                                {isFetching ? "Searching..." : "No patients found"}
                               </div>
                             ) : (
                               patients.map((patient) => (
