@@ -46,6 +46,15 @@ const updateStatusSchema = z.object({
   status: z.string().min(1, "status is required"),
 });
 
+const ancillaryUpdateSchema = z.object({
+  patient_uuid: z.string().min(1, "patient_uuid is required"),
+  ancillary_code: z.string().min(1, "ancillary_code is required"),
+  status: z.string().optional(),
+  scheduled_date: z.string().optional(),
+  notes: z.string().optional(),
+  completed_date: z.string().optional(),
+});
+
 async function plexusGet(action: string, params: Record<string, string> = {}): Promise<any> {
   const searchParams = new URLSearchParams({
     action,
@@ -235,6 +244,31 @@ export async function registerRoutes(
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to get eligible patients" });
+    }
+  });
+
+  // Get ancillary catalog (for dropdown)
+  app.get("/api/ancillary/catalog", async (_req, res) => {
+    try {
+      const data = await plexusGet("ancillary.catalog");
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to get ancillary catalog" });
+    }
+  });
+
+  // Update ancillary record for a patient
+  app.post("/api/ancillary/update", async (req, res) => {
+    try {
+      const validation = ancillaryUpdateSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ ok: false, error: validation.error.message });
+      }
+      
+      const data = await plexusPost("ancillary.update", validation.data);
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to update ancillary record" });
     }
   });
 

@@ -3,9 +3,27 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Activity, Search, Loader2, User, Users, TestTube } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useState, type KeyboardEvent } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Activity, Search, Loader2, User, Users, TestTube, Calendar, CheckCircle, Edit } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
+interface CatalogItem {
+  ancillary_code: string;
+  ancillary_name?: string;
+  repeat_policy?: string;
+}
+
+interface CatalogResponse {
+  ok: boolean;
+  data?: CatalogItem[];
+  error?: string;
+}
 
 interface EligiblePatient {
   patient_uuid: string;
@@ -14,6 +32,9 @@ interface EligiblePatient {
   mrn?: string;
   date_of_birth?: string;
   eligibility_reason?: string;
+  status?: string;
+  scheduled_date?: string;
+  notes?: string;
 }
 
 interface AncillaryPatientsResponse {
@@ -25,37 +46,91 @@ interface AncillaryPatientsResponse {
   error?: string;
 }
 
-export function AncillaryDashboard() {
-  const [ancillaryCode, setAncillaryCode] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [submittedCode, setSubmittedCode] = useState("");
+interface UpdatePayload {
+  patient_uuid: string;
+  ancillary_code: string;
+  status?: string;
+  scheduled_date?: string;
+  notes?: string;
+  completed_date?: string;
+}
 
-  const { data: response, isLoading, error, isFetching } = useQuery<AncillaryPatientsResponse>({
-    queryKey: ["/api/ancillary/patients", submittedCode, searchQuery],
+export function AncillaryDashboard() {
+  const [selectedCode, setSelectedCode] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [editPatient, setEditPatient] = useState<EligiblePatient | null>(null);
+  const [editForm, setEditForm] = useState({
+    status: "",
+    scheduled_date: "",
+    notes: "",
+  });
+  const { toast } = useToast();
+
+  const { data: catalogResponse, isLoading: catalogLoading } = useQuery<CatalogResponse>({
+    queryKey: ["/api/ancillary/catalog"],
+  });
+
+  const catalogItems = catalogResponse?.data || [];
+
+  const { data: response, isLoading, isFetching } = useQuery<AncillaryPatientsResponse>({
+    queryKey: ["/api/ancillary/patients", selectedCode, searchQuery],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (submittedCode) params.set("ancillary_code", submittedCode);
+      if (selectedCode) params.set("ancillary_code", selectedCode);
       if (searchQuery) params.set("q", searchQuery);
       params.set("limit", "50");
       const res = await fetch(`/api/ancillary/patients?${params.toString()}`);
       return res.json();
     },
-    enabled: submittedCode.length > 0,
+    enabled: selectedCode.length > 0,
     staleTime: 30000,
   });
 
   const patients = response?.results || [];
 
-  const handleSearch = () => {
-    if (ancillaryCode.trim()) {
-      setSubmittedCode(ancillaryCode.trim());
-    }
+  const updateMutation = useMutation({
+    mutationFn: async (payload: UpdatePayload) => {
+      return apiRequest("POST", "/api/ancillary/update", payload);
+    },
+    onSuccess: () => {
+      toast({ title: "Updated", description: "Patient record updated successfully" });
+      queryClient.invalidateQueries({ queryKey: ["/api/ancillary/patients", selectedCode] });
+      setEditPatient(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update record", variant: "destructive" });
+    },
+  });
+
+  const openEditDialog = (patient: EligiblePatient) => {
+    setEditPatient(patient);
+    setEditForm({
+      status: patient.status || "",
+      scheduled_date: patient.scheduled_date || "",
+      notes: patient.notes || "",
+    });
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+  const handleSave = () => {
+    if (!editPatient || !selectedCode) return;
+    updateMutation.mutate({
+      patient_uuid: editPatient.patient_uuid,
+      ancillary_code: selectedCode,
+      status: editForm.status || undefined,
+      scheduled_date: editForm.scheduled_date || undefined,
+      notes: editForm.notes || undefined,
+    });
+  };
+
+  const handleMarkCompleted = (patient: EligiblePatient) => {
+    if (!selectedCode) return;
+    const today = new Date().toISOString().split("T")[0];
+    updateMutation.mutate({
+      patient_uuid: patient.patient_uuid,
+      ancillary_code: selectedCode,
+      status: "completed",
+      completed_date: today,
+    });
   };
 
   return (
@@ -68,7 +143,7 @@ export function AncillaryDashboard() {
                 <TestTube className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{submittedCode || "—"}</p>
+                <p className="text-2xl font-bold">{selectedCode || "—"}</p>
                 <p className="text-sm text-muted-foreground">Ancillary Code</p>
               </div>
             </div>
@@ -110,17 +185,18 @@ export function AncillaryDashboard() {
               Ancillary Test Patients
             </CardTitle>
             <div className="flex items-center gap-2">
-              <div className="relative flex-1 md:w-48">
-                <TestTube className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  data-testid="input-ancillary-code"
-                  placeholder="Ancillary code..."
-                  value={ancillaryCode}
-                  onChange={(e) => setAncillaryCode(e.target.value.toUpperCase())}
-                  onKeyDown={handleKeyDown}
-                  className="pl-10"
-                />
-              </div>
+              <Select value={selectedCode} onValueChange={setSelectedCode}>
+                <SelectTrigger data-testid="select-ancillary-code" className="w-48">
+                  <SelectValue placeholder={catalogLoading ? "Loading..." : "Select code..."} />
+                </SelectTrigger>
+                <SelectContent>
+                  {catalogItems.map((item) => (
+                    <SelectItem key={item.ancillary_code} value={item.ancillary_code}>
+                      {item.ancillary_code} {item.ancillary_name ? `- ${item.ancillary_name}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <div className="relative flex-1 md:w-48">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -131,31 +207,24 @@ export function AncillaryDashboard() {
                   className="pl-10"
                 />
               </div>
-              <Button 
-                data-testid="button-search-ancillary"
-                onClick={handleSearch}
-                disabled={!ancillaryCode.trim() || isLoading}
-              >
-                {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
-              </Button>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-24rem)]">
             <div className="space-y-2">
-              {!submittedCode ? (
+              {!selectedCode ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <TestTube className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg font-medium">Enter an ancillary code to find eligible patients</p>
-                  <p className="text-sm mt-1">Type a code like "LAB001" and click Search</p>
+                  <p className="text-lg font-medium">Select an ancillary code</p>
+                  <p className="text-sm mt-1">Choose from the dropdown to find eligible patients</p>
                 </div>
               ) : isLoading ? (
                 <div className="text-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                   <p className="text-muted-foreground mt-3">Finding eligible patients...</p>
                 </div>
-              ) : error || !response?.ok ? (
+              ) : !response?.ok ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium">Unable to load patients</p>
@@ -165,7 +234,7 @@ export function AncillaryDashboard() {
                 <div className="text-center py-12 text-muted-foreground">
                   <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg font-medium">No eligible patients found</p>
-                  <p className="text-sm mt-1">No patients match the criteria for {submittedCode}</p>
+                  <p className="text-sm mt-1">No patients match the criteria for {selectedCode}</p>
                 </div>
               ) : (
                 patients.map((patient, index) => (
@@ -186,16 +255,44 @@ export function AncillaryDashboard() {
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             {patient.mrn && <span>MRN: {patient.mrn}</span>}
                             {patient.date_of_birth && <span>DOB: {patient.date_of_birth}</span>}
+                            {patient.scheduled_date && (
+                              <span className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {patient.scheduled_date}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        {patient.status && (
+                          <Badge variant={patient.status === "completed" ? "default" : "outline"}>
+                            {patient.status}
+                          </Badge>
+                        )}
                         {patient.eligibility_reason && (
                           <Badge variant="outline">{patient.eligibility_reason}</Badge>
                         )}
                         <Badge className="bg-[#1a3d2e]/60 text-[#4a9a7c] border-[#2d5a47]/50">
                           Eligible
                         </Badge>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          data-testid={`button-edit-${patient.patient_uuid}`}
+                          onClick={() => openEditDialog(patient)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          data-testid={`button-complete-${patient.patient_uuid}`}
+                          onClick={() => handleMarkCompleted(patient)}
+                          disabled={updateMutation.isPending}
+                        >
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -205,6 +302,67 @@ export function AncillaryDashboard() {
           </ScrollArea>
         </CardContent>
       </Card>
+
+      <Dialog open={!!editPatient} onOpenChange={(open) => !open && setEditPatient(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Edit Patient: {editPatient?.last_name}, {editPatient?.first_name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select value={editForm.status} onValueChange={(v) => setEditForm({ ...editForm, status: v })}>
+                <SelectTrigger id="status" data-testid="select-edit-status">
+                  <SelectValue placeholder="Select status..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="scheduled_date">Scheduled Date</Label>
+              <Input
+                id="scheduled_date"
+                type="date"
+                data-testid="input-scheduled-date"
+                value={editForm.scheduled_date}
+                onChange={(e) => setEditForm({ ...editForm, scheduled_date: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                data-testid="input-notes"
+                value={editForm.notes}
+                onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                placeholder="Add notes..."
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditPatient(null)}>
+              Cancel
+            </Button>
+            <Button
+              data-testid="button-save-edit"
+              onClick={handleSave}
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
