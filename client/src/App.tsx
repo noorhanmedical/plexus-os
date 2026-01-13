@@ -211,6 +211,7 @@ function MainContent() {
     const saved = localStorage.getItem("plexus_selected_patient");
     return saved ? JSON.parse(saved) : null;
   });
+  const [billingServiceFilter, setBillingServiceFilter] = useState<string>("all");
 
   useEffect(() => {
     localStorage.setItem("plexus_main_tab", mainTab);
@@ -224,8 +225,13 @@ function MainContent() {
     }
   }, [selectedPatient]);
 
-  const handleMainTabChange = (tab: MainTab) => {
+  const handleMainTabChange = (tab: MainTab, serviceFilter?: string) => {
     setMainTab(tab);
+    if (tab === "billing") {
+      setBillingServiceFilter(serviceFilter || "all");
+    } else {
+      setBillingServiceFilter("all");
+    }
   };
 
   const handleClearPatient = () => {
@@ -254,7 +260,7 @@ function MainContent() {
       case "finance":
         return <FinanceView />;
       case "billing":
-        return <BillingView />;
+        return <BillingView defaultServiceFilter={billingServiceFilter} onServiceFilterChange={setBillingServiceFilter} />;
       default:
         return <HomeDashboard onNavigate={handleMainTabChange} />;
     }

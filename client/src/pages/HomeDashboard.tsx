@@ -29,7 +29,7 @@ interface BillingResponse {
 }
 
 interface HomeDashboardProps {
-  onNavigate?: (tab: "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing") => void;
+  onNavigate?: (tab: "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing", serviceFilter?: string) => void;
 }
 
 function formatServiceType(sourceTab: string | undefined): string {
@@ -79,11 +79,20 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const vitalwaveCount = rawRecords.filter(r => r.source_tab?.includes("VITALWAVE")).length;
   const totalCount = records.length;
 
-  const recentRecords = records.slice(0, 5);
+  // Get recent records per service type
+  const recentBrainwave = rawRecords.filter(r => r.source_tab?.includes("BRAINWAVE")).slice(0, 2).map(normalizeBillingRecord);
+  const recentUltrasound = rawRecords.filter(r => r.source_tab?.includes("ULTRASOUND")).slice(0, 2).map(normalizeBillingRecord);
+  const recentVitalwave = rawRecords.filter(r => r.source_tab?.includes("VITALWAVE")).slice(0, 2).map(normalizeBillingRecord);
 
   const handleViewAllBilling = () => {
     if (onNavigate) {
-      onNavigate("billing");
+      onNavigate("billing", "all");
+    }
+  };
+
+  const handleNavigateToService = (serviceFilter: string) => {
+    if (onNavigate) {
+      onNavigate("billing", serviceFilter);
     }
   };
 
@@ -128,18 +137,30 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 <p className="text-sm text-muted-foreground">Total Records</p>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2 bg-blue-50 rounded">
+                <button 
+                  className="p-2 bg-blue-50 rounded hover:bg-blue-100 transition-colors cursor-pointer"
+                  onClick={() => handleNavigateToService("brainwave")}
+                  data-testid="button-finance-brainwave"
+                >
                   <p className="text-sm font-semibold text-blue-700">{brainwaveCount}</p>
                   <p className="text-xs text-blue-600">Brainwave</p>
-                </div>
-                <div className="p-2 bg-purple-50 rounded">
+                </button>
+                <button 
+                  className="p-2 bg-purple-50 rounded hover:bg-purple-100 transition-colors cursor-pointer"
+                  onClick={() => handleNavigateToService("ultrasound")}
+                  data-testid="button-finance-ultrasound"
+                >
                   <p className="text-sm font-semibold text-purple-700">{ultrasoundCount}</p>
                   <p className="text-xs text-purple-600">Ultrasound</p>
-                </div>
-                <div className="p-2 bg-emerald-50 rounded">
+                </button>
+                <button 
+                  className="p-2 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors cursor-pointer"
+                  onClick={() => handleNavigateToService("vitalwave")}
+                  data-testid="button-finance-vitalwave"
+                >
                   <p className="text-sm font-semibold text-emerald-700">{vitalwaveCount}</p>
                   <p className="text-xs text-emerald-600">Vitalwave</p>
-                </div>
+                </button>
               </div>
             </div>
           </CardContent>
@@ -176,62 +197,63 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-sm text-muted-foreground text-center py-8">No billing records</p>
           ) : (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <Zap className="h-5 w-5 mx-auto text-blue-600 mb-2" />
-                  <p className="text-2xl font-bold text-blue-700">{brainwaveCount}</p>
-                  <p className="text-sm text-blue-600">Brainwave</p>
-                </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <Activity className="h-5 w-5 mx-auto text-purple-600 mb-2" />
-                  <p className="text-2xl font-bold text-purple-700">{ultrasoundCount}</p>
-                  <p className="text-sm text-purple-600">Ultrasound</p>
-                </div>
-                <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                  <TrendingUp className="h-5 w-5 mx-auto text-emerald-600 mb-2" />
-                  <p className="text-2xl font-bold text-emerald-700">{vitalwaveCount}</p>
-                  <p className="text-sm text-emerald-600">Vitalwave</p>
-                </div>
-                <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <BarChart3 className="h-5 w-5 mx-auto text-slate-600 mb-2" />
-                  <p className="text-2xl font-bold text-slate-700">{totalCount - brainwaveCount - ultrasoundCount - vitalwaveCount}</p>
-                  <p className="text-sm text-slate-600">Other</p>
-                </div>
-              </div>
-              
-              <div className="border-t pt-4">
-                <h4 className="text-sm font-medium text-slate-700 mb-3">Recent Activity</h4>
-                <div className="space-y-2">
-                  {recentRecords.map((record, index) => (
-                    <div 
-                      key={record.billing_id || index} 
-                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
-                      data-testid={`card-billing-${record.billing_id || index}`}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-900 truncate">
-                          {record.patient_name || "Unknown Patient"}
-                        </p>
-                        <p className="text-sm text-slate-500 truncate">
-                          {record.clinician?.replace(/"/g, "") || "Clinician"} • {formatDate(record.date)}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3 ml-4">
-                        <Badge 
-                          variant="outline" 
-                          className={
-                            record.source_tab?.includes("BRAINWAVE") ? "bg-blue-50 text-blue-700 border-blue-200" :
-                            record.source_tab?.includes("ULTRASOUND") ? "bg-purple-50 text-purple-700 border-purple-200" :
-                            record.source_tab?.includes("VITALWAVE") ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                            "bg-slate-100 text-slate-700 border-slate-200"
-                          }
-                        >
-                          {record.service || "Service"}
-                        </Badge>
-                      </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  className="text-left p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer border border-blue-100"
+                  onClick={() => handleNavigateToService("brainwave")}
+                  data-testid="button-billing-brainwave"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-5 w-5 text-blue-600" />
+                      <span className="font-semibold text-blue-700">Brainwave</span>
                     </div>
-                  ))}
-                </div>
+                    <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">{brainwaveCount}</Badge>
+                  </div>
+                  <div className="space-y-1">
+                    {recentBrainwave.length > 0 ? recentBrainwave.map((r, i) => (
+                      <p key={i} className="text-xs text-blue-600 truncate">{r.patient_name || "Unknown"} • {formatDate(r.date)}</p>
+                    )) : <p className="text-xs text-blue-400">No recent records</p>}
+                  </div>
+                </button>
+                
+                <button
+                  className="text-left p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors cursor-pointer border border-purple-100"
+                  onClick={() => handleNavigateToService("ultrasound")}
+                  data-testid="button-billing-ultrasound"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-5 w-5 text-purple-600" />
+                      <span className="font-semibold text-purple-700">Ultrasound</span>
+                    </div>
+                    <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-200">{ultrasoundCount}</Badge>
+                  </div>
+                  <div className="space-y-1">
+                    {recentUltrasound.length > 0 ? recentUltrasound.map((r, i) => (
+                      <p key={i} className="text-xs text-purple-600 truncate">{r.patient_name || "Unknown"} • {formatDate(r.date)}</p>
+                    )) : <p className="text-xs text-purple-400">No recent records</p>}
+                  </div>
+                </button>
+                
+                <button
+                  className="text-left p-4 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors cursor-pointer border border-emerald-100"
+                  onClick={() => handleNavigateToService("vitalwave")}
+                  data-testid="button-billing-vitalwave"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-emerald-600" />
+                      <span className="font-semibold text-emerald-700">Vitalwave</span>
+                    </div>
+                    <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">{vitalwaveCount}</Badge>
+                  </div>
+                  <div className="space-y-1">
+                    {recentVitalwave.length > 0 ? recentVitalwave.map((r, i) => (
+                      <p key={i} className="text-xs text-emerald-600 truncate">{r.patient_name || "Unknown"} • {formatDate(r.date)}</p>
+                    )) : <p className="text-xs text-emerald-400">No recent records</p>}
+                  </div>
+                </button>
               </div>
               
               <Button 
@@ -240,7 +262,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 onClick={handleViewAllBilling}
                 data-testid="button-view-billing"
               >
-                View All Billing Records
+                Go to Billing Dashboard
               </Button>
             </div>
           )}

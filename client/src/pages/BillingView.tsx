@@ -164,10 +164,15 @@ const EMPTY_BILLING_RECORD: NewBillingRecord = {
 
 const CHART_COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444", "#6366f1"];
 
-export function BillingView() {
+interface BillingViewProps {
+  defaultServiceFilter?: string;
+  onServiceFilterChange?: (filter: string) => void;
+}
+
+export function BillingView({ defaultServiceFilter = "all", onServiceFilterChange }: BillingViewProps) {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [serviceFilter, setServiceFilter] = useState<string>("all");
+  const [serviceFilter, setServiceFilter] = useState<string>(defaultServiceFilter);
   const [clinicianFilter, setClinicianFilter] = useState<string>("all");
   const [dateRangeFilter, setDateRangeFilter] = useState<string>("all");
   const [claimStatusFilter, setClaimStatusFilter] = useState<string>("all");
@@ -177,8 +182,24 @@ export function BillingView() {
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([{ description: "", amount: 0 }]);
   const [invoicePatientId, setInvoicePatientId] = useState("");
   const [invoiceNotes, setInvoiceNotes] = useState("");
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("records");
   const autoRebuildAttempted = useRef(false);
+
+  // Sync with external defaultServiceFilter prop
+  useEffect(() => {
+    if (defaultServiceFilter) {
+      setServiceFilter(defaultServiceFilter);
+      // Switch to records/spreadsheet tab when navigating from home to a specific service
+      if (defaultServiceFilter !== "all") {
+        setActiveTab("records");
+      }
+    }
+  }, [defaultServiceFilter]);
+
+  const handleServiceTabChange = (value: string) => {
+    setServiceFilter(value);
+    onServiceFilterChange?.(value);
+  };
 
   const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[]; header?: string[] }>({
     queryKey: ["/api/billing/list"],
@@ -502,7 +523,7 @@ export function BillingView() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Billing Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {normalizedRecords.length} total records
+            {records.length} of {normalizedRecords.length} records
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -771,6 +792,48 @@ export function BillingView() {
         </div>
       </div>
 
+      <Tabs value={serviceFilter} onValueChange={handleServiceTabChange} className="border-b">
+        <TabsList className="bg-transparent border-b-0 h-auto p-0 gap-0">
+          <TabsTrigger 
+            value="all" 
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent px-4 py-2"
+            data-testid="tab-service-all"
+          >
+            All Services
+          </TabsTrigger>
+          <TabsTrigger 
+            value="brainwave" 
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:text-blue-700 px-4 py-2"
+            data-testid="tab-service-brainwave"
+          >
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              Brainwave
+            </span>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="ultrasound" 
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent data-[state=active]:text-purple-700 px-4 py-2"
+            data-testid="tab-service-ultrasound"
+          >
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+              Ultrasound
+            </span>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="vitalwave" 
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-emerald-600 data-[state=active]:bg-transparent data-[state=active]:text-emerald-700 px-4 py-2"
+            data-testid="tab-service-vitalwave"
+          >
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Vitalwave
+            </span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="bg-slate-100">
           <TabsTrigger value="overview" className="gap-2" data-testid="tab-overview">
@@ -783,7 +846,7 @@ export function BillingView() {
           </TabsTrigger>
           <TabsTrigger value="records" className="gap-2" data-testid="tab-records">
             <BarChart3 className="h-4 w-4" />
-            All Records
+            Spreadsheet
           </TabsTrigger>
         </TabsList>
 
