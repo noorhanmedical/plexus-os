@@ -68,26 +68,34 @@ function TwinklingStars({ className = "" }: { className?: string }) {
 
 function MountainSilhouette() {
   const stars = [
-    { top: 3, left: 10, size: 1.2, opacity: 0.8, delay: 0 },
-    { top: 6, left: 25, size: 1, opacity: 0.6, delay: 1.2 },
-    { top: 4, left: 42, size: 1.5, opacity: 0.7, delay: 0.5 },
-    { top: 8, left: 58, size: 1, opacity: 0.5, delay: 2 },
-    { top: 5, left: 75, size: 1.3, opacity: 0.65, delay: 1.5 },
-    { top: 3, left: 90, size: 1, opacity: 0.55, delay: 2.5 },
-    { top: 12, left: 15, size: 0.8, opacity: 0.5, delay: 3 },
-    { top: 10, left: 35, size: 1.2, opacity: 0.6, delay: 0.8 },
-    { top: 14, left: 52, size: 0.9, opacity: 0.45, delay: 1.8 },
-    { top: 11, left: 68, size: 1.1, opacity: 0.55, delay: 2.2 },
-    { top: 9, left: 82, size: 1, opacity: 0.5, delay: 0.3 },
-    { top: 18, left: 8, size: 0.8, opacity: 0.4, delay: 1.6 },
-    { top: 16, left: 28, size: 1, opacity: 0.5, delay: 2.8 },
-    { top: 20, left: 45, size: 0.7, opacity: 0.35, delay: 0.9 },
-    { top: 17, left: 62, size: 0.9, opacity: 0.45, delay: 3.2 },
-    { top: 22, left: 78, size: 0.8, opacity: 0.4, delay: 1.4 },
-    { top: 19, left: 92, size: 1, opacity: 0.5, delay: 2.1 },
-    { top: 26, left: 20, size: 0.7, opacity: 0.35, delay: 0.6 },
-    { top: 24, left: 55, size: 0.8, opacity: 0.4, delay: 1.9 },
-    { top: 28, left: 85, size: 0.6, opacity: 0.3, delay: 2.7 },
+    { top: 8, left: 10, size: 2, opacity: 1, delay: 0 },
+    { top: 12, left: 25, size: 1.5, opacity: 0.9, delay: 1.2 },
+    { top: 10, left: 42, size: 2.5, opacity: 1, delay: 0.5 },
+    { top: 15, left: 58, size: 1.8, opacity: 0.85, delay: 2 },
+    { top: 11, left: 75, size: 2, opacity: 0.95, delay: 1.5 },
+    { top: 9, left: 90, size: 1.5, opacity: 0.9, delay: 2.5 },
+    { top: 18, left: 15, size: 1.5, opacity: 0.8, delay: 3 },
+    { top: 16, left: 35, size: 2, opacity: 0.9, delay: 0.8 },
+    { top: 22, left: 52, size: 1.8, opacity: 0.85, delay: 1.8 },
+    { top: 19, left: 68, size: 2, opacity: 0.9, delay: 2.2 },
+    { top: 14, left: 82, size: 1.5, opacity: 0.85, delay: 0.3 },
+    { top: 25, left: 8, size: 1.5, opacity: 0.75, delay: 1.6 },
+    { top: 24, left: 28, size: 1.8, opacity: 0.8, delay: 2.8 },
+    { top: 28, left: 45, size: 1.5, opacity: 0.7, delay: 0.9 },
+    { top: 26, left: 62, size: 1.8, opacity: 0.8, delay: 3.2 },
+    { top: 30, left: 78, size: 1.5, opacity: 0.75, delay: 1.4 },
+    { top: 27, left: 92, size: 1.8, opacity: 0.8, delay: 2.1 },
+    { top: 35, left: 20, size: 1.2, opacity: 0.7, delay: 0.6 },
+    { top: 32, left: 55, size: 1.5, opacity: 0.75, delay: 1.9 },
+    { top: 38, left: 85, size: 1.2, opacity: 0.65, delay: 2.7 },
+  ];
+
+  const houses = [
+    { left: 12, bottom: 8, width: 8, height: 6, windowColor: '#ffd54f' },
+    { left: 28, bottom: 10, width: 6, height: 5, windowColor: '#ffb74d' },
+    { left: 45, bottom: 6, width: 7, height: 5, windowColor: '#fff59d' },
+    { left: 65, bottom: 9, width: 6, height: 5, windowColor: '#ffd54f' },
+    { left: 82, bottom: 7, width: 7, height: 6, windowColor: '#ffb74d' },
   ];
 
   return (
@@ -95,14 +103,14 @@ function MountainSilhouette() {
       <div 
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(to bottom, #1a1a2e 0%, #16162b 30%, #141428 60%, #111124 100%)'
+          background: 'linear-gradient(to bottom, #1e293b 0%, #1a1a2e 15%, #16162b 40%, #141428 70%, #111124 100%)'
         }}
       />
       
       {stars.map((star, i) => (
         <div
           key={i}
-          className="absolute rounded-full bg-white animate-pulse"
+          className="absolute rounded-full animate-pulse"
           style={{
             width: `${star.size}px`,
             height: `${star.size}px`,
@@ -110,7 +118,9 @@ function MountainSilhouette() {
             left: `${star.left}%`,
             opacity: star.opacity,
             animationDelay: `${star.delay}s`,
-            animationDuration: '4s'
+            animationDuration: '3s',
+            background: 'radial-gradient(circle, #ffffff 0%, #ffffff 40%, transparent 100%)',
+            boxShadow: `0 0 ${star.size * 2}px ${star.size}px rgba(255,255,255,0.3)`
           }}
         />
       ))}
@@ -120,9 +130,26 @@ function MountainSilhouette() {
         viewBox="0 0 100 30" 
         preserveAspectRatio="none"
       >
+        <defs>
+          <linearGradient id="snowyMountain1" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#4a5568" />
+            <stop offset="30%" stopColor="#3d4554" />
+            <stop offset="100%" stopColor="#2d3748" />
+          </linearGradient>
+        </defs>
         <path 
           d="M0,30 L0,22 L8,20 L15,17 L22,14 L28,11 L35,8 L42,6 L48,4 L52,6 L58,9 L65,12 L72,15 L78,12 L85,9 L92,7 L100,10 L100,30 Z" 
-          fill="#252545"
+          fill="url(#snowyMountain1)"
+        />
+        <path 
+          d="M35,8 L42,6 L48,4 L52,6 L58,9 L55,8 L50,5 L45,7 L40,7 Z" 
+          fill="#e2e8f0"
+          opacity="0.6"
+        />
+        <path 
+          d="M78,12 L85,9 L92,7 L100,10 L95,9 L88,10 L82,11 Z" 
+          fill="#e2e8f0"
+          opacity="0.5"
         />
       </svg>
 
@@ -131,11 +158,89 @@ function MountainSilhouette() {
         viewBox="0 0 100 20" 
         preserveAspectRatio="none"
       >
+        <defs>
+          <linearGradient id="snowyMountain2" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#2d3748" />
+            <stop offset="100%" stopColor="#1a202c" />
+          </linearGradient>
+        </defs>
         <path 
           d="M0,20 L0,14 L10,12 L20,9 L28,7 L35,5 L42,3 L48,5 L55,8 L62,10 L70,8 L78,6 L85,4 L92,6 L100,9 L100,20 Z" 
-          fill="#1a1a35"
+          fill="url(#snowyMountain2)"
+        />
+        <path 
+          d="M28,7 L35,5 L42,3 L48,5 L45,4 L38,4 L32,6 Z" 
+          fill="#e2e8f0"
+          opacity="0.5"
+        />
+        <path 
+          d="M70,8 L78,6 L85,4 L92,6 L88,5 L80,6 L74,7 Z" 
+          fill="#e2e8f0"
+          opacity="0.4"
         />
       </svg>
+
+      {houses.map((house, i) => (
+        <div
+          key={i}
+          className="absolute"
+          style={{
+            left: `${house.left}%`,
+            bottom: `${house.bottom}%`,
+            width: `${house.width}%`,
+            height: `${house.height}%`,
+          }}
+        >
+          <div 
+            className="absolute bottom-0 w-full h-[70%]"
+            style={{ background: '#1a1a24' }}
+          />
+          <div 
+            className="absolute bottom-[70%] left-1/2 -translate-x-1/2 w-0 h-0"
+            style={{ 
+              borderLeft: '12px solid transparent',
+              borderRight: '12px solid transparent',
+              borderBottom: '10px solid #1a1a24'
+            }}
+          />
+          <div 
+            className="absolute animate-pulse"
+            style={{
+              left: '30%',
+              bottom: '25%',
+              width: '3px',
+              height: '3px',
+              background: house.windowColor,
+              boxShadow: `0 0 4px 2px ${house.windowColor}40`,
+              opacity: 0.8,
+              animationDuration: '5s',
+              animationDelay: `${i * 0.5}s`
+            }}
+          />
+          <div 
+            className="absolute animate-pulse"
+            style={{
+              left: '55%',
+              bottom: '25%',
+              width: '3px',
+              height: '3px',
+              background: house.windowColor,
+              boxShadow: `0 0 4px 2px ${house.windowColor}40`,
+              opacity: 0.7,
+              animationDuration: '6s',
+              animationDelay: `${i * 0.3 + 1}s`
+            }}
+          />
+        </div>
+      ))}
+
+      <div 
+        className="absolute bottom-0 left-0 w-full h-[8%]"
+        style={{
+          background: 'linear-gradient(to top, #e2e8f0 0%, #cbd5e1 50%, transparent 100%)',
+          opacity: 0.15
+        }}
+      />
     </div>
   );
 }
