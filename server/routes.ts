@@ -5,22 +5,7 @@ import { z } from "zod";
 const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxNwZ6W5HhBFekOSU1de5jeTFCIc99O2yXLGhSAwSzBMhJpkE8iNi9xcDrcm8eX0l0w/exec";
 const PLEXUS_API_KEY = process.env.PLEXUS_API_KEY || "";
 
-// Patient type for local cache
-interface CachedPatient {
-  patient_uuid: string;
-  first_name: string;
-  last_name: string;
-  mrn: string;
-  date_of_birth: string;
-}
-
-// Pre-loaded patient cache for instant search
-let allPatientsCache: CachedPatient[] = [];
-let patientsCacheTimestamp = 0;
-let isLoadingPatients = false;
-const PATIENTS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
-// Plexus API helper (defined early for use in cache loading)
+// Plexus API helper
 async function plexusGet(action: string, params: Record<string, string> = {}): Promise<any> {
   const searchParams = new URLSearchParams({
     action,
@@ -38,103 +23,18 @@ async function plexusGet(action: string, params: Record<string, string> = {}): P
   return response.json();
 }
 
-// Promise for awaiting cache load
-let loadingPromise: Promise<void> | null = null;
-
-// Load all patients using pagination
-async function loadAllPatients(): Promise<void> {
-  if (loadingPromise) return loadingPromise;
-  
-  isLoadingPatients = true;
-  loadingPromise = (async () => {
-    try {
-      console.log("[cache] Loading all patients from Plexus API with pagination...");
-      const allPatients: CachedPatient[] = [];
-      let offset = 0;
-      const pageSize = 500;
-      let hasMore = true;
-      
-      while (hasMore) {
-        const data = await plexusGet("patients.search", { 
-          q: "", 
-          limit: String(pageSize), 
-          offset: String(offset) 
-        });
-        
-        if (data.ok && Array.isArray(data.data)) {
-          allPatients.push(...data.data);
-          console.log(`[cache] Fetched ${data.data.length} patients (offset: ${offset}, total: ${allPatients.length})`);
-          
-          // Stop if we got fewer than pageSize (end of data)
-          if (data.data.length < pageSize) {
-            hasMore = false;
-          } else {
-            offset += pageSize;
-          }
-        } else {
-          console.error("[cache] API returned non-ok response:", data);
-          hasMore = false;
-        }
-        
-        // Safety limit to prevent infinite loops
-        if (offset > 50000) {
-          console.warn("[cache] Hit safety limit of 50000 patients");
-          hasMore = false;
-        }
-      }
-      
-      allPatientsCache = allPatients;
-      patientsCacheTimestamp = Date.now();
-      console.log(`[cache] Completed loading ${allPatientsCache.length} total patients`);
-    } catch (error) {
-      console.error("[cache] Failed to load patients:", error);
-    } finally {
-      isLoadingPatients = false;
-      loadingPromise = null;
-    }
-  })();
-  
-  return loadingPromise;
-}
-
-// Direct API search fallback (for when cache misses)
-async function searchPatientsAPI(query: string, limit: number): Promise<CachedPatient[]> {
+// Direct API search - no preloading, instant startup
+async function searchPatientsAPI(query: string, limit: number): Promise<any[]> {
   try {
     const data = await plexusGet("patients.search", { q: query, limit: String(limit) });
     if (data.ok && Array.isArray(data.data)) {
       return data.data;
     }
   } catch (error) {
-    console.error("[api] Direct patient search failed:", error);
+    console.error("[api] Patient search failed:", error);
   }
   return [];
 }
-
-// Search patients from local cache (instant)
-function searchPatientsLocal(query: string, limit: number): CachedPatient[] {
-  const q = query.toLowerCase().trim();
-  if (!q) return allPatientsCache.slice(0, limit);
-  
-  return allPatientsCache
-    .filter(p => 
-      p.first_name?.toLowerCase().includes(q) ||
-      p.last_name?.toLowerCase().includes(q) ||
-      p.mrn?.toLowerCase().includes(q) ||
-      p.patient_uuid?.toLowerCase().includes(q) ||
-      `${p.first_name} ${p.last_name}`.toLowerCase().includes(q)
-    )
-    .slice(0, limit);
-}
-
-// Check if cache needs refresh (stale-while-revalidate)
-function checkCacheRefresh(): void {
-  if (Date.now() - patientsCacheTimestamp > PATIENTS_CACHE_TTL && !isLoadingPatients) {
-    loadAllPatients(); // Refresh in background
-  }
-}
-
-// Start loading patients immediately on module load
-loadAllPatients();
 
 // Simple in-memory cache for other searches
 const searchCache = new Map<string, { data: any; timestamp: number }>();
@@ -242,7 +142,7 @@ export async function registerRoutes(
     }
   });
 
-  // Search patients (from local cache with API fallback)
+  // Search patients - direct API call, no blocking preload
   app.get("/api/patients/search", async (req, res) => {
     try {
       const validation = searchPatientsSchema.safeParse(req.query);
@@ -253,34 +153,8 @@ export async function registerRoutes(
       const { query, limit } = validation.data;
       const limitNum = parseInt(limit, 10) || 20;
       
-      // If cache is loading, await it; if empty, trigger load
-      if (loadingPromise) {
-        await loadingPromise;
-      } else if (allPatientsCache.length === 0) {
-        await loadAllPatients();
-      }
-      
-      // Use local cache for instant search
-      let results = searchPatientsLocal(query, limitNum);
-      
-      // If no results from cache and user is searching, try API directly as fallback
-      if (results.length === 0 && query.length >= 2) {
-        console.log(`[search] Cache miss for "${query}", trying API fallback...`);
-        results = await searchPatientsAPI(query, limitNum);
-        
-        // Add any new patients found to cache
-        if (results.length > 0) {
-          const existingIds = new Set(allPatientsCache.map(p => p.patient_uuid));
-          const newPatients = results.filter(p => !existingIds.has(p.patient_uuid));
-          if (newPatients.length > 0) {
-            allPatientsCache.push(...newPatients);
-            console.log(`[cache] Added ${newPatients.length} new patients from API fallback`);
-          }
-        }
-      }
-      
-      // Trigger background refresh if needed
-      checkCacheRefresh();
+      // Direct API search - Plexus handles the search server-side
+      const results = await searchPatientsAPI(query, limitNum);
       
       res.json({ ok: true, data: results });
     } catch (error) {
