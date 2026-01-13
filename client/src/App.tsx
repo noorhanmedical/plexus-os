@@ -72,10 +72,10 @@ function AppSidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  const { data: searchResults, isLoading } = useQuery<{ ok: boolean; patients: Patient[] }>({
+  const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
     queryKey: ["/api/patients/search", debouncedQuery],
     queryFn: async () => {
-      if (debouncedQuery.length < 2) return { ok: true, patients: [] };
+      if (debouncedQuery.length < 2) return { ok: true, data: [] };
       const res = await fetch(`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`);
       return res.json();
     },
@@ -84,7 +84,7 @@ function AppSidebar({
     placeholderData: (prev) => prev,
   });
 
-  const patients = searchResults?.patients || [];
+  const patients = searchResults?.data || [];
 
   return (
     <Sidebar className="border-r border-[#1e1e38]/50">
