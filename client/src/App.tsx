@@ -11,7 +11,7 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2 } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -27,7 +27,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 
-type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule";
+type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing";
 
 interface Patient {
   patient_uuid: string;
@@ -48,6 +48,7 @@ const mainTabs = [
   { id: "prescreens" as MainTab, label: "Prescreens", icon: ClipboardList },
   { id: "ancillary" as MainTab, label: "Ancillary", icon: Activity },
   { id: "finance" as MainTab, label: "Finance", icon: DollarSign },
+  { id: "billing" as MainTab, label: "Billing", icon: Receipt },
 ];
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -243,7 +244,7 @@ function MainContent() {
 
     switch (mainTab) {
       case "home":
-        return <HomeDashboard />;
+        return <HomeDashboard onNavigate={handleMainTabChange} />;
       case "schedule":
         return <ScheduleView />;
       case "prescreens":
@@ -252,8 +253,10 @@ function MainContent() {
         return <AncillaryDashboard />;
       case "finance":
         return <FinanceView />;
+      case "billing":
+        return <BillingView />;
       default:
-        return <HomeDashboard />;
+        return <HomeDashboard onNavigate={handleMainTabChange} />;
     }
   };
 
