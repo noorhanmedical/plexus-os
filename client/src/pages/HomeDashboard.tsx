@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Clock, TestTube, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { serviceConfig } from "@/components/service-icons";
 
@@ -29,6 +29,37 @@ interface BillingResponse {
   rows: BillingRecord[];
 }
 
+interface CatalogItem {
+  ancillary_code: string;
+  ancillary_name?: string;
+  repeat_policy?: string;
+}
+
+interface CatalogResponse {
+  ok: boolean;
+  data?: CatalogItem[];
+}
+
+interface EligiblePatient {
+  patient_uuid: string;
+  first_name: string;
+  last_name: string;
+  mrn?: string;
+  date_of_birth?: string;
+  eligibility_reason?: string;
+  status?: string;
+  scheduled_date?: string;
+  notes?: string;
+}
+
+interface AncillaryPatientsResponse {
+  ok: boolean;
+  action?: string;
+  ancillary_code?: string;
+  count?: number;
+  results?: EligiblePatient[];
+}
+
 interface HomeDashboardProps {
   onNavigate?: (tab: "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing", serviceFilter?: string) => void;
 }
@@ -51,6 +82,15 @@ function normalizeBillingRecord(record: BillingRecord): BillingRecord {
   };
 }
 
+function getStatusColor(status: string | undefined): string {
+  if (!status) return "bg-slate-500/20 text-slate-300 border-slate-400/30";
+  const s = status.toLowerCase();
+  if (s.includes("complete") || s.includes("done")) return "bg-emerald-500/20 text-emerald-300 border-emerald-400/30";
+  if (s.includes("schedule") || s.includes("pending")) return "bg-amber-500/20 text-amber-300 border-amber-400/30";
+  if (s.includes("eligible") || s.includes("ready")) return "bg-blue-500/20 text-blue-300 border-blue-400/30";
+  return "bg-slate-500/20 text-slate-300 border-slate-400/30";
+}
+
 export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const { data: billingData, isLoading: billingLoading, isError: billingError } = useQuery<BillingResponse>({
     queryKey: ["/api/billing/list"],
@@ -61,6 +101,26 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     },
     staleTime: 60000,
   });
+
+  const { data: catalogResponse, isLoading: catalogLoading } = useQuery<CatalogResponse>({
+    queryKey: ["/api/ancillary/catalog"],
+  });
+
+  const catalogItems = catalogResponse?.data || [];
+  const firstAncillaryCode = catalogItems[0]?.ancillary_code || "";
+
+  const { data: ancillaryPatientsData, isLoading: ancillaryLoading, isError: ancillaryError } = useQuery<AncillaryPatientsResponse>({
+    queryKey: ["/api/ancillary/patients", firstAncillaryCode],
+    queryFn: async () => {
+      if (!firstAncillaryCode) return { ok: true, results: [] };
+      const res = await fetch(`/api/ancillary/patients?ancillary_code=${firstAncillaryCode}&limit=10`);
+      return res.json();
+    },
+    enabled: !!firstAncillaryCode,
+    staleTime: 60000,
+  });
+
+  const ancillaryPatients = ancillaryPatientsData?.results || [];
 
   const rawRecords = billingData?.rows || [];
   const records = rawRecords.map(normalizeBillingRecord);
@@ -116,11 +176,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           data-testid="button-ancillary"
         >
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pink-400/30 to-rose-500/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <VitalWaveIcon className="h-10 w-10 text-pink-300" />
+            <TestTube className="h-10 w-10 text-pink-300" />
           </div>
           <div className="text-center">
             <p className="text-white font-semibold text-lg">Ancillary</p>
-            <p className="text-white/60 text-sm">Services & labs</p>
+            <p className="text-white/60 text-sm">Service timelines</p>
           </div>
         </button>
 
@@ -152,6 +212,86 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           </div>
         </button>
       </div>
+
+      <Card className={`${glassCardStyle}`}>
+        <CardContent className="p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-400/30 to-rose-500/30 flex items-center justify-center">
+                <Clock className="h-7 w-7 text-pink-300" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white">Ancillary Service Timelines</h2>
+                <p className="text-white/60 text-sm">Patient test schedules & status</p>
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-white/70 hover:text-white hover:bg-white/10 rounded-xl"
+              onClick={() => onNavigate?.("ancillary")}
+              data-testid="button-view-all-ancillary"
+            >
+              View All
+            </Button>
+          </div>
+
+          {catalogLoading || ancillaryLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-white/40" />
+            </div>
+          ) : ancillaryError ? (
+            <div className="text-center py-12">
+              <AlertTriangle className="h-10 w-10 mx-auto text-amber-400 mb-3" />
+              <p className="text-white/60">Failed to load ancillary data</p>
+            </div>
+          ) : ancillaryPatients.length === 0 ? (
+            <div className="text-center py-12">
+              <TestTube className="h-10 w-10 mx-auto text-white/30 mb-3" />
+              <p className="text-white/60">No ancillary patients found</p>
+              <p className="text-white/40 text-sm mt-1">Select a service in the Ancillary dashboard</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {ancillaryPatients.slice(0, 5).map((patient, idx) => (
+                <div 
+                  key={patient.patient_uuid || idx}
+                  className={`${glassButtonStyle} p-4 flex items-center justify-between`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400/20 to-rose-500/20 flex items-center justify-center">
+                      <User className="h-5 w-5 text-pink-300" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-white">{patient.first_name} {patient.last_name}</p>
+                      <p className="text-sm text-white/60">
+                        {patient.mrn && <span className="mr-2">MRN: {patient.mrn}</span>}
+                        {patient.eligibility_reason && <span>{patient.eligibility_reason}</span>}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {patient.scheduled_date && (
+                      <span className="text-sm text-white/60">{formatDate(patient.scheduled_date)}</span>
+                    )}
+                    <Badge className={getStatusColor(patient.status)}>
+                      {patient.status || "Pending"}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+              
+              <Button 
+                className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl h-12 text-base font-medium backdrop-blur-md mt-4" 
+                onClick={() => onNavigate?.("ancillary")}
+                data-testid="button-go-to-ancillary"
+              >
+                Go to Ancillary Dashboard
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card className={`${glassCardStyle}`}>
         <CardContent className="p-8">
