@@ -222,11 +222,12 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <div className="w-full h-2 bg-gradient-to-r from-amber-400 to-orange-500"></div>
+          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
+            <p className="text-white font-bold text-lg">Schedule</p>
+          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <p className="text-[#1a0a28] font-bold text-lg">Schedule</p>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Calendar className="h-8 w-8 text-amber-600" />
+            <div className="w-16 h-16 rounded-2xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Calendar className="h-8 w-8 text-white" />
             </div>
             <p className="text-slate-600 text-sm">Daily appointments</p>
           </div>
@@ -237,11 +238,12 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <div className="w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500"></div>
+          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
+            <p className="text-white font-bold text-lg">Prescreens</p>
+          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <p className="text-[#1a0a28] font-bold text-lg">Prescreens</p>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Sparkles className="h-8 w-8 text-cyan-600" />
+            <div className="w-16 h-16 rounded-2xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Sparkles className="h-8 w-8 text-white" />
             </div>
             <p className="text-slate-600 text-sm">Patient eligibility</p>
           </div>
@@ -252,11 +254,12 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
-          <div className="w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
+            <p className="text-white font-bold text-lg">Finance Dashboard</p>
+          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <p className="text-[#1a0a28] font-bold text-lg">Finance Dashboard</p>
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <DollarSign className="h-7 w-7 text-emerald-600" />
+            <div className="w-14 h-14 rounded-2xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <DollarSign className="h-7 w-7 text-white" />
             </div>
             <div className="flex items-center gap-2 text-xs">
               <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold">{formatCurrency(brainwaveRevenue)}</span>
@@ -272,20 +275,21 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={handleViewAllBilling}
           data-testid="button-billing-overview"
         >
-          <div className="w-full h-2 bg-gradient-to-r from-violet-400 to-purple-500"></div>
+          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
+            <p className="text-white font-bold text-lg">Billing Dashboard</p>
+          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <p className="text-[#1a0a28] font-bold text-lg">Billing Dashboard</p>
             <div className="flex items-center gap-3">
               <div className="text-center">
-                <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
+                <p className="text-2xl font-bold text-[#1a0a28]">{brainwaveCount}</p>
                 <p className="text-xs text-slate-600">Brain</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-700">{ultrasoundCount}</p>
+                <p className="text-2xl font-bold text-[#1a0a28]">{ultrasoundCount}</p>
                 <p className="text-xs text-slate-600">Ultra</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
+                <p className="text-2xl font-bold text-[#1a0a28]">{vitalwaveCount}</p>
                 <p className="text-xs text-slate-600">Vital</p>
               </div>
             </div>
@@ -295,16 +299,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       </div>
 
       <Card className={`${glassCardStyle} overflow-hidden`}>
-        <div className="w-full h-2 bg-gradient-to-r from-pink-400 to-rose-500"></div>
+        <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
+          <p className="text-white font-bold text-lg">Ancillary Service Patient Tracker</p>
+        </div>
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-100 to-rose-200 flex items-center justify-center">
-                <Clock className="h-7 w-7 text-pink-600" />
+              <div className="w-14 h-14 rounded-xl bg-[#1a0a28] flex items-center justify-center">
+                <Clock className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1a0a28]">Ancillary Service Patient Tracker</h2>
-                <p className="text-slate-600 text-sm">Patients due for follow-up services</p>
+                <p className="text-slate-600 text-sm">Patients due for follow-up services (6mo/12mo)</p>
               </div>
             </div>
             <Button 
@@ -324,7 +329,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
           ) : ancillaryDuePatients.length === 0 ? (
             <div className="text-center py-12">
-              <TestTube className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+              <div className="w-16 h-16 rounded-xl bg-[#1a0a28] flex items-center justify-center mx-auto mb-3">
+                <TestTube className="h-8 w-8 text-white" />
+              </div>
               <p className="text-slate-600">No patients due for follow-up</p>
               <p className="text-slate-500 text-sm mt-1">All patients are up to date with their services</p>
             </div>
@@ -336,16 +343,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   className={`${glassButtonStyle} p-4 flex items-center justify-between`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                      patient.serviceType === "BrainWave" ? "bg-gradient-to-br from-purple-100 to-violet-200" :
-                      patient.serviceType === "Ultrasound" ? "bg-gradient-to-br from-green-100 to-emerald-200" :
-                      patient.serviceType === "VitalWave" ? "bg-gradient-to-br from-red-100 to-rose-200" :
-                      "bg-gradient-to-br from-pink-100 to-rose-200"
-                    }`}>
-                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-purple-600" /> :
-                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-green-600" /> :
-                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-red-600" /> :
-                       <User className="h-5 w-5 text-pink-600" />}
+                    <div className="w-10 h-10 rounded-xl bg-[#1a0a28] flex items-center justify-center">
+                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-white" /> :
+                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-white" /> :
+                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-white" /> :
+                       <User className="h-5 w-5 text-white" />}
                     </div>
                     <div>
                       <p className="font-medium text-[#1a0a28]">{patient.name}</p>
@@ -373,15 +375,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       </Card>
 
       <Card className={`${glassCardStyle} overflow-hidden`}>
-        <div className="w-full h-2 bg-gradient-to-r from-violet-400 to-purple-500"></div>
+        <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
+          <p className="text-white font-bold text-lg">Billing Overview</p>
+        </div>
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-100 to-purple-200 flex items-center justify-center">
-                <DollarSign className="h-7 w-7 text-violet-600" />
+              <div className="w-14 h-14 rounded-xl bg-[#1a0a28] flex items-center justify-center">
+                <DollarSign className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1a0a28]">Billing Overview</h2>
                 <p className="text-slate-600 text-sm">Last 3 patients by service (DOS)</p>
               </div>
             </div>
@@ -415,15 +418,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   onClick={() => handleNavigateToService("brainwave")}
                   data-testid="button-billing-brainwave"
                 >
-                  <div className="w-full h-1.5 bg-gradient-to-r from-purple-400 to-violet-500"></div>
+                  <div className="w-full h-8 bg-[#1a0a28] flex items-center justify-center">
+                    <p className="text-white font-semibold text-sm">BrainWave</p>
+                  </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <Brain className="h-6 w-6 text-purple-600" />
+                      <div className="w-12 h-12 rounded-xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Brain className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold text-[#1a0a28]">BrainWave</p>
-                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">{brainwaveCount} records</Badge>
+                        <Badge className="bg-[#1a0a28]/10 text-[#1a0a28] border-[#1a0a28]/20">{brainwaveCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -442,15 +446,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   onClick={() => handleNavigateToService("ultrasound")}
                   data-testid="button-billing-ultrasound"
                 >
-                  <div className="w-full h-1.5 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+                  <div className="w-full h-8 bg-[#1a0a28] flex items-center justify-center">
+                    <p className="text-white font-semibold text-sm">Ultrasound</p>
+                  </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <UltrasoundProbeIcon className="h-6 w-6 text-green-600" />
+                      <div className="w-12 h-12 rounded-xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <UltrasoundProbeIcon className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold text-[#1a0a28]">Ultrasound</p>
-                        <Badge className="bg-green-100 text-green-700 border-green-200">{ultrasoundCount} records</Badge>
+                        <Badge className="bg-[#1a0a28]/10 text-[#1a0a28] border-[#1a0a28]/20">{ultrasoundCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -469,15 +474,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   onClick={() => handleNavigateToService("vitalwave")}
                   data-testid="button-billing-vitalwave"
                 >
-                  <div className="w-full h-1.5 bg-gradient-to-r from-red-400 to-rose-500"></div>
+                  <div className="w-full h-8 bg-[#1a0a28] flex items-center justify-center">
+                    <p className="text-white font-semibold text-sm">VitalWave</p>
+                  </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <Heart className="h-6 w-6 text-red-600" />
+                      <div className="w-12 h-12 rounded-xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Heart className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold text-[#1a0a28]">VitalWave</p>
-                        <Badge className="bg-red-100 text-red-700 border-red-200">{vitalwaveCount} records</Badge>
+                        <Badge className="bg-[#1a0a28]/10 text-[#1a0a28] border-[#1a0a28]/20">{vitalwaveCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
