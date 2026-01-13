@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Search, Plus, RefreshCw, Loader2, FileText, DollarSign, X, AlertTriangle } from "lucide-react";
+import { Search, Plus, RefreshCw, Loader2, FileText, DollarSign, X, AlertTriangle, ExternalLink } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -60,16 +60,44 @@ interface BillingRecord {
   notes?: string;
 }
 
+// Format service type from source_tab (e.g., BILLING_BRAINWAVE → Brainwave)
+function formatServiceType(sourceTab: string | undefined): string {
+  if (!sourceTab) return "-";
+  return sourceTab
+    .replace(/^BILLING_/i, "")
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+// Format date for display
+function formatDate(dateStr: string | undefined): string {
+  if (!dateStr) return "-";
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
+
+// Check if a string is a valid URL (for document links)
+function isValidUrl(str: string | undefined): boolean {
+  if (!str) return false;
+  return str.startsWith("http://") || str.startsWith("https://");
+}
+
 // Helper to normalize billing record fields
 function normalizeBillingRecord(record: BillingRecord): BillingRecord {
   return {
     ...record,
     patient_name: record.patient_name || record.patient,
-    status: record.status || record.billing_status,
+    // billing_status in API is actually a document link, not a text status
+    status: record.status || (isValidUrl(record.billing_status) ? undefined : record.billing_status),
     amount: record.amount ?? (typeof record.paid_amount === 'number' ? record.paid_amount : parseFloat(record.paid_amount || '0') || 0),
     date: record.date || record.date_of_service,
     notes: record.notes || record.comments,
-    service: record.service || record.source_tab,
+    service: record.service || formatServiceType(record.source_tab),
   };
 }
 
@@ -78,22 +106,10 @@ interface InvoiceItem {
   amount: number;
 }
 
-const statusColorMap: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800 border-amber-200",
-  paid: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  overdue: "bg-red-100 text-red-800 border-red-200",
-  cancelled: "bg-slate-100 text-slate-800 border-slate-200",
-};
-
-function getStatusColor(status: string | undefined): string {
-  if (!status) return "bg-slate-100 text-slate-800 border-slate-200";
-  return statusColorMap[status.toLowerCase()] || "bg-slate-100 text-slate-800 border-slate-200";
-}
-
 export function BillingView() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [serviceFilter, setServiceFilter] = useState<string>("all");
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([{ description: "", amount: 0 }]);
   const [invoicePatientId, setInvoicePatientId] = useState("");
@@ -101,11 +117,11 @@ export function BillingView() {
   const autoRebuildAttempted = useRef(false);
 
   const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[] }>({
-    queryKey: ["/api/billing/search", searchQuery, statusFilter],
+    queryKey: ["/api/billing/search", searchQuery, serviceFilter],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchQuery) params.set("q", searchQuery);
-      if (statusFilter && statusFilter !== "all") params.set("status", statusFilter);
+      // Service filter is applied client-side since API doesn't support it
       params.set("limit", "100");
       const res = await fetch(`/api/billing/search?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch billing data");
@@ -156,7 +172,15 @@ export function BillingView() {
 
   // Normalize records to handle both API formats
   const rawRecords = billingData?.rows || [];
-  const records = rawRecords.map(normalizeBillingRecord);
+  const normalizedRecords = rawRecords.map(normalizeBillingRecord);
+  
+  // Apply client-side service filter
+  const records = normalizedRecords.filter((record) => {
+    if (serviceFilter === "all") return true;
+    if (serviceFilter === "brainwave") return record.source_tab?.includes("BRAINWAVE");
+    if (serviceFilter === "ultrasound") return record.source_tab?.includes("ULTRASOUND");
+    return true;
+  });
 
   // Auto-rebuild index on first load if empty
   useEffect(() => {
@@ -167,15 +191,10 @@ export function BillingView() {
     }
   }, [isLoading, isError, billingData, rawRecords.length]);
 
-  const totalPending = records
-    .filter((b) => b.status?.toLowerCase() === "pending")
-    .reduce((sum, b) => sum + (b.amount || 0), 0);
-  const totalPaid = records
-    .filter((b) => b.status?.toLowerCase() === "paid")
-    .reduce((sum, b) => sum + (b.amount || 0), 0);
-  const totalOverdue = records
-    .filter((b) => b.status?.toLowerCase() === "overdue")
-    .reduce((sum, b) => sum + (b.amount || 0), 0);
+  // Count records by service type
+  const brainwaveCount = records.filter((b) => b.source_tab?.includes("BRAINWAVE")).length;
+  const ultrasoundCount = records.filter((b) => b.source_tab?.includes("ULTRASOUND")).length;
+  const otherCount = records.length - brainwaveCount - ultrasoundCount;
 
   const addInvoiceItem = () => {
     setInvoiceItems([...invoiceItems, { description: "", amount: 0 }]);
@@ -227,15 +246,14 @@ export function BillingView() {
               data-testid="input-billing-search"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-36" data-testid="select-status-filter">
-              <SelectValue placeholder="All Status" />
+          <Select value={serviceFilter} onValueChange={setServiceFilter}>
+            <SelectTrigger className="w-40" data-testid="select-service-filter">
+              <SelectValue placeholder="All Services" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="overdue">Overdue</SelectItem>
+              <SelectItem value="all">All Services</SelectItem>
+              <SelectItem value="brainwave">Brainwave</SelectItem>
+              <SelectItem value="ultrasound">Ultrasound</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -366,26 +384,26 @@ export function BillingView() {
       <div className="grid grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Brainwave</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-amber-600">${totalPending.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-blue-600">{brainwaveCount}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Paid</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Ultrasound</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-emerald-600">${totalPaid.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-purple-600">{ultrasoundCount}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Overdue</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Other</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-red-600">${totalOverdue.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-slate-600">{otherCount}</p>
           </CardContent>
         </Card>
       </div>
@@ -412,7 +430,7 @@ export function BillingView() {
             </div>
           ) : records.length === 0 ? (
             <div className="text-center py-8 text-slate-500">
-              {searchQuery || statusFilter !== "all"
+              {searchQuery || serviceFilter !== "all"
                 ? "No billing records match your search"
                 : "No billing records found. Try rebuilding the index or creating an invoice."}
             </div>
@@ -420,40 +438,62 @@ export function BillingView() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Invoice</TableHead>
                   <TableHead>Patient</TableHead>
                   <TableHead>Service</TableHead>
+                  <TableHead>Clinician</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Insurance</TableHead>
+                  <TableHead>Documents</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records.map((record, index) => (
-                  <TableRow key={record.billing_id || index} data-testid={`row-billing-${record.billing_id || index}`}>
-                    <TableCell className="font-medium">
-                      {record.invoice_number || record.billing_id || "-"}
-                    </TableCell>
-                    <TableCell>{record.patient_name || record.patient_uuid || "-"}</TableCell>
-                    <TableCell>{record.service || "-"}</TableCell>
-                    <TableCell>{record.date || "-"}</TableCell>
-                    <TableCell className="text-right">
-                      {record.amount != null ? `$${record.amount.toLocaleString()}` : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {record.status ? (
-                        <Badge
-                          variant="outline"
-                          className={`${getStatusColor(record.status)} border`}
-                        >
-                          {record.status}
+                {records.map((record, index) => {
+                  const docLinks = [
+                    { label: "Billing", url: record.link_billing_document },
+                    { label: "Report", url: record.link_report },
+                    { label: "Order", url: record.link_order_note },
+                  ].filter(link => isValidUrl(link.url));
+                  
+                  return (
+                    <TableRow key={index} data-testid={`row-billing-${index}`}>
+                      <TableCell className="font-medium">
+                        {record.patient_name || "-"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-200">
+                          {record.service || "-"}
                         </Badge>
-                      ) : (
-                        "-"
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {record.clinician?.replace(/"/g, "") || "-"}
+                      </TableCell>
+                      <TableCell>{formatDate(record.date)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">
+                        {record.insurance_info || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {docLinks.length > 0 ? (
+                          <div className="flex gap-1">
+                            {docLinks.map((link, i) => (
+                              <a
+                                key={i}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                {link.label}
+                              </a>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

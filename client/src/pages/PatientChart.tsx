@@ -28,7 +28,8 @@ import {
   MessageSquare,
   ListTodo,
   Loader2,
-  Receipt
+  Receipt,
+  ExternalLink
 } from "lucide-react";
 import {
   Table,
@@ -49,6 +50,9 @@ interface BillingRecord {
   paid_amount?: string | number;
   insurance_info?: string;
   comments?: string;
+  link_billing_document?: string;
+  link_report?: string;
+  link_order_note?: string;
   // Normalized fields
   billing_id?: string;
   invoice_number?: string;
@@ -59,15 +63,40 @@ interface BillingRecord {
   date?: string;
 }
 
+// Format service type from source_tab (e.g., BILLING_BRAINWAVE → Brainwave)
+function formatServiceType(sourceTab: string | undefined): string {
+  if (!sourceTab) return "-";
+  return sourceTab
+    .replace(/^BILLING_/i, "")
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+// Format date for display
+function formatDate(dateStr: string | undefined): string {
+  if (!dateStr) return "-";
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
+
+// Check if a string is a valid URL (for document links)
+function isValidUrl(str: string | undefined): boolean {
+  if (!str) return false;
+  return str.startsWith("http://") || str.startsWith("https://");
+}
+
 // Helper to normalize billing record fields
 function normalizeBillingRecord(record: BillingRecord): BillingRecord {
   return {
     ...record,
     patient_name: record.patient_name || record.patient,
-    status: record.status || record.billing_status,
-    amount: record.amount ?? (typeof record.paid_amount === 'number' ? record.paid_amount : parseFloat(record.paid_amount || '0') || 0),
     date: record.date || record.date_of_service,
-    service: record.service || record.source_tab,
+    service: record.service || formatServiceType(record.source_tab),
   };
 }
 
@@ -170,17 +199,6 @@ const menuItems: MenuItem[] = [
     ],
   },
 ];
-
-const billingStatusColorMap: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-700",
-  paid: "bg-green-100 text-green-700",
-  overdue: "bg-red-100 text-red-700",
-};
-
-function getBillingStatusColor(status: string | undefined): string {
-  if (!status) return "bg-slate-100 text-slate-700";
-  return billingStatusColorMap[status.toLowerCase()] || "bg-slate-100 text-slate-700";
-}
 
 export function PatientChart({ patient }: PatientChartProps) {
   const [activeSection, setActiveSection] = useState<MenuSection>("prescreens");
@@ -404,35 +422,58 @@ export function PatientChart({ patient }: PatientChartProps) {
         <Table>
           <TableHeader>
             <TableRow className="border-slate-200">
-              <TableHead className="text-slate-600">Invoice #</TableHead>
               <TableHead className="text-slate-600">Date</TableHead>
               <TableHead className="text-slate-600">Service</TableHead>
-              <TableHead className="text-slate-600">Amount</TableHead>
-              <TableHead className="text-slate-600">Status</TableHead>
-              <TableHead className="text-slate-600">Actions</TableHead>
+              <TableHead className="text-slate-600">Clinician</TableHead>
+              <TableHead className="text-slate-600">Insurance</TableHead>
+              <TableHead className="text-slate-600">Documents</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {billingRecords.map((record, index) => (
-              <TableRow key={record.billing_id || index} className="border-slate-200 hover:bg-slate-50">
-                <TableCell className="text-slate-900 font-medium">
-                  {record.invoice_number || record.billing_id || "-"}
-                </TableCell>
-                <TableCell className="text-slate-700">{record.date || "-"}</TableCell>
-                <TableCell className="text-slate-600">{record.service || "-"}</TableCell>
-                <TableCell className="text-slate-900 font-semibold">
-                  {record.amount != null ? `$${record.amount.toLocaleString()}` : "-"}
-                </TableCell>
-                <TableCell>
-                  {record.status ? (
-                    <Badge className={getBillingStatusColor(record.status)}>
-                      {record.status}
+            {billingRecords.map((record, index) => {
+              const docLinks = [
+                { label: "Billing", url: record.link_billing_document },
+                { label: "Report", url: record.link_report },
+                { label: "Order", url: record.link_order_note },
+              ].filter(link => isValidUrl(link.url));
+              
+              return (
+                <TableRow key={index} className="border-slate-200 hover:bg-slate-50">
+                  <TableCell className="text-slate-700">{formatDate(record.date)}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-200">
+                      {record.service || "-"}
                     </Badge>
-                  ) : "-"}
-                </TableCell>
-                <TableCell className="text-blue-600 cursor-pointer hover:underline">View</TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell className="text-slate-600">
+                    {record.clinician?.replace(/"/g, "") || "-"}
+                  </TableCell>
+                  <TableCell className="text-slate-600 text-sm max-w-[150px] truncate">
+                    {record.insurance_info || "-"}
+                  </TableCell>
+                  <TableCell>
+                    {docLinks.length > 0 ? (
+                      <div className="flex gap-1">
+                        {docLinks.map((link, i) => (
+                          <a
+                            key={i}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       );

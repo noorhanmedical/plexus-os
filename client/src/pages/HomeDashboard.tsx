@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Heart, DollarSign, Loader2, AlertTriangle, TrendingUp, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Sparkles, Heart, DollarSign, Loader2, AlertTriangle, TrendingUp, Zap, Activity, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 
@@ -31,27 +31,35 @@ interface BillingResponse {
   rows: BillingRecord[];
 }
 
+// Format service type from source_tab (e.g., BILLING_BRAINWAVE → Brainwave)
+function formatServiceType(sourceTab: string | undefined): string {
+  if (!sourceTab) return "-";
+  return sourceTab
+    .replace(/^BILLING_/i, "")
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+// Format date for display
+function formatDate(dateStr: string | undefined): string {
+  if (!dateStr) return "-";
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
+
 // Helper to normalize billing record fields
 function normalizeBillingRecord(record: BillingRecord): BillingRecord {
   return {
     ...record,
     patient_name: record.patient_name || record.patient,
-    status: record.status || record.billing_status,
-    amount: record.amount ?? (typeof record.paid_amount === 'number' ? record.paid_amount : parseFloat(record.paid_amount || '0') || 0),
     date: record.date || record.date_of_service,
-    service: record.service || record.source_tab,
+    service: record.service || formatServiceType(record.source_tab),
   };
-}
-
-function getStatusColor(status: string | undefined): string {
-  if (!status) return "bg-slate-100 text-slate-700";
-  const normalized = status.toLowerCase();
-  const colors: Record<string, string> = {
-    pending: "bg-amber-100 text-amber-700",
-    paid: "bg-green-100 text-green-700",
-    overdue: "bg-red-100 text-red-700",
-  };
-  return colors[normalized] || "bg-slate-100 text-slate-700";
 }
 
 export function HomeDashboard() {
@@ -69,20 +77,10 @@ export function HomeDashboard() {
   const rawRecords = billingData?.rows || [];
   const records = rawRecords.map(normalizeBillingRecord);
   
-  const totalPending = records
-    .filter(r => r.status?.toLowerCase() === "pending")
-    .reduce((sum, r) => sum + (r.amount || 0), 0);
-  
-  const totalPaid = records
-    .filter(r => r.status?.toLowerCase() === "paid")
-    .reduce((sum, r) => sum + (r.amount || 0), 0);
-  
-  const totalOverdue = records
-    .filter(r => r.status?.toLowerCase() === "overdue")
-    .reduce((sum, r) => sum + (r.amount || 0), 0);
-
-  const pendingCount = records.filter(r => r.status?.toLowerCase() === "pending").length;
-  const overdueCount = records.filter(r => r.status?.toLowerCase() === "overdue").length;
+  // Count records by service type
+  const brainwaveCount = rawRecords.filter(r => r.source_tab?.includes("BRAINWAVE")).length;
+  const ultrasoundCount = rawRecords.filter(r => r.source_tab?.includes("ULTRASOUND")).length;
+  const totalCount = records.length;
 
   const recentRecords = records.slice(0, 5);
 
@@ -135,20 +133,20 @@ export function HomeDashboard() {
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="text-center p-3 bg-amber-50 rounded-lg">
-                    <Clock className="h-4 w-4 mx-auto text-amber-600 mb-1" />
-                    <p className="text-lg font-bold text-amber-700">${totalPending.toLocaleString()}</p>
-                    <p className="text-xs text-amber-600">{pendingCount} Pending</p>
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <Zap className="h-4 w-4 mx-auto text-blue-600 mb-1" />
+                    <p className="text-lg font-bold text-blue-700">{brainwaveCount}</p>
+                    <p className="text-xs text-blue-600">Brainwave</p>
                   </div>
-                  <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <CheckCircle2 className="h-4 w-4 mx-auto text-green-600 mb-1" />
-                    <p className="text-lg font-bold text-green-700">${totalPaid.toLocaleString()}</p>
-                    <p className="text-xs text-green-600">Paid</p>
+                  <div className="text-center p-3 bg-purple-50 rounded-lg">
+                    <Activity className="h-4 w-4 mx-auto text-purple-600 mb-1" />
+                    <p className="text-lg font-bold text-purple-700">{ultrasoundCount}</p>
+                    <p className="text-xs text-purple-600">Ultrasound</p>
                   </div>
-                  <div className="text-center p-3 bg-red-50 rounded-lg">
-                    <AlertCircle className="h-4 w-4 mx-auto text-red-600 mb-1" />
-                    <p className="text-lg font-bold text-red-700">${totalOverdue.toLocaleString()}</p>
-                    <p className="text-xs text-red-600">{overdueCount} Overdue</p>
+                  <div className="text-center p-3 bg-slate-50 rounded-lg">
+                    <BarChart3 className="h-4 w-4 mx-auto text-slate-600 mb-1" />
+                    <p className="text-lg font-bold text-slate-700">{totalCount - brainwaveCount - ultrasoundCount}</p>
+                    <p className="text-xs text-slate-600">Other</p>
                   </div>
                 </div>
                 <Link href="/billing">
@@ -208,15 +206,12 @@ export function HomeDashboard() {
                       {record.patient_name || "Unknown Patient"}
                     </p>
                     <p className="text-sm text-slate-500 truncate">
-                      {record.service || "Service"} • {record.date || "No date"}
+                      {record.clinician?.replace(/"/g, "") || "Clinician"} • {formatDate(record.date)}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 ml-4">
-                    <span className="font-semibold text-slate-900">
-                      ${(record.amount || 0).toLocaleString()}
-                    </span>
-                    <Badge className={getStatusColor(record.status)}>
-                      {record.status || "Unknown"}
+                    <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-200">
+                      {record.service || "Service"}
                     </Badge>
                   </div>
                 </div>

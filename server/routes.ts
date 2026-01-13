@@ -6,6 +6,7 @@ const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxUnc6u-UqiYLUra
 const PLEXUS_API_KEY = process.env.PLEXUS_API_KEY || "";
 
 // Plexus API helper
+// Note: Google Apps Script redirects strip custom headers, so we pass api_key in URL params only
 async function plexusGet(action: string, params: Record<string, string> = {}): Promise<any> {
   const searchParams = new URLSearchParams({
     action,
@@ -15,9 +16,6 @@ async function plexusGet(action: string, params: Record<string, string> = {}): P
   
   const response = await fetch(`${PLEXUS_API_URL}?${searchParams.toString()}`, {
     method: "GET",
-    headers: {
-      "x-api-key": PLEXUS_API_KEY,
-    },
     redirect: "follow",
   });
   
@@ -115,12 +113,12 @@ const ancillaryUpdateSchema = z.object({
   completed_date: z.string().optional(),
 });
 
+// Note: Google Apps Script redirects strip custom headers, so we pass api_key in URL params only
 async function plexusPost(action: string, payload: Record<string, any> = {}): Promise<any> {
   const response = await fetch(`${PLEXUS_API_URL}?api_key=${PLEXUS_API_KEY}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": PLEXUS_API_KEY,
     },
     body: JSON.stringify({ action, ...payload }),
     redirect: "follow",
