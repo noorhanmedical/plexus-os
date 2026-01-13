@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,8 +32,24 @@ import { Search, Plus, RefreshCw, Loader2, FileText, DollarSign, X, AlertTriangl
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
+// Raw API response format from Plexus Apps Script
 interface BillingRecord {
-  billing_id: string;
+  source_tab?: string;
+  date_of_service?: string;
+  patient?: string;
+  clinician?: string;
+  billing_status?: string;
+  paid_amount?: string | number;
+  insurance_info?: string;
+  comments?: string;
+  link_screening_form?: string;
+  link_order_note?: string;
+  link_report?: string;
+  link_procedure_note?: string;
+  link_billing_document?: string;
+  link_problem_list?: string;
+  // Legacy/normalized fields
+  billing_id?: string;
   patient_uuid?: string;
   patient_name?: string;
   service?: string;
@@ -42,6 +58,19 @@ interface BillingRecord {
   date?: string;
   invoice_number?: string;
   notes?: string;
+}
+
+// Helper to normalize billing record fields
+function normalizeBillingRecord(record: BillingRecord): BillingRecord {
+  return {
+    ...record,
+    patient_name: record.patient_name || record.patient,
+    status: record.status || record.billing_status,
+    amount: record.amount ?? (typeof record.paid_amount === 'number' ? record.paid_amount : parseFloat(record.paid_amount || '0') || 0),
+    date: record.date || record.date_of_service,
+    notes: record.notes || record.comments,
+    service: record.service || record.source_tab,
+  };
 }
 
 interface InvoiceItem {
@@ -69,6 +98,7 @@ export function BillingView() {
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([{ description: "", amount: 0 }]);
   const [invoicePatientId, setInvoicePatientId] = useState("");
   const [invoiceNotes, setInvoiceNotes] = useState("");
+  const autoRebuildAttempted = useRef(false);
 
   const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[] }>({
     queryKey: ["/api/billing/search", searchQuery, statusFilter],
@@ -124,7 +154,18 @@ export function BillingView() {
     },
   });
 
-  const records = billingData?.rows || [];
+  // Normalize records to handle both API formats
+  const rawRecords = billingData?.rows || [];
+  const records = rawRecords.map(normalizeBillingRecord);
+
+  // Auto-rebuild index on first load if empty
+  useEffect(() => {
+    if (!isLoading && !isError && billingData?.ok && rawRecords.length === 0 && !autoRebuildAttempted.current) {
+      autoRebuildAttempted.current = true;
+      console.log("[billing] Auto-rebuilding index on empty result");
+      rebuildIndexMutation.mutate();
+    }
+  }, [isLoading, isError, billingData, rawRecords.length]);
 
   const totalPending = records
     .filter((b) => b.status?.toLowerCase() === "pending")

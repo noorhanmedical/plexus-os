@@ -39,13 +39,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+// Raw API response format from Plexus Apps Script
 interface BillingRecord {
-  billing_id: string;
+  source_tab?: string;
+  date_of_service?: string;
+  patient?: string;
+  clinician?: string;
+  billing_status?: string;
+  paid_amount?: string | number;
+  insurance_info?: string;
+  comments?: string;
+  // Normalized fields
+  billing_id?: string;
   invoice_number?: string;
+  patient_name?: string;
   service?: string;
   amount?: number;
   status?: string;
   date?: string;
+}
+
+// Helper to normalize billing record fields
+function normalizeBillingRecord(record: BillingRecord): BillingRecord {
+  return {
+    ...record,
+    patient_name: record.patient_name || record.patient,
+    status: record.status || record.billing_status,
+    amount: record.amount ?? (typeof record.paid_amount === 'number' ? record.paid_amount : parseFloat(record.paid_amount || '0') || 0),
+    date: record.date || record.date_of_service,
+    service: record.service || record.source_tab,
+  };
 }
 
 interface Patient {
@@ -175,7 +198,9 @@ export function PatientChart({ patient }: PatientChartProps) {
     staleTime: 60000,
   });
 
-  const billingRecords = billingData?.rows || [];
+  // Normalize records to handle API field mapping
+  const rawBillingRecords = billingData?.rows || [];
+  const billingRecords = rawBillingRecords.map(normalizeBillingRecord);
 
   const calculateAge = (dob: string) => {
     const birthDate = new Date(dob);
