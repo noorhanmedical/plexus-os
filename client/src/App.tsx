@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -10,7 +10,8 @@ import { BillingView } from "@/pages/BillingView";
 import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
-import { Home, Search, ClipboardList, Activity, CreditCard, DollarSign, Calendar, User, X, Loader2 } from "lucide-react";
+import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -58,33 +59,6 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-function TwinklingStars({ className = "" }: { className?: string }) {
-  return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_2px_rgba(255,255,255,0.8)]"></div>
-      <div className="absolute top-1/3 left-1/3 w-0.5 h-0.5 bg-white rounded-full animate-[pulse_3s_ease-in-out_infinite] opacity-70"></div>
-      <div className="absolute top-2/3 left-2/3 w-1 h-1 bg-white rounded-full animate-[pulse_4s_ease-in-out_infinite] opacity-50"></div>
-      <div className="absolute top-1/4 left-3/4 w-0.5 h-0.5 bg-white rounded-full animate-[pulse_2.5s_ease-in-out_infinite] opacity-80"></div>
-      <div className="absolute top-3/4 left-1/4 w-1 h-1 bg-white rounded-full animate-[pulse_5s_ease-in-out_infinite] opacity-60"></div>
-      <div className="absolute top-1/2 left-1/4 w-0.5 h-0.5 bg-white rounded-full animate-[pulse_3.5s_ease-in-out_infinite] opacity-40"></div>
-      <div className="absolute top-1/3 left-2/3 w-0.5 h-0.5 bg-white rounded-full animate-[pulse_4.5s_ease-in-out_infinite] opacity-55"></div>
-    </div>
-  );
-}
-
-function MountainSilhouette() {
-  return (
-    <div 
-      className="absolute inset-0 overflow-hidden pointer-events-none"
-      style={{
-        backgroundImage: `url('/attached_assets/image_1768287231907.png')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center bottom',
-        backgroundRepeat: 'no-repeat'
-      }}
-    />
-  );
-}
 
 function AppSidebar({ 
   selectedPatient,
@@ -113,10 +87,8 @@ function AppSidebar({
   const patients = searchResults?.patients || [];
 
   return (
-    <Sidebar className="bg-[#16162b] border-r border-[#1e1e38]/50">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <MountainSilhouette />
-      </div>
+    <Sidebar className="border-r border-[#1e1e38]/50">
+      <NightSkyBackdrop starCount={80} showShootingStars={true} showHorizonGlow={true} />
       
       <SidebarHeader className="p-4 border-b border-slate-700/30 relative">
         <button
@@ -280,9 +252,8 @@ function MainContent() {
   return (
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex flex-col h-screen w-full">
-        <header className="bg-slate-900 text-white shadow-lg relative overflow-hidden z-50">
-          <TwinklingStars />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full mix-blend-overlay filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+        <header className="text-white shadow-lg relative overflow-hidden z-50">
+          <NightSkyBackdrop starCount={40} showShootingStars={true} showHorizonGlow={false} />
           
           <div className="px-4 md:px-6 py-4 md:py-5 relative z-10">
             <div className="flex justify-between items-center gap-4">
