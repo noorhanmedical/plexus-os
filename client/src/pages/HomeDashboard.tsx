@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, DollarSign, Activity, AlertCircle, CheckCircle2, FileText } from "lucide-react";
+import { Clock, AlertCircle, CheckCircle2, FileText, Sparkles, Heart, TrendingUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Prescreen } from "@shared/schema";
 
@@ -95,7 +95,7 @@ export function HomeDashboard() {
         <Card className="glow-border overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 rounded-t-lg" style={{ backgroundColor: "#1a0a28" }}>
             <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
-              <Calendar className="h-5 w-5 text-primary" />
+              <Sparkles className="h-4 w-4 text-purple-300" />
               Daily Schedule
             </CardTitle>
             <Badge variant="secondary" className="text-xs">
@@ -129,7 +129,7 @@ export function HomeDashboard() {
         <Card className="glow-border overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 rounded-t-lg" style={{ backgroundColor: "#1a0a28" }}>
             <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
-              <Activity className="h-5 w-5 text-secondary" />
+              <Heart className="h-4 w-4 text-pink-300" />
               Ancillary Services
             </CardTitle>
             <Badge variant="outline" className="text-xs border-slate-600 text-slate-300">
@@ -171,7 +171,7 @@ export function HomeDashboard() {
         <Card className="glow-border overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 rounded-t-lg" style={{ backgroundColor: "#1a0a28" }}>
             <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
-              <DollarSign className="h-5 w-5 text-chart-4" />
+              <TrendingUp className="h-4 w-4 text-emerald-300" />
               Finance Overview
             </CardTitle>
           </CardHeader>
