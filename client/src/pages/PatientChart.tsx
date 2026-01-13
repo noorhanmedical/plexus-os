@@ -52,7 +52,7 @@ interface PatientChartProps {
   patient: Patient;
 }
 
-type MenuSection = "prescreens" | "eligibility" | "schedule" | "finance" | "notes" | "tasks";
+type MenuSection = "prescreens" | "eligibility" | "ancillary" | "schedule" | "finance" | "notes" | "tasks";
 
 interface MenuItem {
   id: MenuSection;
@@ -82,6 +82,15 @@ const menuItems: MenuItem[] = [
       { id: "clinical", label: "Clinical Criteria" },
       { id: "auth", label: "Authorizations" },
       { id: "risk", label: "Risk Assessment" },
+    ],
+  },
+  {
+    id: "ancillary",
+    label: "Ancillary",
+    icon: Activity,
+    subItems: [
+      { id: "active-orders", label: "Active Orders", count: 0 },
+      { id: "add-new", label: "Add New" },
     ],
   },
   {
@@ -191,6 +200,31 @@ export function PatientChart({ patient }: PatientChartProps) {
             </TableRow>
           </TableBody>
         </Table>
+      );
+    }
+
+    if (activeSection === "ancillary") {
+      if (activeSubItem === "add-new") {
+        return (
+          <div className="text-center py-12">
+            <Activity className="h-12 w-12 mx-auto text-slate-300 mb-4" />
+            <h3 className="text-lg font-medium text-slate-700 mb-2">Add New Ancillary Order</h3>
+            <p className="text-slate-500 mb-4">Select from the Ancillary Catalog to add services for this patient</p>
+            <button 
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
+              data-testid="button-open-ancillary-catalog"
+            >
+              Open Ancillary Catalog
+            </button>
+          </div>
+        );
+      }
+      return (
+        <div className="text-center py-12 text-slate-500">
+          <Activity className="h-12 w-12 mx-auto text-slate-300 mb-4" />
+          <p>No active ancillary orders for this patient</p>
+          <p className="text-sm mt-2">Use "Add New" to create an order from the Ancillary Catalog</p>
+        </div>
       );
     }
 
