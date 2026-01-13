@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Calendar, ChevronDown, Info, Plus, X, Search, User, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -477,9 +477,8 @@ export function ScheduleView() {
               </thead>
               <tbody>
                 {schedulingData.map((row) => (
-                  <>
-                    <tr 
-                      key={row.id}
+                  <Fragment key={row.id}>
+                    <tr
                       data-testid={`schedule-row-${row.id}`}
                       className={`border-b border-border hover:bg-muted/30 transition-colors cursor-pointer ${expandedRowId === row.id ? 'bg-muted/50' : ''}`}
                       onClick={() => setExpandedRowId(expandedRowId === row.id ? null : row.id)}
@@ -620,7 +619,7 @@ export function ScheduleView() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>
