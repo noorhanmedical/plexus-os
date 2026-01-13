@@ -100,7 +100,7 @@ export async function registerRoutes(
       }
       
       const { query, limit } = validation.data;
-      const data = await plexusGet("patients.search", { query, limit });
+      const data = await plexusGet("searchPatients", { q: query, limit });
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to search patients" });
