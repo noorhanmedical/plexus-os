@@ -48,7 +48,7 @@ export function PatientSearchView({ onPatientSelect }: PatientSearchViewProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       searchPatients(query);
-    }, 300);
+    }, 150);
     return () => clearTimeout(timer);
   }, [query, searchPatients]);
 

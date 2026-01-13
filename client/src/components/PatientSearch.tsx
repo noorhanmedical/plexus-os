@@ -45,7 +45,7 @@ export function PatientSearch({ onPatientSelect, selectedPatientId }: PatientSea
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       searchPatients(query);
-    }, 300);
+    }, 150);
 
     return () => clearTimeout(debounceTimer);
   }, [query, searchPatients]);
