@@ -62,9 +62,9 @@ function normalizeBillingRecord(record: BillingRecord): BillingRecord {
 
 export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const { data: billingData, isLoading: billingLoading, isError: billingError } = useQuery<BillingResponse>({
-    queryKey: ["/api/billing/search"],
+    queryKey: ["/api/billing/list"],
     queryFn: async () => {
-      const res = await fetch("/api/billing/search");
+      const res = await fetch("/api/billing/list?limit=500&cursor=0");
       if (!res.ok) throw new Error("Failed to fetch billing");
       return res.json();
     },
