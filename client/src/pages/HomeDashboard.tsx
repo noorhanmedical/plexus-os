@@ -226,8 +226,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-white font-bold text-lg">Schedule</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Calendar className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Calendar className="h-8 w-8 text-purple-600" />
             </div>
             <p className="text-slate-600 text-sm">Daily appointments</p>
           </div>
@@ -242,8 +242,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-white font-bold text-lg">Prescreens</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Sparkles className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Sparkles className="h-8 w-8 text-violet-600" />
             </div>
             <p className="text-slate-600 text-sm">Patient eligibility</p>
           </div>
@@ -258,13 +258,13 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-white font-bold text-lg">Finance Dashboard</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <div className="w-14 h-14 rounded-2xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <DollarSign className="h-7 w-7 text-white" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <DollarSign className="h-7 w-7 text-indigo-600" />
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold">{formatCurrency(brainwaveRevenue)}</span>
-              <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">{formatCurrency(ultrasoundRevenue)}</span>
-              <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">{formatCurrency(vitalwaveRevenue)}</span>
+              <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-purple-100/70 text-purple-700 font-semibold border border-purple-200/50">{formatCurrency(brainwaveRevenue)}</span>
+              <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-violet-100/70 text-violet-700 font-semibold border border-violet-200/50">{formatCurrency(ultrasoundRevenue)}</span>
+              <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-indigo-100/70 text-indigo-700 font-semibold border border-indigo-200/50">{formatCurrency(vitalwaveRevenue)}</span>
             </div>
             <p className="text-slate-600 text-xs font-medium">{formatCurrency(totalRevenue)} Total</p>
           </div>
@@ -280,17 +280,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
             <div className="flex items-center gap-3">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-[#1a0a28]">{brainwaveCount}</p>
-                <p className="text-xs text-slate-600">Brain</p>
+              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-purple-100/50 border border-purple-200/30">
+                <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
+                <p className="text-xs text-purple-600">Brain</p>
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-[#1a0a28]">{ultrasoundCount}</p>
-                <p className="text-xs text-slate-600">Ultra</p>
+              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-violet-100/50 border border-violet-200/30">
+                <p className="text-2xl font-bold text-violet-700">{ultrasoundCount}</p>
+                <p className="text-xs text-violet-600">Ultra</p>
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-[#1a0a28]">{vitalwaveCount}</p>
-                <p className="text-xs text-slate-600">Vital</p>
+              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-indigo-100/50 border border-indigo-200/30">
+                <p className="text-2xl font-bold text-indigo-700">{vitalwaveCount}</p>
+                <p className="text-xs text-indigo-600">Vital</p>
               </div>
             </div>
             <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
@@ -305,8 +305,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-[#1a0a28] flex items-center justify-center">
-                <Clock className="h-7 w-7 text-white" />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                <Clock className="h-7 w-7 text-purple-600" />
               </div>
               <div>
                 <p className="text-slate-600 text-sm">Patients due for follow-up services (6mo/12mo)</p>
@@ -315,7 +315,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-[#1a0a28] hover:bg-slate-100 rounded-xl"
+              className="text-purple-700 hover:bg-purple-50 rounded-xl"
               onClick={() => onNavigate?.("ancillary")}
               data-testid="button-view-all-ancillary"
             >
@@ -325,12 +325,12 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
           {billingLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+              <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
             </div>
           ) : ancillaryDuePatients.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-xl bg-[#1a0a28] flex items-center justify-center mx-auto mb-3">
-                <TestTube className="h-8 w-8 text-white" />
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center mx-auto mb-3 shadow-lg">
+                <TestTube className="h-8 w-8 text-purple-600" />
               </div>
               <p className="text-slate-600">No patients due for follow-up</p>
               <p className="text-slate-500 text-sm mt-1">All patients are up to date with their services</p>
@@ -343,11 +343,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   className={`${glassButtonStyle} p-4 flex items-center justify-between`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#1a0a28] flex items-center justify-center">
-                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-white" /> :
-                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-white" /> :
-                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-white" /> :
-                       <User className="h-5 w-5 text-white" />}
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
+                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-purple-600" /> :
+                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-violet-600" /> :
+                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-indigo-600" /> :
+                       <User className="h-5 w-5 text-purple-600" />}
                     </div>
                     <div>
                       <p className="font-medium text-[#1a0a28]">{patient.name}</p>
@@ -381,8 +381,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-[#1a0a28] flex items-center justify-center">
-                <DollarSign className="h-7 w-7 text-white" />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                <DollarSign className="h-7 w-7 text-indigo-600" />
               </div>
               <div>
                 <p className="text-slate-600 text-sm">Last 3 patients by service (DOS)</p>
@@ -391,7 +391,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-[#1a0a28] hover:bg-slate-100 rounded-xl"
+              className="text-purple-700 hover:bg-purple-50 rounded-xl"
               onClick={handleViewAllBilling}
               data-testid="button-view-all-billing"
             >
@@ -423,11 +423,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <Brain className="h-6 w-6 text-white" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <Brain className="h-6 w-6 text-purple-600" />
                       </div>
                       <div className="flex-1">
-                        <Badge className="bg-[#1a0a28]/10 text-[#1a0a28] border-[#1a0a28]/20">{brainwaveCount} records</Badge>
+                        <Badge className="backdrop-blur-sm bg-purple-100/70 text-purple-700 border-purple-200/50">{brainwaveCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -451,11 +451,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <UltrasoundProbeIcon className="h-6 w-6 text-white" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <UltrasoundProbeIcon className="h-6 w-6 text-violet-600" />
                       </div>
                       <div className="flex-1">
-                        <Badge className="bg-[#1a0a28]/10 text-[#1a0a28] border-[#1a0a28]/20">{ultrasoundCount} records</Badge>
+                        <Badge className="backdrop-blur-sm bg-violet-100/70 text-violet-700 border-violet-200/50">{ultrasoundCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -479,11 +479,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#1a0a28] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <Heart className="h-6 w-6 text-white" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <Heart className="h-6 w-6 text-indigo-600" />
                       </div>
                       <div className="flex-1">
-                        <Badge className="bg-[#1a0a28]/10 text-[#1a0a28] border-[#1a0a28]/20">{vitalwaveCount} records</Badge>
+                        <Badge className="backdrop-blur-sm bg-indigo-100/70 text-indigo-700 border-indigo-200/50">{vitalwaveCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
