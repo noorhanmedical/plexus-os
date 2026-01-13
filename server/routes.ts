@@ -5,7 +5,94 @@ import { z } from "zod";
 const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxNwZ6W5HhBFekOSU1de5jeTFCIc99O2yXLGhSAwSzBMhJpkE8iNi9xcDrcm8eX0l0w/exec";
 const PLEXUS_API_KEY = process.env.PLEXUS_API_KEY || "";
 
-// Simple in-memory cache for patient search
+// Patient type for local cache
+interface CachedPatient {
+  patient_uuid: string;
+  first_name: string;
+  last_name: string;
+  mrn: string;
+  date_of_birth: string;
+}
+
+// Pre-loaded patient cache for instant search
+let allPatientsCache: CachedPatient[] = [];
+let patientsCacheTimestamp = 0;
+let isLoadingPatients = false;
+const PATIENTS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Plexus API helper (defined early for use in cache loading)
+async function plexusGet(action: string, params: Record<string, string> = {}): Promise<any> {
+  const searchParams = new URLSearchParams({
+    action,
+    api_key: PLEXUS_API_KEY,
+    ...params,
+  });
+  
+  const response = await fetch(`${PLEXUS_API_URL}?${searchParams.toString()}`, {
+    method: "GET",
+    headers: {
+      "x-api-key": PLEXUS_API_KEY,
+    },
+  });
+  
+  return response.json();
+}
+
+// Promise for awaiting cache load
+let loadingPromise: Promise<void> | null = null;
+
+// Load all patients in background
+async function loadAllPatients(): Promise<void> {
+  if (loadingPromise) return loadingPromise;
+  
+  isLoadingPatients = true;
+  loadingPromise = (async () => {
+    try {
+      console.log("[cache] Loading all patients from Plexus API...");
+      const data = await plexusGet("patients.search", { q: "", limit: "5000" });
+      if (data.ok && Array.isArray(data.data)) {
+        allPatientsCache = data.data;
+        patientsCacheTimestamp = Date.now();
+        console.log(`[cache] Loaded ${allPatientsCache.length} patients into cache`);
+      }
+    } catch (error) {
+      console.error("[cache] Failed to load patients:", error);
+    } finally {
+      isLoadingPatients = false;
+      loadingPromise = null;
+    }
+  })();
+  
+  return loadingPromise;
+}
+
+// Search patients from local cache (instant)
+function searchPatientsLocal(query: string, limit: number): CachedPatient[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return allPatientsCache.slice(0, limit);
+  
+  return allPatientsCache
+    .filter(p => 
+      p.first_name?.toLowerCase().includes(q) ||
+      p.last_name?.toLowerCase().includes(q) ||
+      p.mrn?.toLowerCase().includes(q) ||
+      p.patient_uuid?.toLowerCase().includes(q) ||
+      `${p.first_name} ${p.last_name}`.toLowerCase().includes(q)
+    )
+    .slice(0, limit);
+}
+
+// Check if cache needs refresh (stale-while-revalidate)
+function checkCacheRefresh(): void {
+  if (Date.now() - patientsCacheTimestamp > PATIENTS_CACHE_TTL && !isLoadingPatients) {
+    loadAllPatients(); // Refresh in background
+  }
+}
+
+// Start loading patients immediately on module load
+loadAllPatients();
+
+// Simple in-memory cache for other searches
 const searchCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 60000; // 60 seconds
 
@@ -22,7 +109,6 @@ function getCachedSearch(key: string): any | null {
 
 function setCachedSearch(key: string, data: any): void {
   searchCache.set(key, { data, timestamp: Date.now() });
-  // Clean up old entries periodically
   if (searchCache.size > 100) {
     const now = Date.now();
     const entries = Array.from(searchCache.entries());
@@ -84,23 +170,6 @@ const ancillaryUpdateSchema = z.object({
   completed_date: z.string().optional(),
 });
 
-async function plexusGet(action: string, params: Record<string, string> = {}): Promise<any> {
-  const searchParams = new URLSearchParams({
-    action,
-    api_key: PLEXUS_API_KEY,
-    ...params,
-  });
-  
-  const response = await fetch(`${PLEXUS_API_URL}?${searchParams.toString()}`, {
-    method: "GET",
-    headers: {
-      "x-api-key": PLEXUS_API_KEY,
-    },
-  });
-  
-  return response.json();
-}
-
 async function plexusPost(action: string, payload: Record<string, any> = {}): Promise<any> {
   const response = await fetch(`${PLEXUS_API_URL}?api_key=${PLEXUS_API_KEY}`, {
     method: "POST",
@@ -129,7 +198,7 @@ export async function registerRoutes(
     }
   });
 
-  // Search patients (with caching)
+  // Search patients (instant from local cache)
   app.get("/api/patients/search", async (req, res) => {
     try {
       const validation = searchPatientsSchema.safeParse(req.query);
@@ -138,22 +207,22 @@ export async function registerRoutes(
       }
       
       const { query, limit } = validation.data;
-      const cacheKey = `search:${query.toLowerCase().trim()}:${limit}`;
+      const limitNum = parseInt(limit, 10) || 20;
       
-      // Check cache first
-      const cached = getCachedSearch(cacheKey);
-      if (cached) {
-        return res.json(cached);
+      // If cache is loading, await it; if empty, trigger load
+      if (loadingPromise) {
+        await loadingPromise;
+      } else if (allPatientsCache.length === 0) {
+        await loadAllPatients();
       }
       
-      const data = await plexusGet("patients.search", { q: query, limit });
+      // Use local cache for instant search
+      const results = searchPatientsLocal(query, limitNum);
       
-      // Cache successful responses
-      if (data.ok) {
-        setCachedSearch(cacheKey, data);
-      }
+      // Trigger background refresh if needed
+      checkCacheRefresh();
       
-      res.json(data);
+      res.json({ ok: true, data: results });
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to search patients" });
     }

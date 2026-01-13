@@ -70,7 +70,7 @@ function AppSidebar({
   onClearPatient: () => void;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedQuery = useDebounce(searchQuery, 300);
+  const debouncedQuery = useDebounce(searchQuery, 100);
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
     queryKey: ["/api/patients/search", debouncedQuery],
