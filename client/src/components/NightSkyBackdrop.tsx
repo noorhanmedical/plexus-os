@@ -183,7 +183,7 @@ export function NightSkyBackdrop({
       className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
       style={{
         background: darkOnly 
-          ? "linear-gradient(to bottom, #000000 0%, #050510 50%, #0a0a1a 100%)"
+          ? "linear-gradient(to right, #000000 0%, #050510 40%, #0c0c18 70%, #12121f 100%)"
           : "linear-gradient(to bottom, #000000 0%, #0a0a1a 30%, #0f0a1f 60%, #1a0a28 100%)",
       }}
     >
