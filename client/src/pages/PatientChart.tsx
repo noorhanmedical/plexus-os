@@ -21,7 +21,6 @@ import {
   CheckCircle2,
   XCircle,
   Shield,
-  Syringe,
   TestTube,
   Scan,
   MessageSquare,
@@ -53,7 +52,7 @@ interface PatientChartProps {
   patient: Patient;
 }
 
-type MenuSection = "prescreens" | "eligibility" | "ancillary" | "schedule" | "finance" | "notes" | "tasks";
+type MenuSection = "prescreens" | "eligibility" | "schedule" | "finance" | "notes" | "tasks";
 
 interface MenuItem {
   id: MenuSection;
@@ -83,17 +82,6 @@ const menuItems: MenuItem[] = [
       { id: "clinical", label: "Clinical Criteria" },
       { id: "auth", label: "Authorizations" },
       { id: "risk", label: "Risk Assessment" },
-    ],
-  },
-  {
-    id: "ancillary",
-    label: "Ancillary Services",
-    icon: Syringe,
-    subItems: [
-      { id: "iv-therapy", label: "IV Therapy", count: 1 },
-      { id: "injections", label: "Injections", count: 0 },
-      { id: "labs", label: "Lab Orders", count: 2 },
-      { id: "imaging", label: "Imaging", count: 0 },
     ],
   },
   {
@@ -200,37 +188,6 @@ export function PatientChart({ patient }: PatientChartProps) {
               <TableCell className="text-slate-600">Nurse Johnson</TableCell>
               <TableCell className="text-slate-600">Lab Center</TableCell>
               <TableCell className="text-blue-600 cursor-pointer hover:underline">View</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      );
-    }
-
-    if (activeSection === "ancillary") {
-      return (
-        <Table>
-          <TableHeader>
-            <TableRow className="border-slate-200">
-              <TableHead className="text-slate-600">Order Date</TableHead>
-              <TableHead className="text-slate-600">Status</TableHead>
-              <TableHead className="text-slate-600">Service Type</TableHead>
-              <TableHead className="text-slate-600">Ordering Provider</TableHead>
-              <TableHead className="text-slate-600">Eligibility</TableHead>
-              <TableHead className="text-slate-600">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow className="border-slate-200 hover:bg-slate-50">
-              <TableCell className="text-slate-700">01/12/2026</TableCell>
-              <TableCell>
-                <Badge className="bg-blue-100 text-blue-700 border-blue-300">Scheduled</Badge>
-              </TableCell>
-              <TableCell className="text-slate-900 font-medium">IV Therapy</TableCell>
-              <TableCell className="text-slate-600">Dr. Williams</TableCell>
-              <TableCell>
-                <Badge className="bg-green-100 text-green-700">Eligible</Badge>
-              </TableCell>
-              <TableCell className="text-blue-600 cursor-pointer hover:underline">Manage</TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -467,7 +424,7 @@ export function PatientChart({ patient }: PatientChartProps) {
 
   return (
     <div className="h-full flex flex-col gap-4" data-testid="patient-chart">
-      <div className="bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-white/50 shadow-lg">
+      <div className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center text-white text-lg font-semibold">
@@ -512,7 +469,7 @@ export function PatientChart({ patient }: PatientChartProps) {
       </div>
 
       <div className="flex-1 flex gap-4 min-h-0">
-        <Card className="w-64 bg-white/95 backdrop-blur-sm border-white/50 shadow-md flex-shrink-0">
+        <Card className="w-64 bg-white border-slate-200 shadow-sm flex-shrink-0">
           <CardHeader className="py-3 px-4 border-b border-slate-200 bg-slate-50/80">
             <CardTitle className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Menu</CardTitle>
           </CardHeader>
@@ -576,7 +533,7 @@ export function PatientChart({ patient }: PatientChartProps) {
           </ScrollArea>
         </Card>
 
-        <Card className="flex-1 bg-white/95 backdrop-blur-sm border-white/50 shadow-md flex flex-col min-w-0">
+        <Card className="flex-1 bg-white border-slate-200 shadow-sm flex flex-col min-w-0">
           <CardHeader className="py-3 px-4 border-b border-slate-200 bg-slate-50/80 flex-shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold text-slate-700">

@@ -343,15 +343,8 @@ function MainContent() {
             onClearPatient={handleClearPatient} 
           />
           
-          <main className={`flex-1 overflow-auto p-6 ${selectedPatient ? 'bg-gradient-to-b from-black via-[#0a0a1a] to-[#1a0a28] relative' : 'bg-background'}`}>
-            {selectedPatient && (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <NightSkyBackdrop starCount={60} showShootingStars={true} showHorizonGlow={true} />
-              </div>
-            )}
-            <div className="relative z-10">
-              {renderContent()}
-            </div>
+          <main className="flex-1 overflow-auto p-6 bg-slate-100">
+            {renderContent()}
           </main>
         </div>
       </div>
