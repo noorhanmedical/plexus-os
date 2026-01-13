@@ -80,6 +80,10 @@ function MountainSilhouette() {
     { top: 8, left: 55, size: 1.3, opacity: 0.6, delay: 2.2 },
     { top: 20, left: 78, size: 0.9, opacity: 0.5, delay: 0.3 },
     { top: 3, left: 25, size: 1.1, opacity: 0.55, delay: 1.2 },
+    { top: 35, left: 50, size: 0.8, opacity: 0.3, delay: 1.6 },
+    { top: 45, left: 30, size: 0.7, opacity: 0.25, delay: 2.8 },
+    { top: 55, left: 70, size: 0.9, opacity: 0.3, delay: 0.9 },
+    { top: 65, left: 88, size: 0.6, opacity: 0.2, delay: 3.2 },
   ];
 
   return (
@@ -87,7 +91,7 @@ function MountainSilhouette() {
       <div 
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(to bottom, #0a0c14 0%, #0f1218 40%, #12151d 70%, #0d0f15 100%)'
+          background: 'linear-gradient(to bottom, #1a1a2e 0%, #16162b 30%, #141428 60%, #111124 100%)'
         }}
       />
       
@@ -114,7 +118,7 @@ function MountainSilhouette() {
       >
         <path 
           d="M0,50 L0,40 L5,38 L8,35 L12,32 L15,28 L18,25 L22,22 L25,18 L28,15 L30,12 L32,10 L35,8 L38,10 L40,13 L42,16 L45,20 L48,24 L50,28 L52,25 L55,21 L58,17 L60,14 L62,11 L65,8 L68,6 L70,4 L72,6 L75,9 L78,13 L80,17 L82,21 L85,25 L88,29 L90,33 L92,30 L95,27 L98,24 L100,22 L100,50 Z" 
-          fill="#0f1015"
+          fill="#0e0e1c"
         />
       </svg>
 
@@ -125,7 +129,7 @@ function MountainSilhouette() {
       >
         <path 
           d="M0,40 L0,25 L4,23 L8,20 L12,17 L15,14 L18,12 L20,10 L22,12 L25,15 L28,18 L30,21 L32,18 L35,15 L38,12 L40,10 L42,8 L45,6 L48,8 L50,11 L52,14 L55,17 L58,20 L60,23 L62,20 L65,17 L68,14 L70,12 L72,14 L75,17 L78,20 L82,24 L88,28 L95,33 L100,38 L100,40 Z" 
-          fill="#080a0e"
+          fill="#0a0a16"
         />
       </svg>
     </div>
@@ -142,7 +146,7 @@ function AppSidebar({
   onClearSidebar: () => void;
 }) {
   return (
-    <Sidebar className="bg-gradient-to-b from-slate-900 via-slate-900 to-[#0c1222] border-r border-slate-800/50">
+    <Sidebar className="bg-[#16162b] border-r border-[#1e1e38]/50">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <MountainSilhouette />
       </div>
