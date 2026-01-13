@@ -253,7 +253,7 @@ function MainContent() {
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex flex-col h-screen w-full">
         <header className="bg-black text-white shadow-lg relative overflow-hidden z-50">
-          <NightSkyBackdrop starCount={40} showShootingStars={true} showHorizonGlow={false} />
+          <NightSkyBackdrop starCount={40} showShootingStars={true} showHorizonGlow={false} darkOnly={true} />
           
           <div className="px-4 md:px-6 py-4 md:py-5 relative z-10">
             <div className="flex justify-between items-center gap-4">

@@ -30,6 +30,7 @@ interface NightSkyBackdropProps {
   starCount?: number;
   showShootingStars?: boolean;
   showHorizonGlow?: boolean;
+  darkOnly?: boolean;
   className?: string;
 }
 
@@ -37,6 +38,7 @@ export function NightSkyBackdrop({
   starCount = 100, 
   showShootingStars = true,
   showHorizonGlow = true,
+  darkOnly = false,
   className = "" 
 }: NightSkyBackdropProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -180,7 +182,9 @@ export function NightSkyBackdrop({
       ref={containerRef}
       className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
       style={{
-        background: "linear-gradient(to bottom, #000000 0%, #0a0a1a 30%, #0f0a1f 60%, #1a0a28 100%)",
+        background: darkOnly 
+          ? "linear-gradient(to bottom, #000000 0%, #050510 50%, #0a0a1a 100%)"
+          : "linear-gradient(to bottom, #000000 0%, #0a0a1a 30%, #0f0a1f 60%, #1a0a28 100%)",
       }}
     >
       {stars.map((star) => (
