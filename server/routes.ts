@@ -318,5 +318,138 @@ export async function registerRoutes(
     }
   });
 
+  // ==================== BILLING ROUTES ====================
+
+  // Billing validation schemas
+  const billingSearchSchema = z.object({
+    q: z.string().optional().default(""),
+    limit: z.string().optional().default("50"),
+    status: z.string().optional(),
+  });
+
+  const createInvoiceSchema = z.object({
+    patient_uuid: z.string().min(1, "patient_uuid is required"),
+    items: z.array(z.object({
+      description: z.string().min(1, "description is required"),
+      amount: z.number().min(0, "amount must be non-negative"),
+    })).min(1, "at least one item is required"),
+    notes: z.string().optional().default(""),
+  });
+
+  const updateBillingStatusSchema = z.object({
+    billing_id: z.string().min(1, "billing_id is required"),
+    status: z.string().min(1, "status is required"),
+  });
+
+  // Search billing records
+  app.get("/api/billing/search", async (req, res) => {
+    try {
+      const validation = billingSearchSchema.safeParse(req.query);
+      if (!validation.success) {
+        return res.status(400).json({ ok: false, error: validation.error.message });
+      }
+      
+      const { q, limit, status } = validation.data;
+      const params: Record<string, string> = { q, limit };
+      if (status) params.status = status;
+      
+      const data = await plexusGet("billing.search", params);
+      res.json(data);
+    } catch (error) {
+      console.error("[billing] Search failed:", error);
+      res.status(500).json({ ok: false, error: "Failed to search billing records" });
+    }
+  });
+
+  // Rebuild billing index
+  app.post("/api/billing/rebuild-index", async (_req, res) => {
+    try {
+      const data = await plexusPost("billing.rebuildIndex", {});
+      res.json(data);
+    } catch (error) {
+      console.error("[billing] Rebuild index failed:", error);
+      res.status(500).json({ ok: false, error: "Failed to rebuild billing index" });
+    }
+  });
+
+  // Get billing record by ID
+  app.get("/api/billing/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      if (!id) {
+        return res.status(400).json({ ok: false, error: "billing id is required" });
+      }
+      const data = await plexusGet("billing.get", { id });
+      res.json(data);
+    } catch (error) {
+      console.error("[billing] Get record failed:", error);
+      res.status(500).json({ ok: false, error: "Failed to get billing record" });
+    }
+  });
+
+  // Get billing records for a patient
+  app.get("/api/patients/:patient_uuid/billing", async (req, res) => {
+    try {
+      const patient_uuid = req.params.patient_uuid;
+      if (!patient_uuid) {
+        return res.status(400).json({ ok: false, error: "patient_uuid is required" });
+      }
+      const data = await plexusGet("billing.search", { patient_uuid });
+      res.json(data);
+    } catch (error) {
+      console.error("[billing] Patient billing fetch failed:", error);
+      res.status(500).json({ ok: false, error: "Failed to get patient billing" });
+    }
+  });
+
+  // Create invoice
+  app.post("/api/billing/invoice", async (req, res) => {
+    try {
+      const validation = createInvoiceSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ ok: false, error: validation.error.message });
+      }
+      
+      const { patient_uuid, items, notes } = validation.data;
+      const data = await plexusPost("billing.createInvoice", {
+        patient_uuid,
+        items,
+        notes,
+      });
+      
+      if (!data.ok) {
+        return res.status(400).json({ ok: false, error: data.error || "Invoice creation failed" });
+      }
+      res.json(data);
+    } catch (error) {
+      console.error("[billing] Create invoice failed:", error);
+      res.status(500).json({ ok: false, error: "Failed to create invoice" });
+    }
+  });
+
+  // Update billing status
+  app.post("/api/billing/update-status", async (req, res) => {
+    try {
+      const validation = updateBillingStatusSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ ok: false, error: validation.error.message });
+      }
+      
+      const { billing_id, status } = validation.data;
+      const data = await plexusPost("billing.updateStatus", {
+        billing_id,
+        status,
+      });
+      
+      if (!data.ok) {
+        return res.status(400).json({ ok: false, error: data.error || "Status update failed" });
+      }
+      res.json(data);
+    } catch (error) {
+      console.error("[billing] Update status failed:", error);
+      res.status(500).json({ ok: false, error: "Failed to update billing status" });
+    }
+  });
+
   return httpServer;
 }

@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 import { 
   User, 
   Phone, 
@@ -24,7 +26,9 @@ import {
   TestTube,
   Scan,
   MessageSquare,
-  ListTodo
+  ListTodo,
+  Loader2,
+  Receipt
 } from "lucide-react";
 import {
   Table,
@@ -34,6 +38,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+interface BillingRecord {
+  billing_id: string;
+  invoice_number?: string;
+  service?: string;
+  amount?: number;
+  status?: string;
+  date?: string;
+}
 
 interface Patient {
   patient_uuid: string;
@@ -105,9 +118,10 @@ const menuItems: MenuItem[] = [
   },
   {
     id: "finance",
-    label: "Financial Clearance",
+    label: "Finance & Billing",
     icon: DollarSign,
     subItems: [
+      { id: "billing", label: "Invoices & Billing" },
       { id: "balance", label: "Account Balance" },
       { id: "estimates", label: "Cost Estimates" },
       { id: "payments", label: "Payment History" },
@@ -134,10 +148,34 @@ const menuItems: MenuItem[] = [
   },
 ];
 
+const billingStatusColorMap: Record<string, string> = {
+  pending: "bg-amber-100 text-amber-700",
+  paid: "bg-green-100 text-green-700",
+  overdue: "bg-red-100 text-red-700",
+};
+
+function getBillingStatusColor(status: string | undefined): string {
+  if (!status) return "bg-slate-100 text-slate-700";
+  return billingStatusColorMap[status.toLowerCase()] || "bg-slate-100 text-slate-700";
+}
+
 export function PatientChart({ patient }: PatientChartProps) {
   const [activeSection, setActiveSection] = useState<MenuSection>("prescreens");
   const [activeSubItem, setActiveSubItem] = useState<string>("active");
   const [expandedSections, setExpandedSections] = useState<string[]>(["prescreens"]);
+
+  const { data: billingData, isLoading: billingLoading, isError: billingError, refetch: refetchBilling } = useQuery<{ ok: boolean; data: BillingRecord[] }>({
+    queryKey: ["/api/patients", patient.patient_uuid, "billing"],
+    queryFn: async () => {
+      const res = await fetch(`/api/patients/${patient.patient_uuid}/billing`);
+      if (!res.ok) throw new Error("Failed to fetch billing data");
+      return res.json();
+    },
+    enabled: activeSection === "finance",
+    staleTime: 60000,
+  });
+
+  const billingRecords = billingData?.data || [];
 
   const calculateAge = (dob: string) => {
     const birthDate = new Date(dob);
@@ -307,49 +345,69 @@ export function PatientChart({ patient }: PatientChartProps) {
     }
 
     if (activeSection === "finance") {
+      if (billingLoading) {
+        return (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+          </div>
+        );
+      }
+
+      if (billingError) {
+        return (
+          <div className="text-center py-8">
+            <AlertTriangle className="h-12 w-12 mx-auto text-amber-400 mb-3" />
+            <p className="text-slate-600 font-medium">Failed to load billing records</p>
+            <Button variant="outline" size="sm" onClick={() => refetchBilling()} className="mt-3">
+              Try Again
+            </Button>
+          </div>
+        );
+      }
+
+      if (billingRecords.length === 0) {
+        return (
+          <div className="text-center py-8">
+            <Receipt className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+            <p className="text-slate-500">No billing records for this patient</p>
+            <p className="text-slate-400 text-sm mt-1">Invoices will appear here when created</p>
+          </div>
+        );
+      }
+
       return (
         <Table>
           <TableHeader>
             <TableRow className="border-slate-200">
+              <TableHead className="text-slate-600">Invoice #</TableHead>
               <TableHead className="text-slate-600">Date</TableHead>
-              <TableHead className="text-slate-600">Type</TableHead>
-              <TableHead className="text-slate-600">Description</TableHead>
+              <TableHead className="text-slate-600">Service</TableHead>
               <TableHead className="text-slate-600">Amount</TableHead>
               <TableHead className="text-slate-600">Status</TableHead>
               <TableHead className="text-slate-600">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="border-slate-200 hover:bg-slate-50">
-              <TableCell className="text-slate-700">01/05/2026</TableCell>
-              <TableCell className="text-slate-900 font-medium">Cost Estimate</TableCell>
-              <TableCell className="text-slate-600">IV Therapy - Iron Infusion</TableCell>
-              <TableCell className="text-slate-900 font-semibold">$450.00</TableCell>
-              <TableCell>
-                <Badge className="bg-blue-100 text-blue-700">Provided</Badge>
-              </TableCell>
-              <TableCell className="text-blue-600 cursor-pointer hover:underline">View</TableCell>
-            </TableRow>
-            <TableRow className="border-slate-200 hover:bg-slate-50">
-              <TableCell className="text-slate-700">12/20/2025</TableCell>
-              <TableCell className="text-slate-900 font-medium">Payment</TableCell>
-              <TableCell className="text-slate-600">Copay - Office Visit</TableCell>
-              <TableCell className="text-green-600 font-semibold">-$35.00</TableCell>
-              <TableCell>
-                <Badge className="bg-green-100 text-green-700">Paid</Badge>
-              </TableCell>
-              <TableCell className="text-blue-600 cursor-pointer hover:underline">Receipt</TableCell>
-            </TableRow>
-            <TableRow className="border-slate-200 hover:bg-slate-50">
-              <TableCell className="text-slate-700">-</TableCell>
-              <TableCell className="text-slate-900 font-medium">Balance</TableCell>
-              <TableCell className="text-slate-600">Current account balance</TableCell>
-              <TableCell className="text-slate-900 font-semibold">$0.00</TableCell>
-              <TableCell>
-                <Badge className="bg-green-100 text-green-700">Clear</Badge>
-              </TableCell>
-              <TableCell className="text-blue-600 cursor-pointer hover:underline">Details</TableCell>
-            </TableRow>
+            {billingRecords.map((record, index) => (
+              <TableRow key={record.billing_id || index} className="border-slate-200 hover:bg-slate-50">
+                <TableCell className="text-slate-900 font-medium">
+                  {record.invoice_number || record.billing_id || "-"}
+                </TableCell>
+                <TableCell className="text-slate-700">{record.date || "-"}</TableCell>
+                <TableCell className="text-slate-600">{record.service || "-"}</TableCell>
+                <TableCell className="text-slate-900 font-semibold">
+                  {record.amount != null ? `$${record.amount.toLocaleString()}` : "-"}
+                </TableCell>
+                <TableCell>
+                  {record.status ? (
+                    <Badge className={getBillingStatusColor(record.status)}>
+                      {record.status}
+                    </Badge>
+                  ) : "-"}
+                </TableCell>
+                <TableCell className="text-blue-600 cursor-pointer hover:underline">View</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       );
