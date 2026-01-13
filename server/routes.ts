@@ -341,6 +341,17 @@ export async function registerRoutes(
     status: z.string().min(1, "status is required"),
   });
 
+  // Helper to convert header/rows format to array of objects
+  function convertRowsToObjects(header: string[], rows: any[][]): Record<string, any>[] {
+    return rows.map(row => {
+      const obj: Record<string, any> = {};
+      header.forEach((key, index) => {
+        obj[key] = row[index] ?? "";
+      });
+      return obj;
+    });
+  }
+
   // Search billing records
   app.get("/api/billing/search", async (req, res) => {
     try {
@@ -354,7 +365,14 @@ export async function registerRoutes(
       if (status) params.status = status;
       
       const data = await plexusGet("billing.search", params);
-      res.json(data);
+      
+      // Transform header/rows format to array of objects
+      if (data.ok && data.header && data.rows) {
+        const rows = convertRowsToObjects(data.header, data.rows);
+        res.json({ ok: true, rows });
+      } else {
+        res.json(data);
+      }
     } catch (error) {
       console.error("[billing] Search failed:", error);
       res.status(500).json({ ok: false, error: "Failed to search billing records" });
@@ -395,7 +413,14 @@ export async function registerRoutes(
         return res.status(400).json({ ok: false, error: "patient_uuid is required" });
       }
       const data = await plexusGet("billing.search", { patient_uuid });
-      res.json(data);
+      
+      // Transform header/rows format to array of objects
+      if (data.ok && data.header && data.rows) {
+        const rows = convertRowsToObjects(data.header, data.rows);
+        res.json({ ok: true, rows });
+      } else {
+        res.json(data);
+      }
     } catch (error) {
       console.error("[billing] Patient billing fetch failed:", error);
       res.status(500).json({ ok: false, error: "Failed to get patient billing" });
