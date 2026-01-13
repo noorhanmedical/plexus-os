@@ -181,15 +181,20 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </button>
 
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-4 min-h-[180px] cursor-pointer group`}
+          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-3 min-h-[180px] cursor-pointer group`}
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
           <p className="text-[#1a0a28] font-bold text-lg">Finance</p>
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <DollarSign className="h-8 w-8 text-emerald-600" />
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <DollarSign className="h-7 w-7 text-emerald-600" />
           </div>
-          <p className="text-slate-600 text-sm">{totalCount} total records</p>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold">{brainwaveCount}</span>
+            <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">{ultrasoundCount}</span>
+            <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">{vitalwaveCount}</span>
+          </div>
+          <p className="text-slate-600 text-xs font-medium">{totalCount} Total</p>
         </button>
 
         <button

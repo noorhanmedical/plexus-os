@@ -11,7 +11,7 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -296,28 +296,37 @@ function MainContent() {
               
               <div className="flex items-center gap-3">
                 <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-                  {mainTabs.map((tab) => {
-                    const Icon = tab.icon;
-                    const isActive = !selectedPatient && mainTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        data-testid={`tab-${tab.id}`}
-                        onClick={() => {
-                          handleClearPatient();
-                          handleMainTabChange(tab.id);
-                        }}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
-                          isActive 
-                            ? "bg-white/20 text-white" 
-                            : "text-slate-300 hover:text-white hover:bg-white/10"
-                        }`}
-                      >
-                        <Icon className="h-3.5 w-3.5" />
-                        <span className="hidden lg:inline">{tab.label}</span>
-                      </button>
-                    );
-                  })}
+                  <button
+                    data-testid="tab-home"
+                    onClick={() => {
+                      handleClearPatient();
+                      handleMainTabChange("home");
+                    }}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
+                      !selectedPatient && mainTab === "home"
+                        ? "bg-white/20 text-white" 
+                        : "text-slate-300 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <Home className="h-3.5 w-3.5" />
+                    <span>Home</span>
+                  </button>
+                  
+                  <button
+                    data-testid="tab-admin"
+                    onClick={() => {
+                      handleClearPatient();
+                      handleMainTabChange("prescreens");
+                    }}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
+                      !selectedPatient && (mainTab === "prescreens" || mainTab === "ancillary" || mainTab === "billing")
+                        ? "bg-white/20 text-white" 
+                        : "text-slate-300 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <Settings className="h-3.5 w-3.5" />
+                    <span>Admin</span>
+                  </button>
                   
                   {selectedPatient && (
                     <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-teal-500/30 text-white border border-teal-400/50">
