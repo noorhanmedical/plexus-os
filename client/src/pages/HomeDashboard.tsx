@@ -93,7 +93,7 @@ export function HomeDashboard() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="glow-border overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 bg-slate-800 rounded-t-lg">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 rounded-t-lg" style={{ backgroundColor: "#1a0a28" }}>
             <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
               <Calendar className="h-5 w-5 text-primary" />
               Daily Schedule
@@ -127,7 +127,7 @@ export function HomeDashboard() {
         </Card>
 
         <Card className="glow-border overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 bg-slate-800 rounded-t-lg">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 rounded-t-lg" style={{ backgroundColor: "#1a0a28" }}>
             <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
               <Activity className="h-5 w-5 text-secondary" />
               Ancillary Services
@@ -169,7 +169,7 @@ export function HomeDashboard() {
         </Card>
 
         <Card className="glow-border overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 bg-slate-800 rounded-t-lg">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 rounded-t-lg" style={{ backgroundColor: "#1a0a28" }}>
             <CardTitle className="text-lg font-medium flex items-center gap-2 text-white">
               <DollarSign className="h-5 w-5 text-chart-4" />
               Finance Overview
