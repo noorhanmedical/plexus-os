@@ -67,89 +67,67 @@ function TwinklingStars({ className = "" }: { className?: string }) {
 }
 
 function MountainSilhouette() {
+  const stars = [
+    { top: 8, left: 15, size: 1, opacity: 0.7, delay: 0 },
+    { top: 12, left: 45, size: 1.5, opacity: 0.5, delay: 1 },
+    { top: 5, left: 72, size: 1, opacity: 0.6, delay: 2 },
+    { top: 18, left: 28, size: 0.8, opacity: 0.4, delay: 0.5 },
+    { top: 10, left: 85, size: 1.2, opacity: 0.55, delay: 1.5 },
+    { top: 22, left: 60, size: 0.8, opacity: 0.45, delay: 2.5 },
+    { top: 6, left: 35, size: 1, opacity: 0.5, delay: 3 },
+    { top: 15, left: 92, size: 1, opacity: 0.4, delay: 0.8 },
+    { top: 25, left: 18, size: 0.7, opacity: 0.35, delay: 1.8 },
+    { top: 8, left: 55, size: 1.3, opacity: 0.6, delay: 2.2 },
+    { top: 20, left: 78, size: 0.9, opacity: 0.5, delay: 0.3 },
+    { top: 3, left: 25, size: 1.1, opacity: 0.55, delay: 1.2 },
+  ];
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       <div 
         className="absolute inset-0"
         style={{
-          background: `
-            radial-gradient(ellipse at 50% 90%, rgba(45, 25, 55, 0.4) 0%, transparent 50%),
-            linear-gradient(to top, #080810 0%, #0d1020 20%, #121828 40%, #0f1525 70%, #0a0d18 100%)
-          `
+          background: 'linear-gradient(to bottom, #0a0c14 0%, #0f1218 40%, #12151d 70%, #0d0f15 100%)'
         }}
       />
       
-      <div className="absolute top-0 left-0 right-0 h-1/2">
-        {[...Array(35)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              width: `${Math.random() * 2 + 0.5}px`,
-              height: `${Math.random() * 2 + 0.5}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.6 + 0.2,
-              animation: `pulse ${3 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 3}s`
-            }}
-          />
-        ))}
-      </div>
+      {stars.map((star, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full bg-white animate-pulse"
+          style={{
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+            top: `${star.top}%`,
+            left: `${star.left}%`,
+            opacity: star.opacity,
+            animationDelay: `${star.delay}s`,
+            animationDuration: '4s'
+          }}
+        />
+      ))}
 
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[75%]"
-        viewBox="0 0 200 100" 
+        className="absolute bottom-0 left-0 w-full h-[60%]"
+        viewBox="0 0 100 50" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,100 L0,70 L5,68 L10,65 L12,62 L15,58 L18,55 L20,52 L22,48 L25,42 L28,38 L30,35 L32,32 L35,28 L38,25 L40,22 L42,20 L45,18 L48,22 L50,26 L52,30 L55,34 L58,38 L60,42 L62,45 L65,48 L68,52 L70,55 L72,52 L75,48 L78,44 L80,40 L82,36 L85,32 L88,28 L90,24 L92,20 L95,16 L98,12 L100,10 L102,12 L105,16 L108,20 L110,24 L112,28 L115,32 L118,36 L120,40 L122,44 L125,48 L128,52 L130,56 L132,52 L135,48 L138,44 L140,40 L142,36 L145,32 L148,28 L150,25 L152,28 L155,32 L158,36 L160,40 L162,44 L165,48 L168,52 L170,56 L172,60 L175,64 L178,68 L180,72 L182,76 L185,80 L188,84 L190,88 L195,92 L200,95 L200,100 Z" 
-          fill="url(#mountainGradientFar)"
+          d="M0,50 L0,40 L5,38 L8,35 L12,32 L15,28 L18,25 L22,22 L25,18 L28,15 L30,12 L32,10 L35,8 L38,10 L40,13 L42,16 L45,20 L48,24 L50,28 L52,25 L55,21 L58,17 L60,14 L62,11 L65,8 L68,6 L70,4 L72,6 L75,9 L78,13 L80,17 L82,21 L85,25 L88,29 L90,33 L92,30 L95,27 L98,24 L100,22 L100,50 Z" 
+          fill="#0f1015"
         />
-        <defs>
-          <linearGradient id="mountainGradientFar" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1a1a2e" />
-            <stop offset="50%" stopColor="#12121f" />
-            <stop offset="100%" stopColor="#080810" />
-          </linearGradient>
-        </defs>
       </svg>
 
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[55%]"
-        viewBox="0 0 200 100" 
+        className="absolute bottom-0 left-0 w-full h-[40%]"
+        viewBox="0 0 100 40" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,100 L0,55 L3,52 L6,48 L9,45 L12,42 L15,38 L18,35 L20,32 L22,35 L25,38 L28,42 L30,45 L32,42 L35,38 L38,34 L40,30 L42,26 L45,22 L48,18 L50,15 L52,18 L55,22 L58,26 L60,30 L62,34 L65,38 L68,42 L70,46 L72,50 L75,54 L78,58 L80,62 L82,58 L85,54 L88,50 L90,46 L92,42 L95,38 L98,35 L100,38 L102,42 L105,46 L108,50 L110,54 L112,58 L115,62 L118,66 L120,70 L125,74 L130,78 L140,82 L150,86 L165,90 L180,94 L200,98 L200,100 Z" 
-          fill="url(#mountainGradientMid)"
-        />
-        <defs>
-          <linearGradient id="mountainGradientMid" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#16162a" />
-            <stop offset="50%" stopColor="#0e0e1a" />
-            <stop offset="100%" stopColor="#080810" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      <svg 
-        className="absolute bottom-0 left-0 w-full h-[35%]"
-        viewBox="0 0 200 100" 
-        preserveAspectRatio="none"
-      >
-        <path 
-          d="M0,100 L0,45 L5,42 L10,38 L15,35 L18,32 L20,28 L22,25 L25,22 L28,25 L30,28 L32,32 L35,35 L38,38 L40,42 L42,45 L45,48 L48,52 L50,55 L52,58 L55,62 L60,66 L70,72 L85,78 L100,84 L120,88 L145,92 L175,96 L200,100 Z" 
-          fill="#050508"
+          d="M0,40 L0,25 L4,23 L8,20 L12,17 L15,14 L18,12 L20,10 L22,12 L25,15 L28,18 L30,21 L32,18 L35,15 L38,12 L40,10 L42,8 L45,6 L48,8 L50,11 L52,14 L55,17 L58,20 L60,23 L62,20 L65,17 L68,14 L70,12 L72,14 L75,17 L78,20 L82,24 L88,28 L95,33 L100,38 L100,40 Z" 
+          fill="#080a0e"
         />
       </svg>
-
-      <div 
-        className="absolute bottom-0 left-0 right-0 h-12"
-        style={{
-          background: 'linear-gradient(to top, #050508, transparent)'
-        }}
-      />
     </div>
   );
 }
