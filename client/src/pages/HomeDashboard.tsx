@@ -146,6 +146,13 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const vitalwaveRevenue = vitalwaveRecords.reduce((sum, r) => sum + parseAmount((r as any).claim_paid_amount || r.paid_amount || r.amount), 0);
   const totalRevenue = brainwaveRevenue + ultrasoundRevenue + vitalwaveRevenue;
 
+  // Count claims with payments vs pending
+  const brainwavePaid = brainwaveRecords.filter(r => parseAmount((r as any).claim_paid_amount) > 0).length;
+  const ultrasoundPaid = ultrasoundRecords.filter(r => parseAmount((r as any).claim_paid_amount) > 0).length;
+  const vitalwavePaid = vitalwaveRecords.filter(r => parseAmount((r as any).claim_paid_amount) > 0).length;
+  const totalPaid = brainwavePaid + ultrasoundPaid + vitalwavePaid;
+  const totalPending = totalCount - totalPaid;
+
   const formatCurrency = (amount: number): string => {
     if (amount >= 1000) {
       return `$${(amount / 1000).toFixed(1)}k`;
@@ -261,12 +268,24 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
               <DollarSign className="h-7 w-7 text-indigo-600" />
             </div>
-            <div className="flex items-center gap-2 text-xs">
-              <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-purple-100/70 text-purple-700 font-semibold border border-purple-200/50">{formatCurrency(brainwaveRevenue)}</span>
-              <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-violet-100/70 text-violet-700 font-semibold border border-violet-200/50">{formatCurrency(ultrasoundRevenue)}</span>
-              <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-indigo-100/70 text-indigo-700 font-semibold border border-indigo-200/50">{formatCurrency(vitalwaveRevenue)}</span>
-            </div>
-            <p className="text-slate-600 text-xs font-medium">{formatCurrency(totalRevenue)} Total</p>
+            {totalRevenue > 0 ? (
+              <>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-purple-100/70 text-purple-700 font-semibold border border-purple-200/50">{formatCurrency(brainwaveRevenue)}</span>
+                  <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-violet-100/70 text-violet-700 font-semibold border border-violet-200/50">{formatCurrency(ultrasoundRevenue)}</span>
+                  <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-indigo-100/70 text-indigo-700 font-semibold border border-indigo-200/50">{formatCurrency(vitalwaveRevenue)}</span>
+                </div>
+                <p className="text-slate-600 text-xs font-medium">{formatCurrency(totalRevenue)} Total Collected</p>
+              </>
+            ) : (
+              <>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-purple-700">{totalPending}</p>
+                  <p className="text-xs text-slate-600">Claims Pending</p>
+                </div>
+                <p className="text-slate-500 text-xs">No payments recorded yet</p>
+              </>
+            )}
           </div>
         </button>
 
