@@ -294,7 +294,10 @@ function MainContent() {
                       <button
                         key={tab.id}
                         data-testid={`tab-${tab.id}`}
-                        onClick={() => handleMainTabChange(tab.id)}
+                        onClick={() => {
+                          handleClearPatient();
+                          handleMainTabChange(tab.id);
+                        }}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-colors ${
                           isActive 
                             ? "bg-white/20 text-white" 
@@ -306,6 +309,22 @@ function MainContent() {
                       </button>
                     );
                   })}
+                  
+                  {selectedPatient && (
+                    <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-teal-500/30 text-white border border-teal-400/50">
+                      <User className="h-3.5 w-3.5" />
+                      <span className="text-xs font-medium max-w-24 truncate">
+                        {selectedPatient.last_name}
+                      </span>
+                      <button
+                        onClick={handleClearPatient}
+                        className="ml-1 hover:bg-white/20 rounded-full p-0.5 transition-colors"
+                        data-testid="button-close-patient-tab"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex items-center gap-2 text-slate-400">
@@ -324,8 +343,15 @@ function MainContent() {
             onClearPatient={handleClearPatient} 
           />
           
-          <main className="flex-1 overflow-auto p-6 bg-background">
-            {renderContent()}
+          <main className={`flex-1 overflow-auto p-6 ${selectedPatient ? 'bg-gradient-to-b from-black via-[#0a0a1a] to-[#1a0a28] relative' : 'bg-background'}`}>
+            {selectedPatient && (
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <NightSkyBackdrop starCount={60} showShootingStars={true} showHorizonGlow={true} />
+              </div>
+            )}
+            <div className="relative z-10">
+              {renderContent()}
+            </div>
           </main>
         </div>
       </div>

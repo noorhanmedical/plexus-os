@@ -48,17 +48,17 @@ export function PatientChart({ patient }: PatientChartProps) {
 
   return (
     <div className="h-full flex flex-col gap-4" data-testid="patient-chart">
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-4 border border-slate-700/50">
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-white/50 shadow-lg">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="h-16 w-16 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center text-white text-xl font-semibold">
               {patient.first_name?.[0]}{patient.last_name?.[0]}
             </div>
             <div>
-              <h2 className="text-2xl font-semibold text-white" data-testid="text-patient-name">
+              <h2 className="text-2xl font-semibold text-slate-900" data-testid="text-patient-name">
                 {patient.last_name}, {patient.first_name}
               </h2>
-              <div className="flex items-center gap-4 mt-1 text-slate-400 text-sm">
+              <div className="flex items-center gap-4 mt-1 text-slate-600 text-sm">
                 {patient.mrn && (
                   <span data-testid="text-patient-mrn">MRN: {patient.mrn}</span>
                 )}
@@ -76,7 +76,7 @@ export function PatientChart({ patient }: PatientChartProps) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-1 text-right text-sm text-slate-400">
+          <div className="flex flex-col gap-1 text-right text-sm text-slate-600">
             {patient.phone && (
               <span className="flex items-center gap-2 justify-end">
                 <Phone className="h-3.5 w-3.5" />
@@ -99,7 +99,7 @@ export function PatientChart({ patient }: PatientChartProps) {
       </div>
 
       <Tabs defaultValue="overview" className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
+        <TabsList className="grid w-full grid-cols-6 bg-white/90 backdrop-blur-sm border border-white/50">
           <TabsTrigger value="overview" data-testid="tab-overview" className="text-xs">
             <Activity className="h-3.5 w-3.5 mr-1" />
             Overview
@@ -129,55 +129,55 @@ export function PatientChart({ patient }: PatientChartProps) {
         <div className="flex-1 mt-4">
           <TabsContent value="overview" className="h-full m-0">
             <div className="grid grid-cols-2 gap-4">
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <Heart className="h-4 w-4 text-red-400" />
+                  <CardTitle className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-red-500" />
                     Recent Vitals
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-slate-900/50 rounded p-2">
+                    <div className="bg-slate-100 rounded p-2">
                       <p className="text-slate-500 text-xs">Blood Pressure</p>
-                      <p className="text-white font-medium">120/80 mmHg</p>
+                      <p className="text-slate-900 font-medium">120/80 mmHg</p>
                     </div>
-                    <div className="bg-slate-900/50 rounded p-2">
+                    <div className="bg-slate-100 rounded p-2">
                       <p className="text-slate-500 text-xs">Heart Rate</p>
-                      <p className="text-white font-medium">72 bpm</p>
+                      <p className="text-slate-900 font-medium">72 bpm</p>
                     </div>
-                    <div className="bg-slate-900/50 rounded p-2">
+                    <div className="bg-slate-100 rounded p-2">
                       <p className="text-slate-500 text-xs">Temperature</p>
-                      <p className="text-white font-medium">98.6°F</p>
+                      <p className="text-slate-900 font-medium">98.6°F</p>
                     </div>
-                    <div className="bg-slate-900/50 rounded p-2">
+                    <div className="bg-slate-100 rounded p-2">
                       <p className="text-slate-500 text-xs">SpO2</p>
-                      <p className="text-white font-medium">98%</p>
+                      <p className="text-slate-900 font-medium">98%</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                  <CardTitle className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-500" />
                     Active Allergies
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="destructive" className="text-xs">Penicillin</Badge>
-                    <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-400">Shellfish</Badge>
-                    <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-400">Latex</Badge>
+                    <Badge variant="outline" className="text-xs border-amber-500 text-amber-600">Shellfish</Badge>
+                    <Badge variant="outline" className="text-xs border-amber-500 text-amber-600">Latex</Badge>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <Pill className="h-4 w-4 text-blue-400" />
+                  <CardTitle className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <Pill className="h-4 w-4 text-blue-500" />
                     Active Medications
                   </CardTitle>
                 </CardHeader>
@@ -185,15 +185,15 @@ export function PatientChart({ patient }: PatientChartProps) {
                   <ScrollArea className="h-24">
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between items-center">
-                        <span className="text-white">Lisinopril 10mg</span>
+                        <span className="text-slate-900">Lisinopril 10mg</span>
                         <span className="text-slate-500 text-xs">Daily</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white">Metformin 500mg</span>
+                        <span className="text-slate-900">Metformin 500mg</span>
                         <span className="text-slate-500 text-xs">Twice Daily</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white">Atorvastatin 20mg</span>
+                        <span className="text-slate-900">Atorvastatin 20mg</span>
                         <span className="text-slate-500 text-xs">At Bedtime</span>
                       </div>
                     </div>
@@ -201,10 +201,10 @@ export function PatientChart({ patient }: PatientChartProps) {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <Stethoscope className="h-4 w-4 text-purple-400" />
+                  <CardTitle className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <Stethoscope className="h-4 w-4 text-purple-500" />
                     Active Diagnoses
                   </CardTitle>
                 </CardHeader>
@@ -212,15 +212,15 @@ export function PatientChart({ patient }: PatientChartProps) {
                   <ScrollArea className="h-24">
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between items-center">
-                        <span className="text-white">Essential Hypertension</span>
+                        <span className="text-slate-900">Essential Hypertension</span>
                         <span className="text-slate-500 text-xs">I10</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white">Type 2 Diabetes</span>
+                        <span className="text-slate-900">Type 2 Diabetes</span>
                         <span className="text-slate-500 text-xs">E11.9</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white">Hyperlipidemia</span>
+                        <span className="text-slate-900">Hyperlipidemia</span>
                         <span className="text-slate-500 text-xs">E78.5</span>
                       </div>
                     </div>
@@ -228,25 +228,25 @@ export function PatientChart({ patient }: PatientChartProps) {
                 </CardContent>
               </Card>
 
-              <Card className="col-span-2 bg-slate-800/50 border-slate-700/50">
+              <Card className="col-span-2 bg-white/95 backdrop-blur-sm border-white/50 shadow-md">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <ClipboardList className="h-4 w-4 text-teal-400" />
+                  <CardTitle className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <ClipboardList className="h-4 w-4 text-teal-500" />
                     Pending Orders
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-3 gap-3 text-sm">
-                    <div className="bg-slate-900/50 rounded p-3 border-l-2 border-teal-500">
-                      <p className="text-white font-medium">CBC with Diff</p>
+                    <div className="bg-slate-100 rounded p-3 border-l-2 border-teal-500">
+                      <p className="text-slate-900 font-medium">CBC with Diff</p>
                       <p className="text-slate-500 text-xs mt-1">Ordered: Today</p>
                     </div>
-                    <div className="bg-slate-900/50 rounded p-3 border-l-2 border-blue-500">
-                      <p className="text-white font-medium">Comprehensive Metabolic Panel</p>
+                    <div className="bg-slate-100 rounded p-3 border-l-2 border-blue-500">
+                      <p className="text-slate-900 font-medium">Comprehensive Metabolic Panel</p>
                       <p className="text-slate-500 text-xs mt-1">Ordered: Today</p>
                     </div>
-                    <div className="bg-slate-900/50 rounded p-3 border-l-2 border-purple-500">
-                      <p className="text-white font-medium">HbA1c</p>
+                    <div className="bg-slate-100 rounded p-3 border-l-2 border-purple-500">
+                      <p className="text-slate-900 font-medium">HbA1c</p>
                       <p className="text-slate-500 text-xs mt-1">Ordered: Yesterday</p>
                     </div>
                   </div>
@@ -256,12 +256,12 @@ export function PatientChart({ patient }: PatientChartProps) {
           </TabsContent>
 
           <TabsContent value="vitals" className="h-full m-0">
-            <Card className="bg-slate-800/50 border-slate-700/50 h-full">
+            <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md h-full">
               <CardHeader>
-                <CardTitle className="text-slate-300">Vital Signs History</CardTitle>
+                <CardTitle className="text-slate-700">Vital Signs History</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-slate-400 text-center py-8">
+                <div className="text-slate-500 text-center py-8">
                   Vitals history will be displayed here from the Plexus API
                 </div>
               </CardContent>
@@ -269,12 +269,12 @@ export function PatientChart({ patient }: PatientChartProps) {
           </TabsContent>
 
           <TabsContent value="medications" className="h-full m-0">
-            <Card className="bg-slate-800/50 border-slate-700/50 h-full">
+            <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md h-full">
               <CardHeader>
-                <CardTitle className="text-slate-300">Medication List</CardTitle>
+                <CardTitle className="text-slate-700">Medication List</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-slate-400 text-center py-8">
+                <div className="text-slate-500 text-center py-8">
                   Full medication list will be displayed here from the Plexus API
                 </div>
               </CardContent>
@@ -282,12 +282,12 @@ export function PatientChart({ patient }: PatientChartProps) {
           </TabsContent>
 
           <TabsContent value="allergies" className="h-full m-0">
-            <Card className="bg-slate-800/50 border-slate-700/50 h-full">
+            <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md h-full">
               <CardHeader>
-                <CardTitle className="text-slate-300">Allergy List</CardTitle>
+                <CardTitle className="text-slate-700">Allergy List</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-slate-400 text-center py-8">
+                <div className="text-slate-500 text-center py-8">
                   Allergy information will be displayed here from the Plexus API
                 </div>
               </CardContent>
@@ -295,12 +295,12 @@ export function PatientChart({ patient }: PatientChartProps) {
           </TabsContent>
 
           <TabsContent value="diagnoses" className="h-full m-0">
-            <Card className="bg-slate-800/50 border-slate-700/50 h-full">
+            <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md h-full">
               <CardHeader>
-                <CardTitle className="text-slate-300">Problem List</CardTitle>
+                <CardTitle className="text-slate-700">Problem List</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-slate-400 text-center py-8">
+                <div className="text-slate-500 text-center py-8">
                   Diagnoses and problem list will be displayed here from the Plexus API
                 </div>
               </CardContent>
@@ -308,12 +308,12 @@ export function PatientChart({ patient }: PatientChartProps) {
           </TabsContent>
 
           <TabsContent value="notes" className="h-full m-0">
-            <Card className="bg-slate-800/50 border-slate-700/50 h-full">
+            <Card className="bg-white/95 backdrop-blur-sm border-white/50 shadow-md h-full">
               <CardHeader>
-                <CardTitle className="text-slate-300">Clinical Notes</CardTitle>
+                <CardTitle className="text-slate-700">Clinical Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-slate-400 text-center py-8">
+                <div className="text-slate-500 text-center py-8">
                   Clinical notes will be displayed here from the Plexus API
                 </div>
               </CardContent>
