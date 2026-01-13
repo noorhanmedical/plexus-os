@@ -68,22 +68,26 @@ function TwinklingStars({ className = "" }: { className?: string }) {
 
 function MountainSilhouette() {
   const stars = [
-    { top: 8, left: 15, size: 1, opacity: 0.7, delay: 0 },
-    { top: 12, left: 45, size: 1.5, opacity: 0.5, delay: 1 },
-    { top: 5, left: 72, size: 1, opacity: 0.6, delay: 2 },
-    { top: 18, left: 28, size: 0.8, opacity: 0.4, delay: 0.5 },
-    { top: 10, left: 85, size: 1.2, opacity: 0.55, delay: 1.5 },
-    { top: 22, left: 60, size: 0.8, opacity: 0.45, delay: 2.5 },
-    { top: 6, left: 35, size: 1, opacity: 0.5, delay: 3 },
-    { top: 15, left: 92, size: 1, opacity: 0.4, delay: 0.8 },
-    { top: 25, left: 18, size: 0.7, opacity: 0.35, delay: 1.8 },
-    { top: 8, left: 55, size: 1.3, opacity: 0.6, delay: 2.2 },
-    { top: 20, left: 78, size: 0.9, opacity: 0.5, delay: 0.3 },
-    { top: 3, left: 25, size: 1.1, opacity: 0.55, delay: 1.2 },
-    { top: 35, left: 50, size: 0.8, opacity: 0.3, delay: 1.6 },
-    { top: 45, left: 30, size: 0.7, opacity: 0.25, delay: 2.8 },
-    { top: 55, left: 70, size: 0.9, opacity: 0.3, delay: 0.9 },
-    { top: 65, left: 88, size: 0.6, opacity: 0.2, delay: 3.2 },
+    { top: 3, left: 10, size: 1.2, opacity: 0.8, delay: 0 },
+    { top: 6, left: 25, size: 1, opacity: 0.6, delay: 1.2 },
+    { top: 4, left: 42, size: 1.5, opacity: 0.7, delay: 0.5 },
+    { top: 8, left: 58, size: 1, opacity: 0.5, delay: 2 },
+    { top: 5, left: 75, size: 1.3, opacity: 0.65, delay: 1.5 },
+    { top: 3, left: 90, size: 1, opacity: 0.55, delay: 2.5 },
+    { top: 12, left: 15, size: 0.8, opacity: 0.5, delay: 3 },
+    { top: 10, left: 35, size: 1.2, opacity: 0.6, delay: 0.8 },
+    { top: 14, left: 52, size: 0.9, opacity: 0.45, delay: 1.8 },
+    { top: 11, left: 68, size: 1.1, opacity: 0.55, delay: 2.2 },
+    { top: 9, left: 82, size: 1, opacity: 0.5, delay: 0.3 },
+    { top: 18, left: 8, size: 0.8, opacity: 0.4, delay: 1.6 },
+    { top: 16, left: 28, size: 1, opacity: 0.5, delay: 2.8 },
+    { top: 20, left: 45, size: 0.7, opacity: 0.35, delay: 0.9 },
+    { top: 17, left: 62, size: 0.9, opacity: 0.45, delay: 3.2 },
+    { top: 22, left: 78, size: 0.8, opacity: 0.4, delay: 1.4 },
+    { top: 19, left: 92, size: 1, opacity: 0.5, delay: 2.1 },
+    { top: 26, left: 20, size: 0.7, opacity: 0.35, delay: 0.6 },
+    { top: 24, left: 55, size: 0.8, opacity: 0.4, delay: 1.9 },
+    { top: 28, left: 85, size: 0.6, opacity: 0.3, delay: 2.7 },
   ];
 
   return (
@@ -112,23 +116,23 @@ function MountainSilhouette() {
       ))}
 
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[60%]"
-        viewBox="0 0 100 50" 
+        className="absolute bottom-0 left-0 w-full h-[45%]"
+        viewBox="0 0 100 30" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,50 L0,40 L5,38 L8,35 L12,32 L15,28 L18,25 L22,22 L25,18 L28,15 L30,12 L32,10 L35,8 L38,10 L40,13 L42,16 L45,20 L48,24 L50,28 L52,25 L55,21 L58,17 L60,14 L62,11 L65,8 L68,6 L70,4 L72,6 L75,9 L78,13 L80,17 L82,21 L85,25 L88,29 L90,33 L92,30 L95,27 L98,24 L100,22 L100,50 Z" 
+          d="M0,30 L0,22 L8,20 L15,17 L22,14 L28,11 L35,8 L42,6 L48,4 L52,6 L58,9 L65,12 L72,15 L78,12 L85,9 L92,7 L100,10 L100,30 Z" 
           fill="#252545"
         />
       </svg>
 
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[40%]"
-        viewBox="0 0 100 40" 
+        className="absolute bottom-0 left-0 w-full h-[30%]"
+        viewBox="0 0 100 20" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,40 L0,25 L4,23 L8,20 L12,17 L15,14 L18,12 L20,10 L22,12 L25,15 L28,18 L30,21 L32,18 L35,15 L38,12 L40,10 L42,8 L45,6 L48,8 L50,11 L52,14 L55,17 L58,20 L60,23 L62,20 L65,17 L68,14 L70,12 L72,14 L75,17 L78,20 L82,24 L88,28 L95,33 L100,38 L100,40 Z" 
+          d="M0,20 L0,14 L10,12 L20,9 L28,7 L35,5 L42,3 L48,5 L55,8 L62,10 L70,8 L78,6 L85,4 L92,6 L100,9 L100,20 Z" 
           fill="#1a1a35"
         />
       </svg>
