@@ -224,13 +224,17 @@ export async function registerRoutes(
     }
   });
 
-  // Get ancillary catalog
-  app.get("/api/ancillary/catalog", async (_req, res) => {
+  // Get eligible patients for an ancillary
+  app.get("/api/ancillary/patients", async (req, res) => {
     try {
-      const data = await plexusGet("ancillary.catalog");
+      const ancillary_code = String(req.query.ancillary_code || "");
+      const q = String(req.query.q || "");
+      const limit = String(req.query.limit || "50");
+      
+      const data = await plexusGet("ancillary.patients", { ancillary_code, q, limit });
       res.json(data);
     } catch (error) {
-      res.status(500).json({ ok: false, error: "Failed to get ancillary catalog" });
+      res.status(500).json({ ok: false, error: "Failed to get eligible patients" });
     }
   });
 
