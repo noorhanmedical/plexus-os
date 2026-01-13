@@ -116,23 +116,23 @@ function MountainSilhouette() {
       ))}
 
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[45%]"
-        viewBox="0 0 100 30" 
+        className="absolute bottom-0 left-0 w-full h-[35%]"
+        viewBox="0 0 100 20" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,30 L0,22 L8,20 L15,17 L22,14 L28,11 L35,8 L42,6 L48,4 L52,6 L58,9 L65,12 L72,15 L78,12 L85,9 L92,7 L100,10 L100,30 Z" 
+          d="M-10,20 L-10,16 L0,14 L10,12 L18,10 L25,8 L32,7 L40,6 L48,5 L55,6 L62,7 L70,8 L78,10 L88,12 L100,15 L110,18 L110,20 Z" 
           fill="#252545"
         />
       </svg>
 
       <svg 
-        className="absolute bottom-0 left-0 w-full h-[30%]"
-        viewBox="0 0 100 20" 
+        className="absolute bottom-0 left-0 w-full h-[28%]"
+        viewBox="0 0 100 16" 
         preserveAspectRatio="none"
       >
         <path 
-          d="M0,20 L0,14 L10,12 L20,9 L28,7 L35,5 L42,3 L48,5 L55,8 L62,10 L70,8 L78,6 L85,4 L92,6 L100,9 L100,20 Z" 
+          d="M-10,16 L-10,14 L5,12 L15,10 L25,8 L35,7 L45,6 L52,5 L60,6 L70,7 L80,9 L90,11 L100,13 L110,15 L110,16 Z" 
           fill="#1a1a35"
         />
       </svg>
