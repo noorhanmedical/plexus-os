@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
 
-const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxNwZ6W5HhBFekOSU1de5jeTFCIc99O2yXLGhSAwSzBMhJpkE8iNi9xcDrcm8eX0l0w/exec";
+const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxUnc6u-UqiYLUraXAwU9nJDk7CzVr_xwZC3rU6_VMj5gU5LVWw7a6S0CVYn5Qx_vFy/exec";
 const PLEXUS_API_KEY = process.env.PLEXUS_API_KEY || "";
 
 // Plexus API helper
@@ -18,6 +18,7 @@ async function plexusGet(action: string, params: Record<string, string> = {}): P
     headers: {
       "x-api-key": PLEXUS_API_KEY,
     },
+    redirect: "follow",
   });
   
   return response.json();
@@ -122,6 +123,7 @@ async function plexusPost(action: string, payload: Record<string, any> = {}): Pr
       "x-api-key": PLEXUS_API_KEY,
     },
     body: JSON.stringify({ action, ...payload }),
+    redirect: "follow",
   });
   
   return response.json();
@@ -361,10 +363,10 @@ export async function registerRoutes(
     }
   });
 
-  // Rebuild billing index
+  // Rebuild billing index (uses GET as Plexus API expects action in query params)
   app.post("/api/billing/rebuild-index", async (_req, res) => {
     try {
-      const data = await plexusPost("billing.rebuildIndex", {});
+      const data = await plexusGet("billing.rebuildIndex", {});
       res.json(data);
     } catch (error) {
       console.error("[billing] Rebuild index failed:", error);
