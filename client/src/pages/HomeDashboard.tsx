@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -171,8 +172,50 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden";
   const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 hover:bg-white/90 transition-all duration-300 rounded-2xl";
 
+  // Calculate patients due for ancillary services based on billing dates
+  const ancillaryDuePatients = useMemo(() => {
+    const now = new Date();
+    const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+    const twelveMonthsAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+    
+    const patientMap = new Map<string, { name: string; lastService: Date; serviceType: string; dueIn: string }>();
+    
+    records.forEach(r => {
+      const patientName = r.patient_name || r.patient || "Unknown";
+      const serviceDate = r.date ? new Date(r.date) : null;
+      const serviceType = r.source_tab?.includes("BRAINWAVE") ? "BrainWave" :
+                          r.source_tab?.includes("ULTRASOUND") ? "Ultrasound" :
+                          r.source_tab?.includes("VITALWAVE") ? "VitalWave" : "Other";
+      
+      if (serviceDate && patientName !== "Unknown") {
+        const existing = patientMap.get(patientName);
+        if (!existing || serviceDate > existing.lastService) {
+          let dueIn = "";
+          if (serviceDate <= twelveMonthsAgo) {
+            dueIn = "Overdue (12+ mo)";
+          } else if (serviceDate <= sixMonthsAgo) {
+            dueIn = "Due Soon (6+ mo)";
+          }
+          
+          if (dueIn) {
+            patientMap.set(patientName, { name: patientName, lastService: serviceDate, serviceType, dueIn });
+          }
+        }
+      }
+    });
+    
+    return Array.from(patientMap.values())
+      .sort((a, b) => a.lastService.getTime() - b.lastService.getTime())
+      .slice(0, 5);
+  }, [records]);
+
   return (
     <div className="space-y-8 p-2">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#1a0a28]">Home Page</h1>
+        <p className="text-slate-600 text-sm">Clinical dashboard overview</p>
+      </div>
+      
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <button
           className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
@@ -211,7 +254,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         >
           <div className="w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <p className="text-[#1a0a28] font-bold text-lg">Finance</p>
+            <p className="text-[#1a0a28] font-bold text-lg">Finance Dashboard</p>
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <DollarSign className="h-7 w-7 text-emerald-600" />
             </div>
@@ -231,7 +274,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         >
           <div className="w-full h-2 bg-gradient-to-r from-violet-400 to-purple-500"></div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <p className="text-[#1a0a28] font-bold text-lg">Billing</p>
+            <p className="text-[#1a0a28] font-bold text-lg">Billing Dashboard</p>
             <div className="flex items-center gap-3">
               <div className="text-center">
                 <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
@@ -260,8 +303,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 <Clock className="h-7 w-7 text-pink-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#1a0a28]">Ancillary Service Timelines</h2>
-                <p className="text-slate-600 text-sm">Patient test schedules & status</p>
+                <h2 className="text-xl font-bold text-[#1a0a28]">Ancillary Service Patient Tracker</h2>
+                <p className="text-slate-600 text-sm">Patients due for follow-up services</p>
               </div>
             </div>
             <Button 
@@ -275,48 +318,45 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </Button>
           </div>
 
-          {catalogLoading || ancillaryLoading ? (
+          {billingLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
             </div>
-          ) : ancillaryError ? (
-            <div className="text-center py-12">
-              <AlertTriangle className="h-10 w-10 mx-auto text-amber-500 mb-3" />
-              <p className="text-slate-600">Failed to load ancillary data</p>
-            </div>
-          ) : ancillaryPatients.length === 0 ? (
+          ) : ancillaryDuePatients.length === 0 ? (
             <div className="text-center py-12">
               <TestTube className="h-10 w-10 mx-auto text-slate-300 mb-3" />
-              <p className="text-slate-600">No ancillary patients found</p>
-              <p className="text-slate-500 text-sm mt-1">Select a service in the Ancillary dashboard</p>
+              <p className="text-slate-600">No patients due for follow-up</p>
+              <p className="text-slate-500 text-sm mt-1">All patients are up to date with their services</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {ancillaryPatients.slice(0, 5).map((patient, idx) => (
+              {ancillaryDuePatients.map((patient, idx) => (
                 <div 
-                  key={patient.patient_uuid || idx}
+                  key={`${patient.name}-${idx}`}
                   className={`${glassButtonStyle} p-4 flex items-center justify-between`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-200 flex items-center justify-center">
-                      <User className="h-5 w-5 text-pink-600" />
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                      patient.serviceType === "BrainWave" ? "bg-gradient-to-br from-purple-100 to-violet-200" :
+                      patient.serviceType === "Ultrasound" ? "bg-gradient-to-br from-green-100 to-emerald-200" :
+                      patient.serviceType === "VitalWave" ? "bg-gradient-to-br from-red-100 to-rose-200" :
+                      "bg-gradient-to-br from-pink-100 to-rose-200"
+                    }`}>
+                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-purple-600" /> :
+                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-green-600" /> :
+                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-red-600" /> :
+                       <User className="h-5 w-5 text-pink-600" />}
                     </div>
                     <div>
-                      <p className="font-medium text-[#1a0a28]">{patient.first_name} {patient.last_name}</p>
+                      <p className="font-medium text-[#1a0a28]">{patient.name}</p>
                       <p className="text-sm text-slate-600">
-                        {patient.mrn && <span className="mr-2">MRN: {patient.mrn}</span>}
-                        {patient.eligibility_reason && <span>{patient.eligibility_reason}</span>}
+                        Last {patient.serviceType}: {formatDate(patient.lastService.toISOString())}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {patient.scheduled_date && (
-                      <span className="text-sm text-slate-600">{formatDate(patient.scheduled_date)}</span>
-                    )}
-                    <Badge className={getStatusColor(patient.status)}>
-                      {patient.status || "Pending"}
-                    </Badge>
-                  </div>
+                  <Badge className={patient.dueIn.includes("Overdue") ? "bg-red-100 text-red-700 border-red-200" : "bg-amber-100 text-amber-700 border-amber-200"}>
+                    {patient.dueIn}
+                  </Badge>
                 </div>
               ))}
               
