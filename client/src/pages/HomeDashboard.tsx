@@ -134,6 +134,24 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const vitalwaveCount = vitalwaveRecords.length;
   const totalCount = records.length;
 
+  const parseAmount = (val: string | number | undefined): number => {
+    if (!val) return 0;
+    const num = parseFloat(String(val).replace(/[$,]/g, ""));
+    return isNaN(num) ? 0 : num;
+  };
+
+  const brainwaveRevenue = brainwaveRecords.reduce((sum, r) => sum + parseAmount((r as any).claim_paid_amount || r.paid_amount || r.amount), 0);
+  const ultrasoundRevenue = ultrasoundRecords.reduce((sum, r) => sum + parseAmount((r as any).claim_paid_amount || r.paid_amount || r.amount), 0);
+  const vitalwaveRevenue = vitalwaveRecords.reduce((sum, r) => sum + parseAmount((r as any).claim_paid_amount || r.paid_amount || r.amount), 0);
+  const totalRevenue = brainwaveRevenue + ultrasoundRevenue + vitalwaveRevenue;
+
+  const formatCurrency = (amount: number): string => {
+    if (amount >= 1000) {
+      return `$${(amount / 1000).toFixed(1)}k`;
+    }
+    return `$${amount.toFixed(0)}`;
+  };
+
   const last3Brainwave = brainwaveRecords.slice(0, 3);
   const last3Ultrasound = ultrasoundRecords.slice(0, 3);
   const last3Vitalwave = vitalwaveRecords.slice(0, 3);
@@ -157,71 +175,84 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     <div className="space-y-8 p-2">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-4 min-h-[180px] cursor-pointer group`}
+          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <p className="text-[#1a0a28] font-bold text-lg">Schedule</p>
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <Calendar className="h-8 w-8 text-amber-600" />
+          <div className="w-full h-2 bg-gradient-to-r from-amber-400 to-orange-500"></div>
+          <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
+            <p className="text-[#1a0a28] font-bold text-lg">Schedule</p>
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Calendar className="h-8 w-8 text-amber-600" />
+            </div>
+            <p className="text-slate-600 text-sm">Daily appointments</p>
           </div>
-          <p className="text-slate-600 text-sm">Daily appointments</p>
         </button>
 
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-4 min-h-[180px] cursor-pointer group`}
+          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <p className="text-[#1a0a28] font-bold text-lg">Prescreens</p>
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <Sparkles className="h-8 w-8 text-cyan-600" />
+          <div className="w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500"></div>
+          <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
+            <p className="text-[#1a0a28] font-bold text-lg">Prescreens</p>
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Sparkles className="h-8 w-8 text-cyan-600" />
+            </div>
+            <p className="text-slate-600 text-sm">Patient eligibility</p>
           </div>
-          <p className="text-slate-600 text-sm">Patient eligibility</p>
         </button>
 
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-3 min-h-[180px] cursor-pointer group`}
+          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
-          <p className="text-[#1a0a28] font-bold text-lg">Finance</p>
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <DollarSign className="h-7 w-7 text-emerald-600" />
+          <div className="w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+          <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
+            <p className="text-[#1a0a28] font-bold text-lg">Finance</p>
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <DollarSign className="h-7 w-7 text-emerald-600" />
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold">{formatCurrency(brainwaveRevenue)}</span>
+              <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">{formatCurrency(ultrasoundRevenue)}</span>
+              <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">{formatCurrency(vitalwaveRevenue)}</span>
+            </div>
+            <p className="text-slate-600 text-xs font-medium">{formatCurrency(totalRevenue)} Total</p>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold">{brainwaveCount}</span>
-            <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">{ultrasoundCount}</span>
-            <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">{vitalwaveCount}</span>
-          </div>
-          <p className="text-slate-600 text-xs font-medium">{totalCount} Total</p>
         </button>
 
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} p-6 flex flex-col items-center justify-center gap-3 min-h-[180px] cursor-pointer group`}
+          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
           onClick={handleViewAllBilling}
           data-testid="button-billing-overview"
         >
-          <p className="text-[#1a0a28] font-bold text-lg">Billing</p>
-          <div className="flex items-center gap-3">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
-              <p className="text-xs text-slate-600">Brain</p>
+          <div className="w-full h-2 bg-gradient-to-r from-violet-400 to-purple-500"></div>
+          <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
+            <p className="text-[#1a0a28] font-bold text-lg">Billing</p>
+            <div className="flex items-center gap-3">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
+                <p className="text-xs text-slate-600">Brain</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-green-700">{ultrasoundCount}</p>
+                <p className="text-xs text-slate-600">Ultra</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
+                <p className="text-xs text-slate-600">Vital</p>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-700">{ultrasoundCount}</p>
-              <p className="text-xs text-slate-600">Ultra</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
-              <p className="text-xs text-slate-600">Vital</p>
-            </div>
+            <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
           </div>
-          <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
         </button>
       </div>
 
-      <Card className={`${glassCardStyle}`}>
+      <Card className={`${glassCardStyle} overflow-hidden`}>
+        <div className="w-full h-2 bg-gradient-to-r from-pink-400 to-rose-500"></div>
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -301,7 +332,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </CardContent>
       </Card>
 
-      <Card className={`${glassCardStyle}`}>
+      <Card className={`${glassCardStyle} overflow-hidden`}>
+        <div className="w-full h-2 bg-gradient-to-r from-violet-400 to-purple-500"></div>
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -339,74 +371,83 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button
-                  className={`${glassButtonStyle} p-5 text-left cursor-pointer group`}
+                  className={`${glassButtonStyle} text-left cursor-pointer group overflow-hidden rounded-2xl`}
                   onClick={() => handleNavigateToService("brainwave")}
                   data-testid="button-billing-brainwave"
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Brain className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-bold text-[#1a0a28]">BrainWave</p>
-                      <Badge className="bg-purple-100 text-purple-700 border-purple-200">{brainwaveCount} records</Badge>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
-                      <div key={i} className="flex justify-between items-center text-sm">
-                        <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
-                        <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                  <div className="w-full h-1.5 bg-gradient-to-r from-purple-400 to-violet-500"></div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Brain className="h-6 w-6 text-purple-600" />
                       </div>
-                    )) : <p className="text-sm text-slate-500">No recent records</p>}
+                      <div className="flex-1">
+                        <p className="font-bold text-[#1a0a28]">BrainWave</p>
+                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">{brainwaveCount} records</Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
+                        <div key={i} className="flex justify-between items-center text-sm">
+                          <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
+                          <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                        </div>
+                      )) : <p className="text-sm text-slate-500">No recent records</p>}
+                    </div>
                   </div>
                 </button>
                 
                 <button
-                  className={`${glassButtonStyle} p-5 text-left cursor-pointer group`}
+                  className={`${glassButtonStyle} text-left cursor-pointer group overflow-hidden rounded-2xl`}
                   onClick={() => handleNavigateToService("ultrasound")}
                   data-testid="button-billing-ultrasound"
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <UltrasoundProbeIcon className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-bold text-[#1a0a28]">Ultrasound</p>
-                      <Badge className="bg-green-100 text-green-700 border-green-200">{ultrasoundCount} records</Badge>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
-                      <div key={i} className="flex justify-between items-center text-sm">
-                        <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
-                        <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                  <div className="w-full h-1.5 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <UltrasoundProbeIcon className="h-6 w-6 text-green-600" />
                       </div>
-                    )) : <p className="text-sm text-slate-500">No recent records</p>}
+                      <div className="flex-1">
+                        <p className="font-bold text-[#1a0a28]">Ultrasound</p>
+                        <Badge className="bg-green-100 text-green-700 border-green-200">{ultrasoundCount} records</Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
+                        <div key={i} className="flex justify-between items-center text-sm">
+                          <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
+                          <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                        </div>
+                      )) : <p className="text-sm text-slate-500">No recent records</p>}
+                    </div>
                   </div>
                 </button>
                 
                 <button
-                  className={`${glassButtonStyle} p-5 text-left cursor-pointer group`}
+                  className={`${glassButtonStyle} text-left cursor-pointer group overflow-hidden rounded-2xl`}
                   onClick={() => handleNavigateToService("vitalwave")}
                   data-testid="button-billing-vitalwave"
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Heart className="h-6 w-6 text-red-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-bold text-[#1a0a28]">VitalWave</p>
-                      <Badge className="bg-red-100 text-red-700 border-red-200">{vitalwaveCount} records</Badge>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
-                      <div key={i} className="flex justify-between items-center text-sm">
-                        <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
-                        <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                  <div className="w-full h-1.5 bg-gradient-to-r from-red-400 to-rose-500"></div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Heart className="h-6 w-6 text-red-600" />
                       </div>
-                    )) : <p className="text-sm text-slate-500">No recent records</p>}
+                      <div className="flex-1">
+                        <p className="font-bold text-[#1a0a28]">VitalWave</p>
+                        <Badge className="bg-red-100 text-red-700 border-red-200">{vitalwaveCount} records</Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
+                        <div key={i} className="flex justify-between items-center text-sm">
+                          <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
+                          <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                        </div>
+                      )) : <p className="text-sm text-slate-500">No recent records</p>}
+                    </div>
                   </div>
                 </button>
               </div>
