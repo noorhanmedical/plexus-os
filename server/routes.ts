@@ -41,20 +41,51 @@ async function plexusGet(action: string, params: Record<string, string> = {}): P
 // Promise for awaiting cache load
 let loadingPromise: Promise<void> | null = null;
 
-// Load all patients in background
+// Load all patients using pagination
 async function loadAllPatients(): Promise<void> {
   if (loadingPromise) return loadingPromise;
   
   isLoadingPatients = true;
   loadingPromise = (async () => {
     try {
-      console.log("[cache] Loading all patients from Plexus API...");
-      const data = await plexusGet("patients.search", { q: "", limit: "5000" });
-      if (data.ok && Array.isArray(data.data)) {
-        allPatientsCache = data.data;
-        patientsCacheTimestamp = Date.now();
-        console.log(`[cache] Loaded ${allPatientsCache.length} patients into cache`);
+      console.log("[cache] Loading all patients from Plexus API with pagination...");
+      const allPatients: CachedPatient[] = [];
+      let offset = 0;
+      const pageSize = 500;
+      let hasMore = true;
+      
+      while (hasMore) {
+        const data = await plexusGet("patients.search", { 
+          q: "", 
+          limit: String(pageSize), 
+          offset: String(offset) 
+        });
+        
+        if (data.ok && Array.isArray(data.data)) {
+          allPatients.push(...data.data);
+          console.log(`[cache] Fetched ${data.data.length} patients (offset: ${offset}, total: ${allPatients.length})`);
+          
+          // Stop if we got fewer than pageSize (end of data)
+          if (data.data.length < pageSize) {
+            hasMore = false;
+          } else {
+            offset += pageSize;
+          }
+        } else {
+          console.error("[cache] API returned non-ok response:", data);
+          hasMore = false;
+        }
+        
+        // Safety limit to prevent infinite loops
+        if (offset > 50000) {
+          console.warn("[cache] Hit safety limit of 50000 patients");
+          hasMore = false;
+        }
       }
+      
+      allPatientsCache = allPatients;
+      patientsCacheTimestamp = Date.now();
+      console.log(`[cache] Completed loading ${allPatientsCache.length} total patients`);
     } catch (error) {
       console.error("[cache] Failed to load patients:", error);
     } finally {
@@ -64,6 +95,19 @@ async function loadAllPatients(): Promise<void> {
   })();
   
   return loadingPromise;
+}
+
+// Direct API search fallback (for when cache misses)
+async function searchPatientsAPI(query: string, limit: number): Promise<CachedPatient[]> {
+  try {
+    const data = await plexusGet("patients.search", { q: query, limit: String(limit) });
+    if (data.ok && Array.isArray(data.data)) {
+      return data.data;
+    }
+  } catch (error) {
+    console.error("[api] Direct patient search failed:", error);
+  }
+  return [];
 }
 
 // Search patients from local cache (instant)
@@ -198,7 +242,7 @@ export async function registerRoutes(
     }
   });
 
-  // Search patients (instant from local cache)
+  // Search patients (from local cache with API fallback)
   app.get("/api/patients/search", async (req, res) => {
     try {
       const validation = searchPatientsSchema.safeParse(req.query);
@@ -217,7 +261,23 @@ export async function registerRoutes(
       }
       
       // Use local cache for instant search
-      const results = searchPatientsLocal(query, limitNum);
+      let results = searchPatientsLocal(query, limitNum);
+      
+      // If no results from cache and user is searching, try API directly as fallback
+      if (results.length === 0 && query.length >= 2) {
+        console.log(`[search] Cache miss for "${query}", trying API fallback...`);
+        results = await searchPatientsAPI(query, limitNum);
+        
+        // Add any new patients found to cache
+        if (results.length > 0) {
+          const existingIds = new Set(allPatientsCache.map(p => p.patient_uuid));
+          const newPatients = results.filter(p => !existingIds.has(p.patient_uuid));
+          if (newPatients.length > 0) {
+            allPatientsCache.push(...newPatients);
+            console.log(`[cache] Added ${newPatients.length} new patients from API fallback`);
+          }
+        }
+      }
       
       // Trigger background refresh if needed
       checkCacheRefresh();
