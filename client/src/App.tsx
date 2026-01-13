@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HomeDashboard } from "@/pages/HomeDashboard";
-import { PatientSearchView } from "@/pages/PatientSearchView";
 import { PrescreensView } from "@/pages/PrescreensView";
 import { AncillaryDashboard } from "@/pages/AncillaryDashboard";
 import { BillingView } from "@/pages/BillingView";
 import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
-import { PatientProfile } from "@/pages/PatientProfile";
-import { Home, User, ClipboardList, Activity, CreditCard, DollarSign, Calendar } from "lucide-react";
+import { PatientChart } from "@/pages/PatientChart";
+import { Home, Search, ClipboardList, Activity, CreditCard, DollarSign, Calendar, User, X, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   SidebarProvider,
   Sidebar,
@@ -21,10 +22,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 
 type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule";
-type SidebarTab = "patient" | "billing";
 
 interface Patient {
   patient_uuid: string;
@@ -47,10 +49,14 @@ const mainTabs = [
   { id: "finance" as MainTab, label: "Finance", icon: DollarSign },
 ];
 
-const sidebarTabs = [
-  { id: "patient" as SidebarTab, label: "Patient Search", icon: User },
-  { id: "billing" as SidebarTab, label: "Billing", icon: CreditCard },
-];
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
 
 function TwinklingStars({ className = "" }: { className?: string }) {
   return (
@@ -81,14 +87,31 @@ function MountainSilhouette() {
 }
 
 function AppSidebar({ 
-  activeTab, 
-  onTabChange,
-  onClearSidebar 
+  selectedPatient,
+  onPatientSelect,
+  onClearPatient 
 }: { 
-  activeTab: SidebarTab | null; 
-  onTabChange: (tab: SidebarTab) => void;
-  onClearSidebar: () => void;
+  selectedPatient: Patient | null;
+  onPatientSelect: (patient: Patient) => void;
+  onClearPatient: () => void;
 }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery, 300);
+
+  const { data: searchResults, isLoading } = useQuery<{ ok: boolean; patients: Patient[] }>({
+    queryKey: ["/api/patients/search", debouncedQuery],
+    queryFn: async () => {
+      if (debouncedQuery.length < 2) return { ok: true, patients: [] };
+      const res = await fetch(`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`);
+      return res.json();
+    },
+    enabled: debouncedQuery.length >= 2,
+    staleTime: 60000,
+    placeholderData: (prev) => prev,
+  });
+
+  const patients = searchResults?.patients || [];
+
   return (
     <Sidebar className="bg-[#16162b] border-r border-[#1e1e38]/50">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -97,7 +120,7 @@ function AppSidebar({
       
       <SidebarHeader className="p-4 border-b border-slate-700/30 relative">
         <button
-          onClick={onClearSidebar}
+          onClick={onClearPatient}
           className="flex items-center gap-3 w-full text-left hover:bg-white/5 rounded-lg p-2 -m-1 relative z-10 transition-colors"
           data-testid="nav-home-logo"
         >
@@ -112,30 +135,95 @@ function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent className="p-3 relative">
-        <SidebarMenu className="relative z-10 space-y-1">
-          {sidebarTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <SidebarMenuItem key={tab.id}>
-                <SidebarMenuButton
-                  data-testid={`nav-${tab.id}`}
-                  onClick={() => onTabChange(tab.id)}
-                  isActive={isActive}
-                  tooltip={tab.label}
-                  className={`text-slate-300/80 hover:text-white hover:bg-white/5 transition-all ${
-                    isActive 
-                      ? "bg-gradient-to-r from-white/10 to-transparent text-white border-l-2 border-teal-400/60" 
-                      : "border-l-2 border-transparent"
-                  }`}
+        <SidebarGroup className="relative z-10">
+          <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            Patient Search
+          </SidebarGroupLabel>
+          
+          <div className="relative mb-3">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Input
+              type="text"
+              placeholder="Search patients..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 pr-8 bg-slate-900/50 border-slate-700/50 text-white placeholder:text-slate-500 h-9"
+              data-testid="input-patient-search"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                data-testid="button-clear-search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {selectedPatient && (
+            <div className="mb-3 p-2 bg-teal-900/30 border border-teal-700/50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-teal-700 flex items-center justify-center text-white text-xs font-medium">
+                  {selectedPatient.first_name?.[0]}{selectedPatient.last_name?.[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white text-sm font-medium truncate">
+                    {selectedPatient.last_name}, {selectedPatient.first_name}
+                  </p>
+                  <p className="text-teal-400 text-xs">Selected Patient</p>
+                </div>
+                <button
+                  onClick={onClearPatient}
+                  className="text-slate-400 hover:text-white"
+                  data-testid="button-clear-patient"
                 >
-                  <Icon className={`h-5 w-5 ${isActive ? "text-teal-400" : ""}`} />
-                  <span className="font-medium">{tab.label}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isLoading && debouncedQuery.length >= 2 && (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-5 w-5 text-teal-400 animate-spin" />
+            </div>
+          )}
+
+          {!isLoading && debouncedQuery.length >= 2 && patients.length === 0 && (
+            <p className="text-slate-500 text-sm text-center py-4">No patients found</p>
+          )}
+
+          {patients.length > 0 && (
+            <ScrollArea className="h-[calc(100vh-320px)]">
+              <SidebarMenu className="space-y-1">
+                {patients.map((patient) => (
+                  <SidebarMenuItem key={patient.patient_uuid}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        onPatientSelect(patient);
+                        setSearchQuery("");
+                      }}
+                      isActive={selectedPatient?.patient_uuid === patient.patient_uuid}
+                      className="text-slate-300/80 hover:text-white hover:bg-white/5"
+                      data-testid={`patient-result-${patient.patient_uuid}`}
+                    >
+                      <User className="h-4 w-4 text-slate-500" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {patient.last_name}, {patient.first_name}
+                        </p>
+                        {patient.dob && (
+                          <p className="text-xs text-slate-500">{patient.dob}</p>
+                        )}
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </ScrollArea>
+          )}
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );
@@ -143,51 +231,29 @@ function AppSidebar({
 
 function MainContent() {
   const [mainTab, setMainTab] = useState<MainTab>("home");
-  const [sidebarTab, setSidebarTab] = useState<SidebarTab | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-
-  const handleSidebarTabChange = (tab: SidebarTab) => {
-    setSidebarTab(sidebarTab === tab ? null : tab);
-  };
 
   const handleMainTabChange = (tab: MainTab) => {
     setMainTab(tab);
-    setSidebarTab(null);
   };
 
-  const handleClearSidebar = () => {
-    setSidebarTab(null);
-    setMainTab("home");
+  const handleClearPatient = () => {
     setSelectedPatient(null);
+    setMainTab("home");
   };
 
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
-    setMainTab("home");
-    setSidebarTab(null);
   };
 
   const renderContent = () => {
-    if (sidebarTab === "patient") {
-      return <PatientSearchView onPatientSelect={handlePatientSelect} />;
-    }
-    if (sidebarTab === "billing") {
-      return <BillingView />;
+    if (selectedPatient) {
+      return <PatientChart patient={selectedPatient} />;
     }
 
     switch (mainTab) {
       case "home":
-        return (
-          <div className="space-y-6">
-            <HomeDashboard />
-            {selectedPatient && (
-              <PatientProfile 
-                patient={selectedPatient} 
-                onClose={() => setSelectedPatient(null)} 
-              />
-            )}
-          </div>
-        );
+        return <HomeDashboard />;
       case "schedule":
         return <ScheduleView />;
       case "prescreens":
@@ -202,14 +268,12 @@ function MainContent() {
   };
 
   const getCurrentTitle = () => {
-    if (sidebarTab === "patient") return "Patient Search";
-    if (sidebarTab === "billing") return "Billing";
     if (selectedPatient) return `${selectedPatient.last_name}, ${selectedPatient.first_name}`;
     return mainTabs.find((t) => t.id === mainTab)?.label || "Home";
   };
 
   const style = {
-    "--sidebar-width": "14rem",
+    "--sidebar-width": "18rem",
     "--sidebar-width-icon": "3rem",
   };
 
@@ -236,7 +300,7 @@ function MainContent() {
                 <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
                   {mainTabs.map((tab) => {
                     const Icon = tab.icon;
-                    const isActive = !sidebarTab && mainTab === tab.id;
+                    const isActive = !selectedPatient && mainTab === tab.id;
                     return (
                       <button
                         key={tab.id}
@@ -265,7 +329,11 @@ function MainContent() {
         </header>
 
         <div className="flex flex-1 w-full overflow-hidden">
-          <AppSidebar activeTab={sidebarTab} onTabChange={handleSidebarTabChange} onClearSidebar={handleClearSidebar} />
+          <AppSidebar 
+            selectedPatient={selectedPatient} 
+            onPatientSelect={handlePatientSelect} 
+            onClearPatient={handleClearPatient} 
+          />
           
           <main className="flex-1 overflow-auto p-6 bg-background">
             {renderContent()}

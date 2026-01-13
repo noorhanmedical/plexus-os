@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Sky Banner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #000;
+        }
+
+        .night-sky {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* Full viewport height */
+            background: linear-gradient(to bottom, #000000 0%, #0a0a1a 30%, #0f0a1f 60%, #1a0a28 100%);
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.9; }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.6);
+            opacity: 0;
+        }
+
+        .shooting-star.active {
+            animation: shootAcross 1.5s ease-out;
+        }
+
+        @keyframes shootAcross {
+            0% {
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .tail-segment {
+            position: absolute;
+            width: 0.8px;
+            height: 0.8px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .horizon-glow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(to top, 
+                rgba(138, 43, 226, 0.15) 0%,
+                rgba(75, 0, 130, 0.1) 40%,
+                transparent 100%);
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Night Sky Banner -->
+    <div class="night-sky" id="nightSky">
+        <!-- Horizon Glow -->
+        <div class="horizon-glow"></div>
+    </div>
+
+    <script>
+        const nightSky = document.getElementById('nightSky');
+        const starCount = 150; // Number of stars (increased for smaller stars)
+        let shootingStarActive = false; // Flag to ensure only one shooting star at a time
+
+        // Function to schedule next shooting star at random interval
+        function scheduleNextShootingStar() {
+            const delay = Math.random() * 8000 + 8000; // 8-16 seconds between shooting stars
+            setTimeout(() => {
+                if (!shootingStarActive) {
+                    createShootingStar();
+                }
+            }, delay);
+        }
+
+        // Create stars with random positions, sizes, and animation speeds
+        function createStars() {
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random position
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                
+                // Random size (small stars)
+                const size = Math.random() * 1.2 + 0.5; // 0.5px to 1.7px
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                // Random twinkle speed (slower for more noticeable fade)
+                const duration = Math.random() * 4 + 3; // 3s to 7s
+                star.style.animationDuration = duration + 's';
+                
+                // Random animation delay for variety
+                star.style.animationDelay = Math.random() * 3 + 's';
+                
+                nightSky.appendChild(star);
+            }
+        }
+
+        // Create a shooting star with fading tail
+        function createShootingStar() {
+            shootingStarActive = true;
+            
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            
+            // Random direction: 0 = top-left to bottom-right, 1 = top-right to bottom-left, 
+            // 2 = left to right, 3 = right to left
+            const direction = Math.floor(Math.random() * 4);
+            
+            let startX, startY, directionX, directionY;
+            
+            switch(direction) {
+                case 0: // Diagonal top-left to bottom-right
+                    startX = Math.random() * 30 + 10;
+                    startY = Math.random() * 30;
+                    directionX = 0.7;
+                    directionY = 0.5;
+                    break;
+                case 1: // Diagonal top-right to bottom-left
+                    startX = Math.random() * 30 + 60;
+                    startY = Math.random() * 30;
+                    directionX = -0.7;
+                    directionY = 0.5;
+                    break;
+                case 2: // More horizontal left to right
+                    startX = Math.random() * 20;
+                    startY = Math.random() * 40 + 10;
+                    directionX = 0.9;
+                    directionY = 0.3;
+                    break;
+                case 3: // More horizontal right to left
+                    startX = Math.random() * 20 + 80;
+                    startY = Math.random() * 40 + 10;
+                    directionX = -0.9;
+                    directionY = 0.3;
+                    break;
+            }
+            
+            shootingStar.style.left = startX + '%';
+            shootingStar.style.top = startY + '%';
+            
+            nightSky.appendChild(shootingStar);
+            
+            // Trigger animation
+            setTimeout(() => {
+                shootingStar.classList.add('active');
+            }, 10);
+            
+            // Animate the shooting star movement with tail
+            const duration = 1500; // ms
+            const fps = 60;
+            const totalFrames = (duration / 1000) * fps;
+            const distance = 500; // pixels to travel
+            let frame = 0;
+            
+            const tailSegments = [];
+            
+            const animate = setInterval(() => {
+                frame++;
+                const progress = frame / totalFrames;
+                
+                // Ease out motion
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                const currentX = startX + (easeProgress * distance * directionX);
+                const currentY = startY + (easeProgress * distance * directionY);
+                
+                // Create tail segment at current position
+                if (frame % 2 === 0 && progress < 0.9) { // Create tail every other frame
+                    const tailSegment = document.createElement('div');
+                    tailSegment.className = 'tail-segment';
+                    tailSegment.style.left = currentX + '%';
+                    tailSegment.style.top = currentY + '%';
+                    tailSegment.style.opacity = '0.9';
+                    nightSky.appendChild(tailSegment);
+                    
+                    tailSegments.push({
+                        element: tailSegment,
+                        createdAt: frame
+                    });
+                }
+                
+                // Fade out tail segments over time
+                tailSegments.forEach((segment, index) => {
+                    const age = frame - segment.createdAt;
+                    const fadeProgress = age / 20; // Fade over 20 frames
+                    const opacity = Math.max(0, 0.9 - fadeProgress);
+                    segment.element.style.opacity = opacity;
+                    
+                    // Remove fully faded segments
+                    if (opacity <= 0) {
+                        segment.element.remove();
+                        tailSegments.splice(index, 1);
+                    }
+                });
+                
+                // Update shooting star position
+                shootingStar.style.transform = `translate(${easeProgress * distance * directionX}px, ${easeProgress * distance * directionY}px)`;
+                
+                if (frame >= totalFrames) {
+                    clearInterval(animate);
+                    
+                    // Clean up remaining tail segments
+                    setTimeout(() => {
+                        tailSegments.forEach(segment => segment.element.remove());
+                        shootingStar.remove();
+                        shootingStarActive = false;
+                        scheduleNextShootingStar(); // Schedule the next one
+                    }, 500);
+                }
+            }, 1000 / fps);
+        }
+
+        // Initialize stars
+        createStars();
+
+        // Create first shooting star after a delay, then schedule subsequent ones
+        setTimeout(() => {
+            createShootingStar();
+        }, 5000); // First shooting star after 5 seconds
+    </script>
+</body>
+</html>

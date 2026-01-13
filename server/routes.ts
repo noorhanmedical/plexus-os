@@ -5,6 +5,35 @@ import { z } from "zod";
 const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxNwZ6W5HhBFekOSU1de5jeTFCIc99O2yXLGhSAwSzBMhJpkE8iNi9xcDrcm8eX0l0w/exec";
 const PLEXUS_API_KEY = process.env.PLEXUS_API_KEY || "";
 
+// Simple in-memory cache for patient search
+const searchCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 60000; // 60 seconds
+
+function getCachedSearch(key: string): any | null {
+  const cached = searchCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  if (cached) {
+    searchCache.delete(key);
+  }
+  return null;
+}
+
+function setCachedSearch(key: string, data: any): void {
+  searchCache.set(key, { data, timestamp: Date.now() });
+  // Clean up old entries periodically
+  if (searchCache.size > 100) {
+    const now = Date.now();
+    const entries = Array.from(searchCache.entries());
+    for (const [k, v] of entries) {
+      if (now - v.timestamp > CACHE_TTL) {
+        searchCache.delete(k);
+      }
+    }
+  }
+}
+
 // Validation schemas
 const searchPatientsSchema = z.object({
   query: z.string().optional().default(""),
@@ -100,7 +129,7 @@ export async function registerRoutes(
     }
   });
 
-  // Search patients
+  // Search patients (with caching)
   app.get("/api/patients/search", async (req, res) => {
     try {
       const validation = searchPatientsSchema.safeParse(req.query);
@@ -109,7 +138,21 @@ export async function registerRoutes(
       }
       
       const { query, limit } = validation.data;
+      const cacheKey = `search:${query.toLowerCase().trim()}:${limit}`;
+      
+      // Check cache first
+      const cached = getCachedSearch(cacheKey);
+      if (cached) {
+        return res.json(cached);
+      }
+      
       const data = await plexusGet("patients.search", { q: query, limit });
+      
+      // Cache successful responses
+      if (data.ok) {
+        setCachedSearch(cacheKey, data);
+      }
+      
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to search patients" });
