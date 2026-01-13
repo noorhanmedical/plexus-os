@@ -215,31 +215,47 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     staleTime: 30000,
   });
 
-  // Column definitions for spreadsheet view - ordered like the actual sheet
-  const SPREADSHEET_COLUMNS = [
-    { key: "source_tab", label: "Source", width: "w-[100px]" },
-    { key: "date_of_service", label: "Date of Service", width: "w-[110px]" },
-    { key: "patient", label: "Patient", width: "w-[180px]" },
-    { key: "clinician", label: "Clinician", width: "w-[150px]" },
-    { key: "billing_status", label: "Billing Status", width: "w-[120px]", isLink: true },
-    { key: "insurance_info", label: "Insurance Info", width: "w-[120px]", isLink: true },
-    { key: "claim_submitted", label: "Claim Submitted", width: "w-[120px]", isLink: true },
-    { key: "claim_submitted_date", label: "Submitted Date", width: "w-[110px]" },
-    { key: "claim_adjudicated", label: "Claim Adjudicated", width: "w-[130px]", isLink: true },
-    { key: "claim_adjudicated_date", label: "Adjudicated Date", width: "w-[110px]" },
-    { key: "claim_paid_amount", label: "Paid Amount", width: "w-[100px]", isCurrency: true },
-    { key: "claim_paid_date", label: "Paid Date", width: "w-[100px]" },
-    { key: "patient_responsibility", label: "Patient Resp.", width: "w-[100px]", isCurrency: true },
-    { key: "secondary_payment", label: "Secondary Pmt", width: "w-[100px]", isCurrency: true },
-    { key: "comments", label: "Comments", width: "w-[200px]" },
-    { key: "biller_comments", label: "Biller Comments", width: "w-[200px]" },
-    { key: "link_screening", label: "Screening", width: "w-[90px]", isLink: true },
-    { key: "link_order_note", label: "Order Note", width: "w-[90px]", isLink: true },
-    { key: "link_report", label: "Report", width: "w-[90px]", isLink: true },
-    { key: "link_procedure_note", label: "Procedure Note", width: "w-[100px]", isLink: true },
-    { key: "link_billing_document", label: "Billing Doc", width: "w-[90px]", isLink: true },
-    { key: "link_problem_list", label: "Problem List", width: "w-[90px]", isLink: true },
-  ];
+  // Dynamic column definitions from API header
+  const spreadsheetColumns = useMemo(() => {
+    const apiHeader = billingData?.header || [];
+    if (apiHeader.length === 0) {
+      // Fallback if no header from API
+      return [
+        { key: "source_tab", label: "Source", width: "w-[100px]" },
+        { key: "date_of_service", label: "Date of Service", width: "w-[110px]" },
+        { key: "patient", label: "Patient", width: "w-[180px]" },
+        { key: "clinician", label: "Clinician", width: "w-[150px]" },
+      ];
+    }
+    
+    // Map header names to column definitions with heuristics
+    return apiHeader.map((headerName: string) => {
+      const key = headerName.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+      const isLink = headerName.toLowerCase().startsWith("link") || 
+                     headerName.toLowerCase().includes("url") ||
+                     headerName.toLowerCase() === "billing status" ||
+                     headerName.toLowerCase() === "insurance info" ||
+                     headerName.toLowerCase() === "claim submitted" ||
+                     headerName.toLowerCase() === "claim adjudicated";
+      const isCurrency = headerName.toLowerCase().includes("amount") ||
+                         headerName.toLowerCase().includes("paid") ||
+                         headerName.toLowerCase().includes("responsibility") ||
+                         headerName.toLowerCase().includes("payment");
+      const isDate = headerName.toLowerCase().includes("date");
+      
+      // Determine width based on content type
+      let width = "w-[120px]";
+      if (headerName.toLowerCase().includes("comment")) width = "w-[200px]";
+      else if (headerName.toLowerCase() === "patient") width = "w-[180px]";
+      else if (headerName.toLowerCase() === "clinician") width = "w-[150px]";
+      else if (isLink) width = "w-[100px]";
+      else if (isCurrency) width = "w-[100px]";
+      else if (isDate) width = "w-[110px]";
+      else if (headerName.toLowerCase() === "source") width = "w-[100px]";
+      
+      return { key, label: headerName, width, isLink, isCurrency, isDate };
+    });
+  }, [billingData?.header]);
 
   const rebuildIndexMutation = useMutation({
     mutationFn: async () => {
@@ -335,8 +351,10 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     return Array.from(clinicians).sort();
   }, [normalizedRecords]);
 
+  const [visibleCount, setVisibleCount] = useState(50);
+
   const records = useMemo(() => {
-    return normalizedRecords.filter((record) => {
+    const filtered = normalizedRecords.filter((record) => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesSearch = 
@@ -387,6 +405,15 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
       
       return true;
     });
+    
+    // Sort by date of service (recent to oldest)
+    filtered.sort((a, b) => {
+      const dateA = a.date_of_service ? new Date(a.date_of_service).getTime() : 0;
+      const dateB = b.date_of_service ? new Date(b.date_of_service).getTime() : 0;
+      return dateB - dateA; // Descending order (recent first)
+    });
+    
+    return filtered;
   }, [normalizedRecords, searchQuery, serviceFilter, clinicianFilter, dateRangeFilter, claimStatusFilter]);
 
   useEffect(() => {
@@ -1089,7 +1116,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                 Billing Spreadsheet
               </CardTitle>
               <span className="text-sm text-muted-foreground">
-                Showing {records.length} of {normalizedRecords.length} records
+                Showing {Math.min(visibleCount, records.length)} of {records.length} records
               </span>
             </CardHeader>
             <CardContent className="p-0">
@@ -1106,7 +1133,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                       <TableHeader className="sticky top-0 bg-slate-100 z-10">
                         <TableRow>
                           <TableHead className="w-[50px] text-center font-bold text-slate-700">#</TableHead>
-                          {SPREADSHEET_COLUMNS.map((col) => (
+                          {spreadsheetColumns.map((col) => (
                             <TableHead 
                               key={col.key} 
                               className={`${col.width} font-bold text-slate-700 text-xs whitespace-nowrap`}
@@ -1117,7 +1144,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {records.slice(0, 200).map((record, index) => (
+                        {records.slice(0, visibleCount).map((record, index) => (
                           <TableRow 
                             key={index} 
                             data-testid={`row-billing-${index}`}
@@ -1126,7 +1153,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                             <TableCell className="text-center text-xs text-muted-foreground font-mono">
                               {index + 1}
                             </TableCell>
-                            {SPREADSHEET_COLUMNS.map((col) => {
+                            {spreadsheetColumns.map((col) => {
                               const rawValue = (record as any)[col.key];
                               const value = rawValue ?? "";
                               
@@ -1149,7 +1176,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                               
                               // Render currency columns
                               if (col.isCurrency) {
-                                const numVal = parseFloat(String(value));
+                                const numVal = parseFloat(String(value).replace(/[$,]/g, ""));
                                 const formatted = !isNaN(numVal) && numVal > 0 ? `$${numVal.toFixed(2)}` : "-";
                                 return (
                                   <TableCell key={col.key} className={`${col.width} text-xs font-mono`}>
@@ -1160,8 +1187,8 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                                 );
                               }
                               
-                              // Render source_tab with badge
-                              if (col.key === "source_tab") {
+                              // Render source column with badge
+                              if (col.key === "source_tab" || col.label.toLowerCase() === "source") {
                                 const displayValue = formatServiceType(value);
                                 return (
                                   <TableCell key={col.key} className={`${col.width} p-1`}>
@@ -1182,7 +1209,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                               
                               // Render text columns
                               const displayValue = typeof value === "string" ? value.replace(/"/g, "") : String(value);
-                              const isComment = col.key === "comments" || col.key === "biller_comments";
+                              const isComment = col.key.includes("comment") || col.label.toLowerCase().includes("comment");
                               
                               return (
                                 <TableCell 
@@ -1201,9 +1228,20 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                       </TableBody>
                     </Table>
                   </div>
-                  {records.length > 200 && (
+                  {records.length > visibleCount && (
+                    <div className="flex justify-center py-4 border-t">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setVisibleCount(prev => prev + 50)}
+                        data-testid="button-show-more"
+                      >
+                        Show More ({records.length - visibleCount} remaining)
+                      </Button>
+                    </div>
+                  )}
+                  {records.length <= visibleCount && records.length > 50 && (
                     <p className="text-center text-sm text-muted-foreground py-4 border-t">
-                      Showing first 200 records. Use filters to narrow results.
+                      Showing all {records.length} records
                     </p>
                   )}
                 </div>
