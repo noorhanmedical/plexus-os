@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { serviceConfig } from "@/components/service-icons";
 import {
   BarChart,
   Bar,
@@ -803,32 +804,32 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
           </TabsTrigger>
           <TabsTrigger 
             value="brainwave" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:text-blue-700 px-4 py-2"
+            className={`rounded-none border-b-2 border-transparent data-[state=active]:${serviceConfig.brainwave.borderActive} data-[state=active]:bg-transparent data-[state=active]:text-violet-700 px-4 py-2`}
             data-testid="tab-service-brainwave"
           >
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              Brainwave
+              <serviceConfig.brainwave.Icon className="h-4 w-4" />
+              {serviceConfig.brainwave.name}
             </span>
           </TabsTrigger>
           <TabsTrigger 
             value="ultrasound" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-600 data-[state=active]:bg-transparent data-[state=active]:text-purple-700 px-4 py-2"
+            className={`rounded-none border-b-2 border-transparent data-[state=active]:${serviceConfig.ultrasound.borderActive} data-[state=active]:bg-transparent data-[state=active]:text-purple-700 px-4 py-2`}
             data-testid="tab-service-ultrasound"
           >
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-              Ultrasound
+              <serviceConfig.ultrasound.Icon className="h-4 w-4" />
+              {serviceConfig.ultrasound.name}
             </span>
           </TabsTrigger>
           <TabsTrigger 
             value="vitalwave" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-emerald-600 data-[state=active]:bg-transparent data-[state=active]:text-emerald-700 px-4 py-2"
+            className={`rounded-none border-b-2 border-transparent data-[state=active]:${serviceConfig.vitalwave.borderActive} data-[state=active]:bg-transparent data-[state=active]:text-red-700 px-4 py-2`}
             data-testid="tab-service-vitalwave"
           >
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Vitalwave
+              <serviceConfig.vitalwave.Icon className="h-4 w-4" />
+              {serviceConfig.vitalwave.name}
             </span>
           </TabsTrigger>
         </TabsList>
