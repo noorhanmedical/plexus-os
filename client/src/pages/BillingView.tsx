@@ -70,7 +70,7 @@ export function BillingView() {
   const [invoicePatientId, setInvoicePatientId] = useState("");
   const [invoiceNotes, setInvoiceNotes] = useState("");
 
-  const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; data: BillingRecord[] }>({
+  const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[] }>({
     queryKey: ["/api/billing/search", searchQuery, statusFilter],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -124,7 +124,7 @@ export function BillingView() {
     },
   });
 
-  const records = billingData?.data || [];
+  const records = billingData?.rows || [];
 
   const totalPending = records
     .filter((b) => b.status?.toLowerCase() === "pending")

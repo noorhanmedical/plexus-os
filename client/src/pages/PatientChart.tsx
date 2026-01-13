@@ -164,7 +164,7 @@ export function PatientChart({ patient }: PatientChartProps) {
   const [activeSubItem, setActiveSubItem] = useState<string>("active");
   const [expandedSections, setExpandedSections] = useState<string[]>(["prescreens"]);
 
-  const { data: billingData, isLoading: billingLoading, isError: billingError, refetch: refetchBilling } = useQuery<{ ok: boolean; data: BillingRecord[] }>({
+  const { data: billingData, isLoading: billingLoading, isError: billingError, refetch: refetchBilling } = useQuery<{ ok: boolean; rows: BillingRecord[] }>({
     queryKey: ["/api/patients", patient.patient_uuid, "billing"],
     queryFn: async () => {
       const res = await fetch(`/api/patients/${patient.patient_uuid}/billing`);
@@ -175,7 +175,7 @@ export function PatientChart({ patient }: PatientChartProps) {
     staleTime: 60000,
   });
 
-  const billingRecords = billingData?.data || [];
+  const billingRecords = billingData?.rows || [];
 
   const calculateAge = (dob: string) => {
     const birthDate = new Date(dob);

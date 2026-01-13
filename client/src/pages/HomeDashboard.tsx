@@ -18,7 +18,7 @@ interface BillingRecord {
 
 interface BillingResponse {
   ok: boolean;
-  data: BillingRecord[];
+  rows: BillingRecord[];
 }
 
 function getStatusColor(status: string | undefined): string {
@@ -43,7 +43,7 @@ export function HomeDashboard() {
     staleTime: 60000,
   });
 
-  const records = billingData?.data || [];
+  const records = billingData?.rows || [];
   
   const totalPending = records
     .filter(r => r.status?.toLowerCase() === "pending")
