@@ -229,8 +229,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
-            <p className="text-white font-bold text-lg">Schedule</p>
+          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+            <p className="text-white font-bold text-lg drop-shadow-sm">Schedule</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -245,8 +245,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
-            <p className="text-white font-bold text-lg">Prescreens</p>
+          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+            <p className="text-white font-bold text-lg drop-shadow-sm">Prescreens</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -261,8 +261,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
-          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
-            <p className="text-white font-bold text-lg">Finance Dashboard</p>
+          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+            <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -294,8 +294,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={handleViewAllBilling}
           data-testid="button-billing-overview"
         >
-          <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
-            <p className="text-white font-bold text-lg">Billing Dashboard</p>
+          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+            <p className="text-white font-bold text-lg drop-shadow-sm">Billing Dashboard</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
             <div className="flex items-center gap-3">
@@ -318,8 +318,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       </div>
 
       <Card className={`${glassCardStyle} overflow-hidden`}>
-        <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
-          <p className="text-white font-bold text-lg">Ancillary Service Patient Tracker</p>
+        <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+          <p className="text-white font-bold text-lg drop-shadow-sm">Ancillary Service Patient Tracker</p>
         </div>
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
@@ -394,8 +394,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       </Card>
 
       <Card className={`${glassCardStyle} overflow-hidden`}>
-        <div className="w-full h-10 bg-[#1a0a28] flex items-center justify-center">
-          <p className="text-white font-bold text-lg">Billing Overview</p>
+        <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+          <p className="text-white font-bold text-lg drop-shadow-sm">Billing Overview</p>
         </div>
         <CardContent className="p-8">
           <div className="flex items-center justify-between mb-6">
@@ -437,8 +437,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   onClick={() => handleNavigateToService("brainwave")}
                   data-testid="button-billing-brainwave"
                 >
-                  <div className="w-full h-8 bg-[#1a0a28] flex items-center justify-center">
-                    <p className="text-white font-semibold text-sm">BrainWave</p>
+                  <div className="w-full h-10 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+                    <p className="text-white font-semibold text-sm drop-shadow-sm">BrainWave</p>
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
@@ -465,8 +465,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   onClick={() => handleNavigateToService("ultrasound")}
                   data-testid="button-billing-ultrasound"
                 >
-                  <div className="w-full h-8 bg-[#1a0a28] flex items-center justify-center">
-                    <p className="text-white font-semibold text-sm">Ultrasound</p>
+                  <div className="w-full h-10 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+                    <p className="text-white font-semibold text-sm drop-shadow-sm">Ultrasound</p>
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
@@ -493,8 +493,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   onClick={() => handleNavigateToService("vitalwave")}
                   data-testid="button-billing-vitalwave"
                 >
-                  <div className="w-full h-8 bg-[#1a0a28] flex items-center justify-center">
-                    <p className="text-white font-semibold text-sm">VitalWave</p>
+                  <div className="w-full h-10 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
+                    <p className="text-white font-semibold text-sm drop-shadow-sm">VitalWave</p>
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
