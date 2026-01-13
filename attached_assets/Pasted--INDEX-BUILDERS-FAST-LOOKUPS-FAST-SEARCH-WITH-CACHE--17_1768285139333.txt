@@ -1,0 +1,556 @@
+/***************************************
+ * INDEX BUILDERS + FAST LOOKUPS + FAST SEARCH (WITH CACHE)
+ *
+ * Drop this whole file into your Apps Script project (e.g., Indexes.gs).
+ * It replaces slow TextFinder-per-request lookups with:
+ *   1) Small index tabs (you already have)
+ *   2) ScriptCache-backed in-memory maps (instant lookups)
+ *   3) Patient search index + searchPatients() for Replit
+ *
+ * IMPORTANT:
+ * - Keep your existing PS_CFG + helper functions (getHeaderMap_, must_, fmtDate_, addMonths_) as-is.
+ * - This file assumes PS_CFG.demo, PS_CFG.catalog, PS_CFG.events exist (same as your current code).
+ ***************************************/
+
+const IDX_CFG = {
+  payorIndex: 'Patient Payor Index',
+  catalogIndex: 'Catalog Index',
+  lastCompletedIndex: 'Last Completed Index',
+
+  // NEW: patient search
+  patientSearchIndex: 'Patient Search Index'
+};
+
+// ===== Cache keys / TTLs =====
+const CACHE_KEYS = {
+  PAYOR_MAP: 'IDX_PAYOR_MAP_V1',
+  CATALOG_MAP: 'IDX_CATALOG_MAP_V1',
+  LASTCOMP_MAP: 'IDX_LASTCOMP_MAP_V1',
+  PATIENT_SEARCH_ROWS: 'IDX_PATIENT_SEARCH_ROWS_V1'
+};
+const CACHE_TTL_SEC = {
+  PAYOR: 6 * 60 * 60,        // 6 hours
+  CATALOG: 6 * 60 * 60,      // 6 hours
+  LASTCOMP: 60 * 60,         // 1 hour (can change more)
+  PATIENT_SEARCH: 10 * 60    // 10 minutes
+};
+
+function rebuildAllIndexes() {
+  buildPatientPayorIndex();
+  buildCatalogIndex();
+  buildLastCompletedIndex();
+  buildPatientSearchIndex(); // NEW
+  clearIndexCaches_();
+  SpreadsheetApp.getUi().alert('All indexes rebuilt (and caches cleared).');
+}
+
+/***************************************
+ * BUILDERS
+ ***************************************/
+
+function buildPatientPayorIndex() {
+  const ss = SpreadsheetApp.getActive();
+  const demo = ss.getSheetByName(PS_CFG.demo);
+  if (!demo) throw new Error(`Missing sheet: ${PS_CFG.demo}`);
+
+  let sh = ss.getSheetByName(IDX_CFG.payorIndex);
+  if (!sh) sh = ss.insertSheet(IDX_CFG.payorIndex);
+
+  sh.clearContents();
+  sh.getRange(1, 1, 1, 2).setValues([['patient_uuid', 'payor_type']]);
+
+  const map = getHeaderMap_(demo);
+  const colUUID = must_(map, 'patient_uuid');
+  const colPayor = must_(map, 'payor_type');
+
+  const lastRow = demo.getLastRow();
+  if (lastRow < 2) return;
+
+  const data = demo.getRange(2, 1, lastRow - 1, demo.getLastColumn()).getValues();
+
+  const out = [];
+  for (const r of data) {
+    const uuid = r[colUUID - 1];
+    if (!uuid) continue;
+    out.push([String(uuid).trim(), String(r[colPayor - 1] || '').trim()]);
+  }
+
+  if (out.length) sh.getRange(2, 1, out.length, 2).setValues(out);
+}
+
+function buildCatalogIndex() {
+  const ss = SpreadsheetApp.getActive();
+  const cat = ss.getSheetByName(PS_CFG.catalog);
+  if (!cat) throw new Error(`Missing sheet: ${PS_CFG.catalog}`);
+
+  let sh = ss.getSheetByName(IDX_CFG.catalogIndex);
+  if (!sh) sh = ss.insertSheet(IDX_CFG.catalogIndex);
+
+  sh.clearContents();
+  sh.getRange(1, 1, 1, 4).setValues([[
+    'ancillary_code',
+    'repeat_policy',
+    'cooldown_months_ppo',
+    'cooldown_months_medicare'
+  ]]);
+
+  const map = getHeaderMap_(cat);
+  const colCode = must_(map, 'ancillary_code');
+  const colPolicy = must_(map, 'repeat_policy');
+  const colPPO = must_(map, 'cooldown_months_ppo');
+  const colMed = must_(map, 'cooldown_months_medicare');
+
+  const lastRow = cat.getLastRow();
+  if (lastRow < 2) return;
+
+  const data = cat.getRange(2, 1, lastRow - 1, cat.getLastColumn()).getValues();
+
+  const out = [];
+  for (const r of data) {
+    const code = r[colCode - 1];
+    if (!code) continue;
+    out.push([
+      String(code).trim(),
+      String(r[colPolicy - 1] || '').trim().toUpperCase(),
+      r[colPPO - 1],
+      r[colMed - 1]
+    ]);
+  }
+
+  if (out.length) sh.getRange(2, 1, out.length, 4).setValues(out);
+}
+
+function buildLastCompletedIndex() {
+  const ss = SpreadsheetApp.getActive();
+  const ev = ss.getSheetByName(PS_CFG.events);
+  if (!ev) throw new Error(`Missing sheet: ${PS_CFG.events}`);
+
+  let sh = ss.getSheetByName(IDX_CFG.lastCompletedIndex);
+  if (!sh) sh = ss.insertSheet(IDX_CFG.lastCompletedIndex);
+
+  sh.clearContents();
+  sh.getRange(1, 1, 1, 4).setValues([['key','patient_uuid','ancillary_code','last_completed_date']]);
+
+  const map = getHeaderMap_(ev);
+  const colUUID = must_(map, 'patient_uuid');
+  const colAnc = must_(map, 'ancillary_code');
+  const colDOS = must_(map, 'date_of_service');
+  const colStatus = map['status'] || null;
+
+  const lastRow = ev.getLastRow();
+  if (lastRow < 2) return;
+
+  const data = ev.getRange(2, 1, lastRow - 1, ev.getLastColumn()).getValues();
+
+  const lastMap = {}; // key -> Date
+  for (const r of data) {
+    const p = r[colUUID - 1];
+    const a = r[colAnc - 1];
+    const d = r[colDOS - 1];
+    if (!p || !a || !d) continue;
+
+    if (colStatus) {
+      const st = String(r[colStatus - 1] || '').trim().toLowerCase();
+      if (st && st !== 'completed') continue;
+    }
+
+    const key = `${String(p).trim()}|${String(a).trim()}`;
+    const dt = (Object.prototype.toString.call(d) === '[object Date]') ? d : new Date(d);
+    if (isNaN(dt.getTime())) continue;
+
+    if (!lastMap[key] || dt > lastMap[key]) lastMap[key] = dt;
+  }
+
+  const keys = Object.keys(lastMap);
+  if (!keys.length) return;
+
+  const out = new Array(keys.length);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const parts = key.split('|');
+    out[i] = [key, parts[0], parts[1], fmtDate_(lastMap[key])];
+  }
+
+  sh.getRange(2, 1, out.length, 4).setValues(out);
+}
+
+/**
+ * NEW: Build a lightweight patient search index for Replit.
+ * Source: PS_CFG.demo (your demographics sheet).
+ * Output columns:
+ * A patient_uuid
+ * B display_name (LAST, FIRST)
+ * C dob (as text)
+ * D room (if exists; else blank)
+ * E search_key (lowercase)
+ */
+function buildPatientSearchIndex() {
+  const ss = SpreadsheetApp.getActive();
+  const demo = ss.getSheetByName(PS_CFG.demo);
+  if (!demo) throw new Error(`Missing sheet: ${PS_CFG.demo}`);
+
+  let sh = ss.getSheetByName(IDX_CFG.patientSearchIndex);
+  if (!sh) sh = ss.insertSheet(IDX_CFG.patientSearchIndex);
+
+  sh.clearContents();
+  sh.getRange(1, 1, 1, 5).setValues([['patient_uuid','display_name','dob','room','search_key']]);
+
+  const map = getHeaderMap_(demo);
+  const colUUID = must_(map, 'patient_uuid');
+
+  // Try common header variants for names/DOB/room
+  const colLast = map['last_name'] || map['last'] || map['lname'] || null;
+  const colFirst = map['first_name'] || map['first'] || map['fname'] || null;
+  const colDOB = map['date_of_birth'] || map['dob'] || null;
+  const colRoom = map['room'] || map['rm'] || map['location'] || null;
+
+  const lastRow = demo.getLastRow();
+  if (lastRow < 2) return;
+
+  const data = demo.getRange(2, 1, lastRow - 1, demo.getLastColumn()).getValues();
+
+  const out = [];
+  for (const r of data) {
+    const uuid = r[colUUID - 1];
+    if (!uuid) continue;
+
+    const last = colLast ? String(r[colLast - 1] || '').trim() : '';
+    const first = colFirst ? String(r[colFirst - 1] || '').trim() : '';
+    const dobRaw = colDOB ? r[colDOB - 1] : '';
+    const room = colRoom ? String(r[colRoom - 1] || '').trim() : '';
+
+    const dob = normalizeDob_(dobRaw);
+    const display = `${last}, ${first}`.trim().replace(/^, /, '');
+    const searchKey = `${last}|${first}|${dob}|${display} ${dob} ${room}`.toLowerCase();
+
+    out.push([String(uuid).trim(), display, dob, room, searchKey]);
+  }
+
+  if (out.length) sh.getRange(2, 1, out.length, 5).setValues(out);
+}
+
+/***************************************
+ * FAST LOOKUPS (CACHED MAPS)
+ ***************************************/
+
+function getPayorFromIndex_(patientUuid) {
+  const m = getPayorMap_();
+  return String(m[String(patientUuid).trim()] || '').trim();
+}
+
+function getCatalogFromIndex_(ancillaryCode) {
+  const m = getCatalogMap_();
+  return m[String(ancillaryCode).trim()] || null;
+}
+
+function getLastCompletedFromIndex_(patientUuid, ancillaryCode) {
+  const m = getLastCompletedMap_();
+  const key = `${String(patientUuid).trim()}|${String(ancillaryCode).trim()}`;
+  const s = m[key];
+  if (!s) return null;
+  const dt = new Date(s);
+  return isNaN(dt.getTime()) ? null : dt;
+}
+
+/**
+ * Loads payor index into a map (uuid -> payor), cached in ScriptCache.
+ */
+function getPayorMap_() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get(CACHE_KEYS.PAYOR_MAP);
+  if (cached) return JSON.parse(cached);
+
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getSheetByName(IDX_CFG.payorIndex);
+  if (!sh || sh.getLastRow() < 2) return {};
+
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues();
+  const map = {};
+  for (const r of vals) {
+    const k = String(r[0] || '').trim();
+    if (!k) continue;
+    map[k] = String(r[1] || '').trim();
+  }
+
+  cache.put(CACHE_KEYS.PAYOR_MAP, JSON.stringify(map), CACHE_TTL_SEC.PAYOR);
+  return map;
+}
+
+/**
+ * Loads catalog index into a map (code -> {repeat_policy, cooldown...}), cached.
+ */
+function getCatalogMap_() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get(CACHE_KEYS.CATALOG_MAP);
+  if (cached) return JSON.parse(cached);
+
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getSheetByName(IDX_CFG.catalogIndex);
+  if (!sh || sh.getLastRow() < 2) return {};
+
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues();
+  const map = {};
+  for (const r of vals) {
+    const code = String(r[0] || '').trim();
+    if (!code) continue;
+    map[code] = {
+      repeat_policy: String(r[1] || '').trim().toUpperCase(),
+      cooldown_months_ppo: r[2],
+      cooldown_months_medicare: r[3]
+    };
+  }
+
+  cache.put(CACHE_KEYS.CATALOG_MAP, JSON.stringify(map), CACHE_TTL_SEC.CATALOG);
+  return map;
+}
+
+/**
+ * Loads last completed index into a map (patient|ancillary -> dateString), cached.
+ */
+function getLastCompletedMap_() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get(CACHE_KEYS.LASTCOMP_MAP);
+  if (cached) return JSON.parse(cached);
+
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getSheetByName(IDX_CFG.lastCompletedIndex);
+  if (!sh || sh.getLastRow() < 2) return {};
+
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues();
+  const map = {};
+  for (const r of vals) {
+    const key = String(r[0] || '').trim();
+    const dt = r[3];
+    if (!key || !dt) continue;
+    map[key] = String(dt); // store as string; parse on read
+  }
+
+  cache.put(CACHE_KEYS.LASTCOMP_MAP, JSON.stringify(map), CACHE_TTL_SEC.LASTCOMP);
+  return map;
+}
+
+/***************************************
+ * FAST PATIENT SEARCH FOR REPLIT
+ ***************************************/
+
+/**
+ * Call this from Replit:
+ *   searchPatients('jo')  -> returns up to 20 matches quickly
+ */
+function searchPatients(q) {
+  q = String(q || '').trim().toLowerCase();
+  if (q.length < 2) return [];
+
+  // Per-query cache (so repeated keystrokes are fast)
+  const cache = CacheService.getScriptCache();
+  const ck = `PS_Q_${q}`;
+  const hit = cache.get(ck);
+  if (hit) return JSON.parse(hit);
+
+  const rows = getPatientSearchRows_(); // cached full index rows
+  const out = [];
+  for (const r of rows) {
+    // r = [uuid, display, dob, room, search_key]
+    if (r[4] && r[4].includes(q)) {
+      out.push({ patient_uuid: r[0], display_name: r[1], dob: r[2], room: r[3] });
+      if (out.length >= 20) break;
+    }
+  }
+
+  cache.put(ck, JSON.stringify(out), 90); // 90 sec cache per query
+  return out;
+}
+
+/**
+ * Optional helper if Replit needs a patient’s full demo row by uuid quickly.
+ * This does NOT scan the entire demo sheet; it uses an in-memory map built once per cache TTL.
+ *
+ * Note: For absolute speed, you can add a separate "Patient Row Lookup" index too,
+ * but this is usually enough.
+ */
+function getDemoRowByPatientUuid(patientUuid) {
+  const uuid = String(patientUuid || '').trim();
+  if (!uuid) return null;
+
+  const ss = SpreadsheetApp.getActive();
+  const demo = ss.getSheetByName(PS_CFG.demo);
+  if (!demo) return null;
+
+  const map = getHeaderMap_(demo);
+  const colUUID = must_(map, 'patient_uuid');
+
+  // Build a uuid->row map and cache it (fast for repeated chart opens)
+  const cache = CacheService.getScriptCache();
+  const ck = 'DEMO_ROW_MAP_V1';
+  let rowMap = cache.get(ck);
+  if (rowMap) rowMap = JSON.parse(rowMap);
+  else {
+    const lastRow = demo.getLastRow();
+    if (lastRow < 2) return null;
+    const vals = demo.getRange(2, colUUID, lastRow - 1, 1).getValues();
+    const m = {};
+    for (let i = 0; i < vals.length; i++) {
+      const v = String(vals[i][0] || '').trim();
+      if (v) m[v] = i + 2;
+    }
+    rowMap = m;
+    cache.put(ck, JSON.stringify(rowMap), 10 * 60); // 10 min
+  }
+
+  const rowNum = rowMap[uuid];
+  if (!rowNum) return null;
+
+  const lastCol = demo.getLastColumn();
+  return demo.getRange(rowNum, 1, 1, lastCol).getValues()[0];
+}
+
+/**
+ * Loads Patient Search Index rows into cache.
+ */
+function getPatientSearchRows_() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get(CACHE_KEYS.PATIENT_SEARCH_ROWS);
+  if (cached) return JSON.parse(cached);
+
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getSheetByName(IDX_CFG.patientSearchIndex);
+  if (!sh || sh.getLastRow() < 2) return [];
+
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 5).getValues();
+  cache.put(CACHE_KEYS.PATIENT_SEARCH_ROWS, JSON.stringify(vals), CACHE_TTL_SEC.PATIENT_SEARCH);
+  return vals;
+}
+
+/***************************************
+ * ELIGIBILITY (unchanged logic, faster lookups)
+ ***************************************/
+
+function computeEligibility_(cacheIgnored, patientUuid, ancillaryCode, today) {
+  if (!patientUuid || !ancillaryCode) {
+    return { lastCompleted:'', cooldownMonths:null, eligibleAfter:'', statusCalc:'', reason:'' };
+  }
+
+  const p = String(patientUuid).trim();
+  const a = String(ancillaryCode).trim();
+
+  const payor = getPayorFromIndex_(p); // Medicare / PPO / Other
+  const cat = getCatalogFromIndex_(a);
+  const lastDt = getLastCompletedFromIndex_(p, a);
+
+  if (!cat) {
+    return {
+      lastCompleted: lastDt ? fmtDate_(lastDt) : '',
+      cooldownMonths: null,
+      eligibleAfter: '',
+      statusCalc: 'Needs Review',
+      reason: 'Ancillary code not found in catalog'
+    };
+  }
+
+  let cooldownMonths = 0;
+
+  if (cat.repeat_policy === 'NO_LIMIT') {
+    cooldownMonths = 0;
+  } else if (cat.repeat_policy === 'ONCE_ONLY') {
+    cooldownMonths = 999;
+  } else {
+    if (payor === 'Medicare') cooldownMonths = cat.cooldown_months_medicare;
+    else if (payor === 'PPO') cooldownMonths = cat.cooldown_months_ppo;
+    else {
+      return {
+        lastCompleted: lastDt ? fmtDate_(lastDt) : '',
+        cooldownMonths: '',
+        eligibleAfter: '',
+        statusCalc: 'Needs Review',
+        reason: 'Payor type requires manual review'
+      };
+    }
+
+    cooldownMonths = (cooldownMonths === '' || cooldownMonths === null || cooldownMonths === undefined)
+      ? ''
+      : Number(cooldownMonths);
+  }
+
+  let eligibleAfterDt = null;
+  if (lastDt && cooldownMonths !== '' && cooldownMonths !== 0 && cooldownMonths < 999) {
+    eligibleAfterDt = addMonths_(lastDt, cooldownMonths);
+  }
+
+  let statusCalc = 'Eligible';
+  let reason = 'Meets eligibility requirements';
+
+  if (cooldownMonths === '') {
+    statusCalc = 'Needs Review';
+    reason = 'Cooldown months missing for this payor';
+  } else if (cooldownMonths === 0) {
+    statusCalc = 'Eligible';
+    reason = 'No limit ancillary';
+  } else if (cooldownMonths >= 999) {
+    if (lastDt) {
+      statusCalc = 'Not Eligible';
+      reason = 'Once-only ancillary already completed';
+    } else {
+      statusCalc = 'Eligible';
+      reason = 'Once-only ancillary not yet completed';
+    }
+  } else {
+    if (!lastDt) {
+      statusCalc = 'Eligible';
+      reason = 'No prior completion found';
+    } else if (eligibleAfterDt && today >= eligibleAfterDt) {
+      statusCalc = 'Eligible';
+      reason = 'Cooldown satisfied';
+    } else {
+      statusCalc = 'Not Eligible';
+      reason = 'Cooldown period not met';
+    }
+  }
+
+  return {
+    lastCompleted: lastDt ? fmtDate_(lastDt) : '',
+    cooldownMonths,
+    eligibleAfter: eligibleAfterDt ? fmtDate_(eligibleAfterDt) : '',
+    statusCalc,
+    reason
+  };
+}
+
+/***************************************
+ * UTILITIES
+ ***************************************/
+
+function clearIndexCaches_() {
+  CacheService.getScriptCache().removeAll([
+    CACHE_KEYS.PAYOR_MAP,
+    CACHE_KEYS.CATALOG_MAP,
+    CACHE_KEYS.LASTCOMP_MAP,
+    CACHE_KEYS.PATIENT_SEARCH_ROWS,
+    'DEMO_ROW_MAP_V1'
+  ]);
+}
+
+/**
+ * Normalizes DOB input to YYYY-MM-DD string.
+ * Handles Date objects and text values.
+ */
+function normalizeDob_(dobRaw) {
+  if (!dobRaw) return '';
+  if (Object.prototype.toString.call(dobRaw) === '[object Date]') {
+    const y = dobRaw.getFullYear();
+    const m = String(dobRaw.getMonth() + 1).padStart(2, '0');
+    const d = String(dobRaw.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  const s = String(dobRaw).trim();
+  // If already YYYY-MM-DD, keep it
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // Try to parse
+  const dt = new Date(s);
+  if (isNaN(dt.getTime())) return s;
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth() + 1).padStart(2, '0');
+  const d = String(dt.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
