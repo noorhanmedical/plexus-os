@@ -66,6 +66,63 @@ function TwinklingStars({ className = "" }: { className?: string }) {
   );
 }
 
+function MountainSilhouette() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-full"
+        style={{
+          background: `
+            linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, transparent 40%),
+            linear-gradient(135deg, transparent 60%, rgba(30, 41, 59, 0.6) 60%, rgba(30, 41, 59, 0.4) 100%)
+          `
+        }}
+      />
+      <svg 
+        className="absolute bottom-0 left-0 w-full h-3/4 opacity-40"
+        viewBox="0 0 100 100" 
+        preserveAspectRatio="none"
+      >
+        <polygon 
+          points="0,100 15,45 30,70 50,30 70,55 85,25 100,60 100,100" 
+          fill="url(#mountainGradient1)"
+        />
+        <defs>
+          <linearGradient id="mountainGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#1e293b" />
+            <stop offset="100%" stopColor="#0f172a" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <svg 
+        className="absolute bottom-0 left-0 w-full h-1/2 opacity-60"
+        viewBox="0 0 100 100" 
+        preserveAspectRatio="none"
+      >
+        <polygon 
+          points="0,100 10,60 25,80 40,50 55,70 75,40 90,65 100,50 100,100" 
+          fill="url(#mountainGradient2)"
+        />
+        <defs>
+          <linearGradient id="mountainGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#334155" />
+            <stop offset="100%" stopColor="#1e293b" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-16"
+        style={{
+          background: 'linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent)'
+        }}
+      />
+      <div className="absolute top-4 left-4 w-0.5 h-0.5 bg-white/60 rounded-full animate-[pulse_4s_ease-in-out_infinite]"></div>
+      <div className="absolute top-8 right-6 w-0.5 h-0.5 bg-white/40 rounded-full animate-[pulse_3s_ease-in-out_infinite]"></div>
+      <div className="absolute top-12 left-8 w-0.5 h-0.5 bg-white/50 rounded-full animate-[pulse_5s_ease-in-out_infinite]"></div>
+    </div>
+  );
+}
+
 function AppSidebar({ 
   activeTab, 
   onTabChange,
@@ -76,27 +133,29 @@ function AppSidebar({
   onClearSidebar: () => void;
 }) {
   return (
-    <Sidebar className="bg-slate-900 border-r border-slate-800">
-      <SidebarHeader className="p-4 border-b border-slate-800 relative overflow-hidden">
-        <TwinklingStars />
+    <Sidebar className="bg-gradient-to-b from-slate-900 via-slate-900 to-[#0c1222] border-r border-slate-800/50">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <MountainSilhouette />
+      </div>
+      
+      <SidebarHeader className="p-4 border-b border-slate-700/30 relative">
         <button
           onClick={onClearSidebar}
-          className="flex items-center gap-3 w-full text-left hover-elevate rounded-lg p-1 -m-1 relative z-10"
+          className="flex items-center gap-3 w-full text-left hover:bg-white/5 rounded-lg p-2 -m-1 relative z-10 transition-colors"
           data-testid="nav-home-logo"
         >
-          <div className="h-10 w-10 rounded-lg bg-[#1a3d2e]/60 flex items-center justify-center border border-[#2d5a47]/50">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#4a9a7c] animate-pulse"></div>
+          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#1a3d2e]/80 to-[#0f2920]/80 flex items-center justify-center border border-[#2d5a47]/60 shadow-lg shadow-teal-900/20">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#4a9a7c] animate-pulse shadow-[0_0_10px_rgba(74,154,124,0.5)]"></div>
           </div>
           <div>
-            <p className="text-slate-500 text-[10px] font-bold tracking-[0.15em] uppercase">Clinical EMR</p>
-            <h1 className="font-light text-lg text-white tracking-tight">Plexus</h1>
+            <p className="text-slate-400 text-[10px] font-semibold tracking-[0.2em] uppercase">Clinical EMR</p>
+            <h1 className="font-light text-lg text-white/90 tracking-tight">Plexus</h1>
           </div>
         </button>
       </SidebarHeader>
 
-      <SidebarContent className="p-3 bg-slate-900 relative">
-        <TwinklingStars />
-        <SidebarMenu className="relative z-10">
+      <SidebarContent className="p-3 relative">
+        <SidebarMenu className="relative z-10 space-y-1">
           {sidebarTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -107,10 +166,14 @@ function AppSidebar({
                   onClick={() => onTabChange(tab.id)}
                   isActive={isActive}
                   tooltip={tab.label}
-                  className={`text-slate-300 hover:text-white hover:bg-white/10 ${isActive ? "bg-white/10 text-white" : ""}`}
+                  className={`text-slate-300/80 hover:text-white hover:bg-white/5 transition-all ${
+                    isActive 
+                      ? "bg-gradient-to-r from-white/10 to-transparent text-white border-l-2 border-teal-400/60" 
+                      : "border-l-2 border-transparent"
+                  }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span>{tab.label}</span>
+                  <Icon className={`h-5 w-5 ${isActive ? "text-teal-400" : ""}`} />
+                  <span className="font-medium">{tab.label}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
