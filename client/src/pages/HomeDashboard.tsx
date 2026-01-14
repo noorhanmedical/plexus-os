@@ -177,8 +177,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   };
 
   const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden";
-  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 hover:bg-[#E6E6FA]/60 active:bg-[#E6E6FA] transition-all duration-300 rounded-2xl";
-  const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden hover:bg-[#E6E6FA]/40 active:bg-[#E6E6FA]/80 transition-all duration-200";
+  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 transition-all duration-300 rounded-2xl smoke-fill";
+  const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl smoke-fill";
 
   // Calculate patients due for ancillary services based on billing dates
   const ancillaryDuePatients = useMemo(() => {
@@ -218,7 +218,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   }, [records]);
 
   return (
-    <div className="space-y-8 p-2">
+    <div className="space-y-8 p-4 cross-stitch-bg min-h-full">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#1a0a28]">Home Page</h1>
         <p className="text-slate-600 text-sm">Clinical dashboard overview</p>
