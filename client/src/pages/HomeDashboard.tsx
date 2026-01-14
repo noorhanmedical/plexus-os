@@ -461,7 +461,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button
-                  className={`${glassButtonStyle} text-left cursor-pointer group overflow-hidden rounded-2xl`}
+                  className="text-left cursor-pointer group rounded-2xl border border-white/40 shadow-lg smoke-fill-violet"
                   onClick={() => handleNavigateToService("brainwave")}
                   data-testid="button-billing-brainwave"
                 >
@@ -489,7 +489,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 </button>
                 
                 <button
-                  className={`${glassButtonStyle} text-left cursor-pointer group overflow-hidden rounded-2xl`}
+                  className="text-left cursor-pointer group rounded-2xl border border-white/40 shadow-lg smoke-fill-blue"
                   onClick={() => handleNavigateToService("ultrasound")}
                   data-testid="button-billing-ultrasound"
                 >
@@ -517,7 +517,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 </button>
                 
                 <button
-                  className={`${glassButtonStyle} text-left cursor-pointer group overflow-hidden rounded-2xl`}
+                  className="text-left cursor-pointer group rounded-2xl border border-white/40 shadow-lg smoke-fill-red"
                   onClick={() => handleNavigateToService("vitalwave")}
                   data-testid="button-billing-vitalwave"
                 >
