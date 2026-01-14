@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Clock, TestTube, Brain, Heart } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { UltrasoundProbeIcon } from "@/components/service-icons";
 
@@ -300,9 +300,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
             <div className="flex items-center gap-3">
-              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-purple-100/50 border border-purple-200/30">
-                <p className="text-2xl font-bold text-purple-700">{brainwaveCount}</p>
-                <p className="text-xs text-purple-600">Brain</p>
+              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-fuchsia-100/50 border border-fuchsia-200/30">
+                <p className="text-2xl font-bold text-fuchsia-700">{brainwaveCount}</p>
+                <p className="text-xs text-fuchsia-600">Brain</p>
               </div>
               <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-blue-100/50 border border-blue-200/30">
                 <p className="text-2xl font-bold text-blue-700">{ultrasoundCount}</p>
@@ -332,8 +332,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         <div className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                <Clock className="h-7 w-7 text-purple-600" />
+              <div className="flex gap-2">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                  <Brain className="h-6 w-6 text-fuchsia-600" />
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                  <UltrasoundProbeIcon className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                  <Heart className="h-6 w-6 text-red-600" />
+                </div>
               </div>
               <div>
                 <p className="text-slate-600 text-sm">Patients due for follow-up services (6mo/12mo)</p>
@@ -356,8 +364,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
           ) : ancillaryDuePatients.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center mx-auto mb-3 shadow-lg">
-                <TestTube className="h-8 w-8 text-purple-600" />
+              <div className="flex justify-center gap-3 mb-4">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-fuchsia-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                  <Brain className="h-7 w-7 text-fuchsia-600" />
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                  <UltrasoundProbeIcon className="h-7 w-7 text-blue-600" />
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                  <Heart className="h-7 w-7 text-red-600" />
+                </div>
               </div>
               <p className="text-slate-600">No patients due for follow-up</p>
               <p className="text-slate-500 text-sm mt-1">All patients are up to date with their services</p>
@@ -371,7 +387,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-purple-600" /> :
+                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-fuchsia-600" /> :
                        patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" /> :
                        patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-red-600" /> :
                        <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" />}
@@ -457,11 +473,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                        <Brain className="h-6 w-6 text-purple-600" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <Brain className="h-6 w-6 text-fuchsia-600" />
                       </div>
                       <div className="flex-1">
-                        <Badge className="backdrop-blur-sm bg-purple-100/70 text-purple-700 border-purple-200/50">{brainwaveCount} records</Badge>
+                        <Badge className="backdrop-blur-sm bg-fuchsia-100/70 text-fuchsia-700 border-fuchsia-200/50">{brainwaveCount} records</Badge>
                       </div>
                     </div>
                     <div className="space-y-2">
