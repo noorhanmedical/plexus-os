@@ -218,7 +218,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   }, [records]);
 
   return (
-    <div className="space-y-8 p-4 cross-stitch-bg min-h-full">
+    <div className="space-y-8 p-4 min-h-full">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#1a0a28]">Home Page</h1>
         <p className="text-slate-600 text-sm">Clinical dashboard overview</p>
