@@ -93,6 +93,20 @@ function getStatusColor(status: string | undefined): string {
 }
 
 export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
+  const cursorGlowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (cursorGlowRef.current) {
+        cursorGlowRef.current.style.left = `${e.clientX}px`;
+        cursorGlowRef.current.style.top = `${e.clientY}px`;
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const { data: billingData, isLoading: billingLoading, isError: billingError } = useQuery<BillingResponse>({
     queryKey: ["/api/billing/list"],
     queryFn: async () => {
@@ -177,20 +191,6 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden glass-tile-hover";
   const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 transition-all duration-300 rounded-2xl smoke-fill glass-tile-hover";
   const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl smoke-fill glass-tile-hover";
-
-  const cursorGlowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (cursorGlowRef.current) {
-        cursorGlowRef.current.style.left = `${e.clientX}px`;
-        cursorGlowRef.current.style.top = `${e.clientY}px`;
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   // Calculate patients due for ancillary services based on billing dates
   const ancillaryDuePatients = useMemo(() => {

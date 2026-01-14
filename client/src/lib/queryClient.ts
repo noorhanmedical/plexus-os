@@ -1,4 +1,7 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { safeFetch, CACHE_TTL, clearCache } from "./safeFetch";
+
+export { safeFetch, CACHE_TTL, clearCache } from "./safeFetch";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -24,33 +27,45 @@ export async function apiRequest(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
-export const getQueryFn: <T>(options: {
+
+function getCacheTtl(url: string): number {
+  if (url.includes('/api/patients') && !url.includes('/detail')) return CACHE_TTL.PATIENT_LIST;
+  if (url.includes('/detail')) return CACHE_TTL.PATIENT_DETAIL;
+  if (url.includes('/api/billing/list')) return CACHE_TTL.BILLING_LIST;
+  if (url.includes('/api/billing/') && !url.includes('/list')) return CACHE_TTL.BILLING_DETAIL;
+  if (url.includes('/api/ancillary/catalog')) return CACHE_TTL.CATALOG;
+  return CACHE_TTL.PATIENT_LIST;
+}
+
+export function getQueryFn<T>(options: {
   on401: UnauthorizedBehavior;
-}) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
-    });
-
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+}): QueryFunction<T> {
+  return async ({ queryKey }) => {
+    const url = queryKey.join("/") as string;
+    const cacheTtl = getCacheTtl(url);
+    
+    try {
+      return await safeFetch<T>(url, { cacheTtlMs: cacheTtl });
+    } catch (err) {
+      if (options.on401 === "returnNull" && 
+          err instanceof Error && err.message.includes('401')) {
+        return null as T;
+      }
+      throw err;
     }
-
-    await throwIfResNotOk(res);
-    return await res.json();
   };
+}
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: 30000, // Refetch every 30 seconds
-      refetchOnWindowFocus: true, // Refetch when user returns to tab
-      refetchOnReconnect: true, // Refetch when network reconnects
-      staleTime: 10000, // Data is fresh for 10 seconds
-      gcTime: 300000, // Keep unused data in cache for 5 minutes
-      retry: 1, // Retry failed requests once
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: 60000,
+      gcTime: 600000,
+      retry: false,
     },
     mutations: {
       retry: false,
