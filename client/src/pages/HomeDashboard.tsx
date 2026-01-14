@@ -234,8 +234,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-white font-bold text-lg drop-shadow-sm">Schedule</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Calendar className="h-8 w-8 text-purple-600" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Calendar className="h-8 w-8 text-indigo-800" />
             </div>
             <p className="text-slate-600 text-sm">Daily appointments</p>
           </div>
@@ -250,8 +250,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-white font-bold text-lg drop-shadow-sm">Prescreens</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Sparkles className="h-8 w-8 text-violet-600" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Sparkles className="h-8 w-8 text-indigo-800" />
             </div>
             <p className="text-slate-600 text-sm">Patient eligibility</p>
           </div>
@@ -267,8 +267,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <DollarSign className="h-7 w-7 text-indigo-600" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <DollarSign className="h-7 w-7 text-indigo-800" />
             </div>
             {totalRevenue > 0 ? (
               <>
