@@ -318,11 +318,18 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </button>
       </div>
 
-      <Card className={`${glassCardStyle} overflow-hidden`}>
-        <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-          <p className="text-white font-bold text-lg drop-shadow-sm">Ancillary Service Patient Tracker</p>
+      <button 
+        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer smoke-fill`}
+        onClick={() => onNavigate?.("ancillary")}
+        data-testid="button-ancillary-card"
+      >
+        <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
+          <Brain className="h-5 w-5 text-white" />
+          <UltrasoundProbeIcon className="h-5 w-5 text-white" />
+          <Heart className="h-5 w-5 text-white" />
+          <p className="text-white font-bold text-lg drop-shadow-sm ml-2">Ancillary Service Patient Tracker</p>
         </div>
-        <CardContent className="p-8">
+        <div className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
@@ -391,14 +398,21 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      <Card className={`${glassCardStyle} overflow-hidden`}>
-        <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-          <p className="text-white font-bold text-lg drop-shadow-sm">Billing Overview</p>
         </div>
-        <CardContent className="p-8">
+      </button>
+
+      <button 
+        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer smoke-fill`}
+        onClick={handleViewAllBilling}
+        data-testid="button-billing-card"
+      >
+        <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
+          <Brain className="h-5 w-5 text-white" />
+          <UltrasoundProbeIcon className="h-5 w-5 text-white" />
+          <Heart className="h-5 w-5 text-white" />
+          <p className="text-white font-bold text-lg drop-shadow-sm ml-2">Billing Overview</p>
+        </div>
+        <div className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
@@ -527,8 +541,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </button>
     </div>
   );
 }
