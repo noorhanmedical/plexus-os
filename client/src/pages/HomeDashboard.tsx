@@ -465,91 +465,83 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : records.length === 0 ? (
             <p className="text-slate-600 text-center py-12">No billing records</p>
           ) : (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button
-                  className="text-left cursor-pointer group rounded-2xl border border-white/40 shadow-lg smoke-fill-violet"
-                  onClick={() => handleNavigateToService("brainwave")}
-                  data-testid="button-billing-brainwave"
-                >
-                  <div className="w-full h-10 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-                    <p className="text-white font-semibold text-sm drop-shadow-sm">BrainWave</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* BrainWave */}
+              <div className="rounded-2xl smoke-fill-violet p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
+                    <Brain className="h-5 w-5 text-violet-700" />
                   </div>
-                  <div className="p-5">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                        <Brain className="h-6 w-6 text-violet-700" />
-                      </div>
-                      <div className="flex-1">
-                        <Badge className="backdrop-blur-sm bg-violet-100/70 text-violet-800 border-violet-200/50">{brainwaveCount} records</Badge>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
-                        <div key={i} className="flex justify-between items-center text-sm">
-                          <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
-                          <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
-                        </div>
-                      )) : <p className="text-sm text-slate-500">No recent records</p>}
-                    </div>
+                  <div>
+                    <p className="font-semibold text-violet-800">BrainWave</p>
+                    <p className="text-xs text-slate-600">{brainwaveCount} records</p>
                   </div>
-                </button>
-                
-                <button
-                  className="text-left cursor-pointer group rounded-2xl border border-white/40 shadow-lg smoke-fill-blue"
-                  onClick={() => handleNavigateToService("ultrasound")}
-                  data-testid="button-billing-ultrasound"
-                >
-                  <div className="w-full h-10 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-                    <p className="text-white font-semibold text-sm drop-shadow-sm">Ultrasound</p>
+                </div>
+                <div className="space-y-2">
+                  {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
+                    <button 
+                      key={i} 
+                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors"
+                      onClick={() => handleNavigateToService("brainwave")}
+                      data-testid={`button-billing-brainwave-${i}`}
+                    >
+                      <span className="text-slate-700 truncate max-w-[100px]">{r.patient_name || "Unknown"}</span>
+                      <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                    </button>
+                  )) : <p className="text-sm text-slate-500">No recent records</p>}
+                </div>
+              </div>
+
+              {/* Ultrasound */}
+              <div className="rounded-2xl smoke-fill-blue p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
+                    <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" />
                   </div>
-                  <div className="p-5">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                        <UltrasoundProbeIcon className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <Badge className="backdrop-blur-sm bg-blue-100/70 text-blue-700 border-blue-200/50">{ultrasoundCount} records</Badge>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
-                        <div key={i} className="flex justify-between items-center text-sm">
-                          <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
-                          <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
-                        </div>
-                      )) : <p className="text-sm text-slate-500">No recent records</p>}
-                    </div>
+                  <div>
+                    <p className="font-semibold text-blue-700">Ultrasound</p>
+                    <p className="text-xs text-slate-600">{ultrasoundCount} records</p>
                   </div>
-                </button>
-                
-                <button
-                  className="text-left cursor-pointer group rounded-2xl border border-white/40 shadow-lg smoke-fill-red"
-                  onClick={() => handleNavigateToService("vitalwave")}
-                  data-testid="button-billing-vitalwave"
-                >
-                  <div className="w-full h-10 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-                    <p className="text-white font-semibold text-sm drop-shadow-sm">VitalWave</p>
+                </div>
+                <div className="space-y-2">
+                  {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
+                    <button 
+                      key={i} 
+                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors"
+                      onClick={() => handleNavigateToService("ultrasound")}
+                      data-testid={`button-billing-ultrasound-${i}`}
+                    >
+                      <span className="text-slate-700 truncate max-w-[100px]">{r.patient_name || "Unknown"}</span>
+                      <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                    </button>
+                  )) : <p className="text-sm text-slate-500">No recent records</p>}
+                </div>
+              </div>
+
+              {/* VitalWave */}
+              <div className="rounded-2xl smoke-fill-red p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
+                    <Heart className="h-5 w-5 text-red-600" />
                   </div>
-                  <div className="p-5">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-                        <Heart className="h-6 w-6 text-red-600" />
-                      </div>
-                      <div className="flex-1">
-                        <Badge className="backdrop-blur-sm bg-red-100/70 text-red-700 border-red-200/50">{vitalwaveCount} records</Badge>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
-                        <div key={i} className="flex justify-between items-center text-sm">
-                          <span className="text-slate-700 truncate max-w-[120px]">{r.patient_name || "Unknown"}</span>
-                          <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
-                        </div>
-                      )) : <p className="text-sm text-slate-500">No recent records</p>}
-                    </div>
+                  <div>
+                    <p className="font-semibold text-red-700">VitalWave</p>
+                    <p className="text-xs text-slate-600">{vitalwaveCount} records</p>
                   </div>
-                </button>
+                </div>
+                <div className="space-y-2">
+                  {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
+                    <button 
+                      key={i} 
+                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors"
+                      onClick={() => handleNavigateToService("vitalwave")}
+                      data-testid={`button-billing-vitalwave-${i}`}
+                    >
+                      <span className="text-slate-700 truncate max-w-[100px]">{r.patient_name || "Unknown"}</span>
+                      <span className="text-slate-600 font-medium">{formatDate(r.date)}</span>
+                    </button>
+                  )) : <p className="text-sm text-slate-500">No recent records</p>}
+                </div>
               </div>
             </div>
           )}
