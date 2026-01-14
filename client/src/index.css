@@ -311,7 +311,9 @@
   .smoke-fill-violet {
     position: relative;
     overflow: hidden;
-    background-color: #E6E6FA;
+    background: rgba(230, 230, 250, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .smoke-fill-violet::before {
@@ -346,7 +348,9 @@
   .smoke-fill-blue {
     position: relative;
     overflow: hidden;
-    background-color: #E6E6FA;
+    background: rgba(230, 230, 250, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .smoke-fill-blue::before {
@@ -381,7 +385,9 @@
   .smoke-fill-red {
     position: relative;
     overflow: hidden;
-    background-color: #E6E6FA;
+    background: rgba(230, 230, 250, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .smoke-fill-red::before {

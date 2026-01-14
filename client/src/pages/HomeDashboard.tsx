@@ -328,24 +328,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           <ClipboardList className="h-5 w-5 text-white" />
           <p className="text-white font-bold text-lg drop-shadow-sm">Ancillary Service Patient Tracker</p>
         </div>
-        <div className="p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="flex gap-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                  <Brain className="h-6 w-6 text-violet-700" />
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                  <UltrasoundProbeIcon className="h-6 w-6 text-blue-600" />
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                  <Heart className="h-6 w-6 text-red-600" />
-                </div>
-              </div>
-              <div>
-                <p className="text-slate-600 text-sm">Patients due for follow-up services (6mo/12mo)</p>
-              </div>
-            </div>
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-slate-600 text-sm">Patients due for follow-up services (6mo/12mo)</p>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -361,56 +346,85 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
             </div>
-          ) : ancillaryDuePatients.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="flex justify-center gap-3 mb-4">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                  <Brain className="h-7 w-7 text-violet-700" />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* BrainWave Patient Tracking */}
+              <div className="rounded-2xl border border-white/40 shadow-lg smoke-fill-violet p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
+                    <Brain className="h-5 w-5 text-violet-700" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-violet-800">BrainWave</p>
+                    <p className="text-xs text-slate-600">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} due</p>
+                  </div>
                 </div>
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                  <UltrasoundProbeIcon className="h-7 w-7 text-blue-600" />
-                </div>
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                  <Heart className="h-7 w-7 text-red-600" />
+                <div className="space-y-2">
+                  {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").slice(0, 2).map((patient, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-sm">
+                      <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
+                      <Badge className={patient.dueIn.includes("Overdue") ? "bg-red-100/80 text-red-700 border-red-200/50 text-xs" : "bg-amber-100/80 text-amber-700 border-amber-200/50 text-xs"}>
+                        {patient.dueIn}
+                      </Badge>
+                    </div>
+                  ))}
+                  {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length === 0 && (
+                    <p className="text-sm text-slate-500">No patients due</p>
+                  )}
                 </div>
               </div>
-              <p className="text-slate-600">No patients due for follow-up</p>
-              <p className="text-slate-500 text-sm mt-1">All patients are up to date with their services</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {ancillaryDuePatients.map((patient, idx) => (
-                <div 
-                  key={`${patient.name}-${idx}`}
-                  className={`${glassButtonStyle} p-4 flex items-center justify-between`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-200/60 to-violet-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                      {patient.serviceType === "BrainWave" ? <Brain className="h-5 w-5 text-violet-700" /> :
-                       patient.serviceType === "Ultrasound" ? <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" /> :
-                       patient.serviceType === "VitalWave" ? <Heart className="h-5 w-5 text-red-600" /> :
-                       <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" />}
-                    </div>
-                    <div>
-                      <p className="font-medium text-[#1a0a28]">{patient.name}</p>
-                      <p className="text-sm text-slate-600">
-                        Last {patient.serviceType}: {formatDate(patient.lastService.toISOString())}
-                      </p>
-                    </div>
+
+              {/* Ultrasound Patient Tracking */}
+              <div className="rounded-2xl border border-white/40 shadow-lg smoke-fill-blue p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
+                    <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" />
                   </div>
-                  <Badge className={patient.dueIn.includes("Overdue") ? "bg-red-100 text-red-700 border-red-200" : "bg-amber-100 text-amber-700 border-amber-200"}>
-                    {patient.dueIn}
-                  </Badge>
+                  <div>
+                    <p className="font-semibold text-blue-700">Ultrasound</p>
+                    <p className="text-xs text-slate-600">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} due</p>
+                  </div>
                 </div>
-              ))}
-              
-              <Button 
-                className="w-full bg-[#1a0a28] hover:bg-[#2a1a38] text-white rounded-2xl h-12 text-base font-medium mt-4" 
-                onClick={() => onNavigate?.("ancillary")}
-                data-testid="button-go-to-ancillary"
-              >
-                Go to Ancillary Dashboard
-              </Button>
+                <div className="space-y-2">
+                  {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 2).map((patient, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-sm">
+                      <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
+                      <Badge className={patient.dueIn.includes("Overdue") ? "bg-red-100/80 text-red-700 border-red-200/50 text-xs" : "bg-amber-100/80 text-amber-700 border-amber-200/50 text-xs"}>
+                        {patient.dueIn}
+                      </Badge>
+                    </div>
+                  ))}
+                  {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length === 0 && (
+                    <p className="text-sm text-slate-500">No patients due</p>
+                  )}
+                </div>
+              </div>
+
+              {/* VitalWave Patient Tracking */}
+              <div className="rounded-2xl border border-white/40 shadow-lg smoke-fill-red p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
+                    <Heart className="h-5 w-5 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-red-700">VitalWave</p>
+                    <p className="text-xs text-slate-600">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} due</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 2).map((patient, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-sm">
+                      <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
+                      <Badge className={patient.dueIn.includes("Overdue") ? "bg-red-100/80 text-red-700 border-red-200/50 text-xs" : "bg-amber-100/80 text-amber-700 border-amber-200/50 text-xs"}>
+                        {patient.dueIn}
+                      </Badge>
+                    </div>
+                  ))}
+                  {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length === 0 && (
+                    <p className="text-sm text-slate-500">No patients due</p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -425,16 +439,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           <Receipt className="h-5 w-5 text-white" />
           <p className="text-white font-bold text-lg drop-shadow-sm">Billing Overview</p>
         </div>
-        <div className="p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
-                <DollarSign className="h-7 w-7 text-indigo-600" />
-              </div>
-              <div>
-                <p className="text-slate-600 text-sm">Last 3 patients by service (DOS)</p>
-              </div>
-            </div>
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-slate-600 text-sm">Last 3 patients by service (DOS)</p>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -544,14 +551,6 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                 </button>
               </div>
-              
-              <Button 
-                className="w-full bg-[#1a0a28] hover:bg-[#2a1a38] text-white rounded-2xl h-12 text-base font-medium" 
-                onClick={handleViewAllBilling}
-                data-testid="button-view-billing"
-              >
-                Go to Billing Dashboard
-              </Button>
             </div>
           )}
         </div>
