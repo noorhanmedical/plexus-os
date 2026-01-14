@@ -177,7 +177,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   };
 
   const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden";
-  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 hover:bg-white/90 transition-all duration-300 rounded-2xl";
+  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 hover:bg-[#E6E6FA]/60 active:bg-[#E6E6FA] transition-all duration-300 rounded-2xl";
+  const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden hover:bg-[#E6E6FA]/40 active:bg-[#E6E6FA]/80 transition-all duration-200";
 
   // Calculate patients due for ancillary services based on billing dates
   const ancillaryDuePatients = useMemo(() => {
@@ -225,7 +226,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
+          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
@@ -241,7 +242,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </button>
 
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
+          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
@@ -257,7 +258,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </button>
 
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
+          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
@@ -290,7 +291,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </button>
 
         <button
-          className={`${glassCardStyle} ${glassButtonStyle} flex flex-col min-h-[180px] cursor-pointer group overflow-hidden`}
+          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
           onClick={handleViewAllBilling}
           data-testid="button-billing-overview"
         >
