@@ -126,13 +126,8 @@ export function ScheduleView() {
   }, [searchQuery]);
 
   const { data: searchResults, isFetching: isSearching } = useQuery<{ ok: boolean; data?: Patient[] }>({
-    queryKey: ["/api/patients/search", debouncedQuery],
-    queryFn: async () => {
-      const response = await fetch(`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`);
-      return response.json();
-    },
+    queryKey: [`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`],
     enabled: debouncedQuery.length >= 1,
-    staleTime: 30000,
   });
 
   const { data: prescreensData, isLoading: isPrescreensLoading } = useQuery<{ ok: boolean; data?: Prescreen[] }>({

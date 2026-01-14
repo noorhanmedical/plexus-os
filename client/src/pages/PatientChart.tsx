@@ -206,14 +206,8 @@ export function PatientChart({ patient }: PatientChartProps) {
   const [expandedSections, setExpandedSections] = useState<string[]>(["prescreens"]);
 
   const { data: billingData, isLoading: billingLoading, isError: billingError, refetch: refetchBilling } = useQuery<{ ok: boolean; rows: BillingRecord[] }>({
-    queryKey: ["/api/patients", patient.patient_uuid, "billing"],
-    queryFn: async () => {
-      const res = await fetch(`/api/patients/${patient.patient_uuid}/billing`);
-      if (!res.ok) throw new Error("Failed to fetch billing data");
-      return res.json();
-    },
+    queryKey: [`/api/patients/${patient.patient_uuid}/billing`],
     enabled: activeSection === "finance",
-    staleTime: 60000,
   });
 
   // Normalize records to handle API field mapping

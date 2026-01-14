@@ -2,7 +2,7 @@ import { useMemo, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp, RefreshCw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { UltrasoundProbeIcon } from "@/components/service-icons";
 
@@ -107,13 +107,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const { data: billingData, isLoading: billingLoading, isError: billingError } = useQuery<BillingResponse>({
-    queryKey: ["/api/billing/list"],
-    queryFn: async () => {
-      const res = await fetch("/api/billing/list?limit=500&cursor=0");
-      if (!res.ok) throw new Error("Failed to fetch billing");
-      return res.json();
-    },
+  const { data: billingData, isLoading: billingLoading, isError: billingError, refetch: refetchBilling } = useQuery<BillingResponse>({
+    queryKey: ["/api/billing/list?limit=100&cursor=0"],
   });
 
   const { data: catalogResponse, isLoading: catalogLoading } = useQuery<CatalogResponse>({
@@ -124,12 +119,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const firstAncillaryCode = catalogItems[0]?.ancillary_code || "";
 
   const { data: ancillaryPatientsData, isLoading: ancillaryLoading, isError: ancillaryError } = useQuery<AncillaryPatientsResponse>({
-    queryKey: ["/api/ancillary/patients", firstAncillaryCode],
-    queryFn: async () => {
-      if (!firstAncillaryCode) return { ok: true, results: [] };
-      const res = await fetch(`/api/ancillary/patients?ancillary_code=${firstAncillaryCode}&limit=10`);
-      return res.json();
-    },
+    queryKey: [`/api/ancillary/patients?ancillary_code=${firstAncillaryCode}&limit=10`],
     enabled: !!firstAncillaryCode,
   });
 
@@ -229,12 +219,29 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       .slice(0, 5);
   }, [records]);
 
+  const handleRefresh = () => {
+    refetchBilling();
+  };
+
   return (
     <div className="space-y-8 p-4 min-h-full relative">
       <div ref={cursorGlowRef} className="cursor-glow" />
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1a0a28]">Home Page</h1>
-        <p className="text-slate-600 text-sm">Clinical dashboard overview</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1a0a28]">Home Page</h1>
+          <p className="text-slate-600 text-sm">Clinical dashboard overview</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={billingLoading}
+          className="gap-2"
+          data-testid="button-refresh-dashboard"
+        >
+          <RefreshCw className={`h-4 w-4 ${billingLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
       </div>
       
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">

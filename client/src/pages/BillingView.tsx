@@ -203,16 +203,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
   };
 
   const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[]; header?: string[] }>({
-    queryKey: ["/api/billing/list"],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      params.set("limit", "500");
-      params.set("cursor", "0");
-      const res = await fetch(`/api/billing/list?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch billing data");
-      return res.json();
-    },
-    staleTime: 30000,
+    queryKey: ["/api/billing/list?limit=500&cursor=0"],
   });
 
   // Dynamic column definitions from API header
@@ -221,10 +212,10 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     if (apiHeader.length === 0) {
       // Fallback if no header from API
       return [
-        { key: "source_tab", label: "Source", width: "w-[100px]" },
-        { key: "date_of_service", label: "Date of Service", width: "w-[110px]" },
-        { key: "patient", label: "Patient", width: "w-[180px]" },
-        { key: "clinician", label: "Clinician", width: "w-[150px]" },
+        { key: "source_tab", label: "Source", width: "w-[100px]", isLink: false, isCurrency: false, isDate: false },
+        { key: "date_of_service", label: "Date of Service", width: "w-[110px]", isLink: false, isCurrency: false, isDate: true },
+        { key: "patient", label: "Patient", width: "w-[180px]", isLink: false, isCurrency: false, isDate: false },
+        { key: "clinician", label: "Clinician", width: "w-[150px]", isLink: false, isCurrency: false, isDate: false },
       ];
     }
     
@@ -265,7 +256,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     onSuccess: (data) => {
       if (data.ok) {
         toast({ title: "Success", description: "Billing index rebuilt - includes all sheets" });
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/list"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=500&cursor=0"] });
         refetch();
       } else {
         toast({ title: "Error", description: data.error || "Failed to rebuild index", variant: "destructive" });
@@ -288,7 +279,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
         setInvoiceItems([{ description: "", amount: 0 }]);
         setInvoicePatientId("");
         setInvoiceNotes("");
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/list"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=500&cursor=0"] });
       } else {
         toast({ title: "Error", description: data.error || "Failed to create invoice", variant: "destructive" });
       }
@@ -308,7 +299,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
         toast({ title: "Success", description: "Billing record added successfully" });
         setIsAddRecordDialogOpen(false);
         setNewRecord(EMPTY_BILLING_RECORD);
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/list"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=500&cursor=0"] });
       } else {
         toast({ title: "Note", description: "Record saved locally. API write endpoint not yet configured.", variant: "default" });
         setIsAddRecordDialogOpen(false);
@@ -555,6 +546,20 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isLoading}
+            data-testid="button-refresh-billing"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Refresh
+          </Button>
           <Button
             variant="outline"
             size="sm"

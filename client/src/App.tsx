@@ -74,14 +74,8 @@ function AppSidebar({
   const debouncedQuery = useDebounce(searchQuery, 100);
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
-    queryKey: ["/api/patients/search", debouncedQuery],
-    queryFn: async () => {
-      if (debouncedQuery.length < 2) return { ok: true, data: [] };
-      const res = await fetch(`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`);
-      return res.json();
-    },
+    queryKey: [`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`],
     enabled: debouncedQuery.length >= 2,
-    staleTime: 60000,
     placeholderData: (prev) => prev,
   });
 

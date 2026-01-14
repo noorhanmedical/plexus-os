@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Activity, Search, Loader2, User, Users, TestTube, Calendar, CheckCircle, Edit } from "lucide-react";
+import { Activity, Search, Loader2, User, Users, TestTube, Calendar, CheckCircle, Edit, RefreshCw } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -72,18 +72,9 @@ export function AncillaryDashboard() {
 
   const catalogItems = catalogResponse?.data || [];
 
-  const { data: response, isLoading, isFetching } = useQuery<AncillaryPatientsResponse>({
-    queryKey: ["/api/ancillary/patients", selectedCode, searchQuery],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (selectedCode) params.set("ancillary_code", selectedCode);
-      if (searchQuery) params.set("q", searchQuery);
-      params.set("limit", "50");
-      const res = await fetch(`/api/ancillary/patients?${params.toString()}`);
-      return res.json();
-    },
+  const { data: response, isLoading, isFetching, refetch } = useQuery<AncillaryPatientsResponse>({
+    queryKey: [`/api/ancillary/patients?ancillary_code=${selectedCode}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ''}&limit=50`],
     enabled: selectedCode.length > 0,
-    staleTime: 30000,
   });
 
   const patients = response?.results || [];
@@ -94,7 +85,7 @@ export function AncillaryDashboard() {
     },
     onSuccess: () => {
       toast({ title: "Updated", description: "Patient record updated successfully" });
-      queryClient.invalidateQueries({ queryKey: ["/api/ancillary/patients", selectedCode] });
+      refetch();
       setEditPatient(null);
     },
     onError: () => {
@@ -135,6 +126,23 @@ export function AncillaryDashboard() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Ancillary Service Tracker</h1>
+          <p className="text-sm text-muted-foreground">Track patient eligibility for ancillary services</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          disabled={isLoading || isFetching}
+          className="gap-2"
+          data-testid="button-refresh-ancillary"
+        >
+          <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
