@@ -417,4 +417,46 @@
     position: relative;
     z-index: 1;
   }
+
+  /* Cursor glow effect */
+  .cursor-glow {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(230, 230, 250, 0.4) 0%, rgba(200, 180, 220, 0.2) 40%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    transition: opacity 0.3s ease;
+    filter: blur(40px);
+  }
+
+  /* Hazy blur effect on tile hover */
+  .glass-tile-hover {
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+
+  .glass-tile-hover::after {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(ellipse at center, rgba(230, 230, 250, 0.5) 0%, transparent 70%);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(20px);
+  }
+
+  .glass-tile-hover:hover::after {
+    opacity: 1;
+  }
+
+  .glass-tile-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(200, 180, 220, 0.3);
+  }
 }

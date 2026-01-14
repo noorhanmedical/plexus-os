@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -174,9 +174,23 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     }
   };
 
-  const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden";
-  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 transition-all duration-300 rounded-2xl smoke-fill";
-  const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl smoke-fill";
+  const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden glass-tile-hover";
+  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 transition-all duration-300 rounded-2xl smoke-fill glass-tile-hover";
+  const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl smoke-fill glass-tile-hover";
+
+  const cursorGlowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (cursorGlowRef.current) {
+        cursorGlowRef.current.style.left = `${e.clientX}px`;
+        cursorGlowRef.current.style.top = `${e.clientY}px`;
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   // Calculate patients due for ancillary services based on billing dates
   const ancillaryDuePatients = useMemo(() => {
@@ -216,7 +230,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   }, [records]);
 
   return (
-    <div className="space-y-8 p-4 min-h-full">
+    <div className="space-y-8 p-4 min-h-full relative">
+      <div ref={cursorGlowRef} className="cursor-glow" />
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#1a0a28]">Home Page</h1>
         <p className="text-slate-600 text-sm">Clinical dashboard overview</p>
@@ -367,19 +382,19 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-x divide-white/20">
               {/* BrainWave Patient Tracking */}
-              <div className="rounded-2xl border border-white/40 shadow-lg smoke-fill-violet p-4">
+              <div className="px-4 py-2">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                    <Brain className="h-5 w-5 text-violet-700" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                    <Brain className="h-4 w-4 text-violet-700" />
                   </div>
                   <div>
-                    <p className="font-semibold text-violet-800">BrainWave</p>
-                    <p className="text-xs text-slate-600">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} due</p>
+                    <p className="font-semibold text-violet-800 text-sm">BrainWave</p>
+                    <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} due</p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").slice(0, 2).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
@@ -395,17 +410,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="rounded-2xl border border-white/40 shadow-lg smoke-fill-blue p-4">
+              <div className="px-4 py-2">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                    <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                    <UltrasoundProbeIcon className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-blue-700">Ultrasound</p>
-                    <p className="text-xs text-slate-600">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} due</p>
+                    <p className="font-semibold text-blue-700 text-sm">Ultrasound</p>
+                    <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} due</p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 2).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
@@ -421,17 +436,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="rounded-2xl border border-white/40 shadow-lg smoke-fill-red p-4">
+              <div className="px-4 py-2">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                    <Heart className="h-5 w-5 text-red-600" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                    <Heart className="h-4 w-4 text-red-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-red-700">VitalWave</p>
-                    <p className="text-xs text-slate-600">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} due</p>
+                    <p className="font-semibold text-red-700 text-sm">VitalWave</p>
+                    <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} due</p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 2).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
@@ -485,19 +500,19 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : records.length === 0 ? (
             <p className="text-slate-600 text-center py-12">No billing records</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-x divide-white/20">
               {/* BrainWave */}
-              <div className="rounded-2xl smoke-fill-violet p-4">
+              <div className="px-4 py-2">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                    <Brain className="h-5 w-5 text-violet-700" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                    <Brain className="h-4 w-4 text-violet-700" />
                   </div>
                   <div>
-                    <p className="font-semibold text-violet-800">BrainWave</p>
-                    <p className="text-xs text-slate-600">{brainwaveCount} records</p>
+                    <p className="font-semibold text-violet-800 text-sm">BrainWave</p>
+                    <p className="text-xs text-slate-500">{brainwaveCount} records</p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
                     <button 
                       key={i} 
@@ -513,17 +528,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound */}
-              <div className="rounded-2xl smoke-fill-blue p-4">
+              <div className="px-4 py-2">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                    <UltrasoundProbeIcon className="h-5 w-5 text-blue-600" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                    <UltrasoundProbeIcon className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-blue-700">Ultrasound</p>
-                    <p className="text-xs text-slate-600">{ultrasoundCount} records</p>
+                    <p className="font-semibold text-blue-700 text-sm">Ultrasound</p>
+                    <p className="text-xs text-slate-500">{ultrasoundCount} records</p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
                     <button 
                       key={i} 
@@ -539,17 +554,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave */}
-              <div className="rounded-2xl smoke-fill-red p-4">
+              <div className="px-4 py-2">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md">
-                    <Heart className="h-5 w-5 text-red-600" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                    <Heart className="h-4 w-4 text-red-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-red-700">VitalWave</p>
-                    <p className="text-xs text-slate-600">{vitalwaveCount} records</p>
+                    <p className="font-semibold text-red-700 text-sm">VitalWave</p>
+                    <p className="text-xs text-slate-500">{vitalwaveCount} records</p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
                     <button 
                       key={i} 
