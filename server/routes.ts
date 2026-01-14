@@ -35,32 +35,50 @@ async function searchPatientsAPI(query: string, limit: number): Promise<any[]> {
   return [];
 }
 
-// Simple in-memory cache for other searches
-const searchCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 60000; // 60 seconds
+// Robust in-memory cache for API responses
+const apiCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 30000; // 30 seconds - balance between freshness and speed
 
-function getCachedSearch(key: string): any | null {
-  const cached = searchCache.get(key);
+function getCached(key: string): any | null {
+  const cached = apiCache.get(key);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    console.log(`[cache] HIT: ${key}`);
     return cached.data;
   }
   if (cached) {
-    searchCache.delete(key);
+    apiCache.delete(key);
   }
   return null;
 }
 
-function setCachedSearch(key: string, data: any): void {
-  searchCache.set(key, { data, timestamp: Date.now() });
-  if (searchCache.size > 100) {
+function setCache(key: string, data: any): void {
+  apiCache.set(key, { data, timestamp: Date.now() });
+  // Clean up old entries periodically
+  if (apiCache.size > 200) {
     const now = Date.now();
-    const entries = Array.from(searchCache.entries());
+    const entries = Array.from(apiCache.entries());
     for (const [k, v] of entries) {
       if (now - v.timestamp > CACHE_TTL) {
-        searchCache.delete(k);
+        apiCache.delete(k);
       }
     }
   }
+}
+
+// Cached version of plexusGet
+async function cachedPlexusGet(action: string, params: Record<string, string> = {}): Promise<any> {
+  const cacheKey = `GET:${action}:${JSON.stringify(params)}`;
+  
+  const cached = getCached(cacheKey);
+  if (cached) {
+    return cached;
+  }
+  
+  const data = await plexusGet(action, params);
+  if (data.ok) {
+    setCache(cacheKey, data);
+  }
+  return data;
 }
 
 // Validation schemas
@@ -135,7 +153,7 @@ export async function registerRoutes(
   // Health check
   app.get("/api/health", async (_req, res) => {
     try {
-      const data = await plexusGet("health");
+      const data = await cachedPlexusGet("health");
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to connect to Plexus API" });
@@ -171,7 +189,7 @@ export async function registerRoutes(
       }
       
       const { patient_uuid } = validation.data;
-      const data = await plexusGet("patients.get", { patient_uuid });
+      const data = await cachedPlexusGet("patients.get", { patient_uuid });
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to get patient details" });
@@ -190,7 +208,7 @@ export async function registerRoutes(
       const params: Record<string, string> = { limit };
       if (status) params.status = status;
       
-      const data = await plexusGet("prescreen.list", params);
+      const data = await cachedPlexusGet("prescreen.list", params);
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to list prescreens" });
@@ -286,7 +304,7 @@ export async function registerRoutes(
       const q = String(req.query.q || "");
       const limit = String(req.query.limit || "50");
       
-      const data = await plexusGet("ancillary.patients", { ancillary_code, q, limit });
+      const data = await cachedPlexusGet("ancillary.patients", { ancillary_code, q, limit });
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to get eligible patients" });
@@ -296,7 +314,7 @@ export async function registerRoutes(
   // Get ancillary catalog (for dropdown)
   app.get("/api/ancillary/catalog", async (_req, res) => {
     try {
-      const data = await plexusGet("ancillary.catalog");
+      const data = await cachedPlexusGet("ancillary.catalog");
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to get ancillary catalog" });
@@ -364,7 +382,7 @@ export async function registerRoutes(
       const params: Record<string, string> = { q, limit };
       if (status) params.status = status;
       
-      const data = await plexusGet("billing.search", params);
+      const data = await cachedPlexusGet("billing.search", params);
       
       // Transform header/rows format to array of objects
       if (data.ok && data.header && data.rows) {
@@ -385,7 +403,7 @@ export async function registerRoutes(
       const limit = req.query.limit?.toString() || "200";
       const cursor = req.query.cursor?.toString() || "0";
       
-      const data = await plexusGet("billing.list", { limit, cursor });
+      const data = await cachedPlexusGet("billing.list", { limit, cursor });
       
       // Transform header/rows format to array of objects
       if (data.ok && data.header && data.rows) {
@@ -424,7 +442,7 @@ export async function registerRoutes(
       if (!id) {
         return res.status(400).json({ ok: false, error: "billing id is required" });
       }
-      const data = await plexusGet("billing.get", { id });
+      const data = await cachedPlexusGet("billing.get", { id });
       res.json(data);
     } catch (error) {
       console.error("[billing] Get record failed:", error);
@@ -439,7 +457,7 @@ export async function registerRoutes(
       if (!patient_uuid) {
         return res.status(400).json({ ok: false, error: "patient_uuid is required" });
       }
-      const data = await plexusGet("billing.search", { patient_uuid });
+      const data = await cachedPlexusGet("billing.search", { patient_uuid });
       
       // Transform header/rows format to array of objects
       if (data.ok && data.header && data.rows) {

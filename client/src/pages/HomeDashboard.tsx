@@ -100,7 +100,6 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       if (!res.ok) throw new Error("Failed to fetch billing");
       return res.json();
     },
-    staleTime: 60000,
   });
 
   const { data: catalogResponse, isLoading: catalogLoading } = useQuery<CatalogResponse>({
@@ -118,7 +117,6 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       return res.json();
     },
     enabled: !!firstAncillaryCode,
-    staleTime: 60000,
   });
 
   const ancillaryPatients = ancillaryPatientsData?.results || [];
@@ -270,7 +268,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
               <DollarSign className="h-7 w-7 text-indigo-800" />
             </div>
-            {totalRevenue > 0 ? (
+            {billingLoading ? (
+              <div className="flex flex-col items-center gap-2 animate-pulse">
+                <div className="flex items-center gap-2">
+                  <div className="w-16 h-5 rounded-full bg-slate-200/70" />
+                  <div className="w-16 h-5 rounded-full bg-slate-200/70" />
+                  <div className="w-16 h-5 rounded-full bg-slate-200/70" />
+                </div>
+                <div className="w-24 h-4 rounded bg-slate-200/70" />
+              </div>
+            ) : totalRevenue > 0 ? (
               <>
                 <div className="flex items-center gap-2 text-xs">
                   <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-purple-100/70 text-purple-700 font-semibold border border-purple-200/50">{formatCurrency(brainwaveRevenue)}</span>
@@ -300,21 +307,34 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             <p className="text-white font-bold text-lg drop-shadow-sm">Billing Dashboard</p>
           </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <div className="flex items-center gap-3">
-              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-violet-100/50 border border-violet-200/30">
-                <p className="text-2xl font-bold text-violet-800">{brainwaveCount}</p>
-                <p className="text-xs text-violet-700">Brain</p>
+            {billingLoading ? (
+              <div className="flex flex-col items-center gap-3 animate-pulse">
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 rounded-xl bg-slate-200/70" />
+                  <div className="w-16 h-16 rounded-xl bg-slate-200/70" />
+                  <div className="w-16 h-16 rounded-xl bg-slate-200/70" />
+                </div>
+                <div className="w-20 h-4 rounded bg-slate-200/70" />
               </div>
-              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-blue-100/50 border border-blue-200/30">
-                <p className="text-2xl font-bold text-blue-700">{ultrasoundCount}</p>
-                <p className="text-xs text-blue-600">Ultra</p>
-              </div>
-              <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-red-100/50 border border-red-200/30">
-                <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
-                <p className="text-xs text-red-600">Vital</p>
-              </div>
-            </div>
-            <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
+            ) : (
+              <>
+                <div className="flex items-center gap-3">
+                  <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-violet-100/50 border border-violet-200/30">
+                    <p className="text-2xl font-bold text-violet-800">{brainwaveCount}</p>
+                    <p className="text-xs text-violet-700">Brain</p>
+                  </div>
+                  <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-blue-100/50 border border-blue-200/30">
+                    <p className="text-2xl font-bold text-blue-700">{ultrasoundCount}</p>
+                    <p className="text-xs text-blue-600">Ultra</p>
+                  </div>
+                  <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-red-100/50 border border-red-200/30">
+                    <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
+                    <p className="text-xs text-red-600">Vital</p>
+                  </div>
+                </div>
+                <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
+              </>
+            )}
           </div>
         </button>
       </div>
