@@ -10,8 +10,8 @@ const STORAGE_PREFIX = 'emr_cache_';
 const requestQueue: Array<() => void> = [];
 let activeRequests = 0;
 let lastRequestTime = 0;
-const MAX_CONCURRENT = 2;
-const MIN_INTERVAL_MS = 1000;
+const MAX_CONCURRENT = 1;  // Ultra-conservative: one request at a time
+const MIN_INTERVAL_MS = 3000;  // 3 seconds between requests to avoid blocks
 
 function processQueue() {
   if (requestQueue.length === 0 || activeRequests >= MAX_CONCURRENT) return;
@@ -115,7 +115,7 @@ export interface SafeFetchOptions {
   signal?: AbortSignal;
 }
 
-const BACKOFF_DELAYS = [1000, 2000, 4000];
+const BACKOFF_DELAYS = [3000, 6000];  // Slower backoff, max 1 retry
 
 async function fetchWithBackoff(
   url: string,
@@ -208,11 +208,11 @@ export async function safeFetch<T = unknown>(
 }
 
 export const CACHE_TTL = {
-  PATIENT_LIST: 5 * 60 * 1000,
-  PATIENT_DETAIL: 2 * 60 * 1000,
-  BILLING_LIST: 5 * 60 * 1000,
-  BILLING_DETAIL: 2 * 60 * 1000,
-  CATALOG: 10 * 60 * 1000,
+  PATIENT_LIST: 15 * 60 * 1000,   // 15 min - extended to reduce API calls
+  PATIENT_DETAIL: 10 * 60 * 1000, // 10 min
+  BILLING_LIST: 15 * 60 * 1000,   // 15 min - extended to reduce API calls
+  BILLING_DETAIL: 10 * 60 * 1000, // 10 min
+  CATALOG: 30 * 60 * 1000,        // 30 min - rarely changes
 } as const;
 
 export async function safeFetchWithStaleWhileRevalidate<T>(

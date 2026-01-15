@@ -68,3 +68,28 @@ Preferred communication style: Simple, everyday language.
 - `zod`: Runtime type validation
 - `@radix-ui/*`: Accessible UI primitives
 - `tailwindcss`: Utility-first CSS framework
+
+## Performance & Safety Architecture
+
+### Rate Limiting (safeFetch wrapper)
+- **Location**: `client/src/lib/safeFetch.ts`
+- **Max Concurrent Requests**: 1 (ultra-conservative)
+- **Min Request Interval**: 3 seconds between requests
+- **Retry Strategy**: Exponential backoff (3s, 6s) with max 1 retry
+- **Auth Error Handling**: Immediate failure on 401/403 (no retry)
+
+### Caching Strategy
+- **Dual-layer cache**: In-memory + localStorage
+- **Patient/Billing Lists**: 15 minute TTL
+- **Detail Views**: 10 minute TTL
+- **Catalog Data**: 30 minute TTL
+- **Cache Key Format**: Query keys match exact URL strings for proper invalidation
+
+### Data Transfer Limits
+- **Home Dashboard**: 50 records max
+- **Billing View**: 100 records max
+- **Ancillary Patients**: 50 records max per service
+- **Manual refresh only**: No automatic polling (refetchInterval disabled)
+
+### Why These Limits
+Google Apps Script has strict quotas and the responses contain large payloads (many URL fields). Aggressive rate limiting prevents platform blocks.

@@ -108,7 +108,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   }, []);
 
   const { data: billingData, isLoading: billingLoading, isError: billingError, refetch: refetchBilling } = useQuery<BillingResponse>({
-    queryKey: ["/api/billing/list?limit=100&cursor=0"],
+    queryKey: ["/api/billing/list?limit=50&cursor=0"],
   });
 
   const { data: catalogResponse, isLoading: catalogLoading } = useQuery<CatalogResponse>({
