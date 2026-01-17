@@ -228,24 +228,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </Button>
       </div>
 
-      {/* ROW 1: Square tiles with big icons - Schedule, Patient Prescreens, Patient Database, VideoCall */}
+      {/* ROW 1: Square tiles with big icons - Schedule, Patient Database, Prescreens, Ancillary Portal */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div
           className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <Calendar className="h-12 w-12 text-indigo-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <Calendar className="h-24 w-24 text-indigo-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
           <p className="text-slate-700 font-semibold text-sm text-center">Schedule</p>
-        </div>
-
-        <div
-          className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
-          onClick={() => onNavigate?.("prescreens")}
-          data-testid="button-prescreens"
-        >
-          <Sparkles className="h-12 w-12 text-purple-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
-          <p className="text-slate-700 font-semibold text-sm text-center">Patient Prescreens</p>
         </div>
 
         <div
@@ -253,17 +244,26 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-patient-database"
         >
-          <Database className="h-12 w-12 text-teal-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <Database className="h-24 w-24 text-teal-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
           <p className="text-slate-700 font-semibold text-sm text-center">Patient Database</p>
         </div>
 
         <div
           className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
-          onClick={() => onNavigate?.("schedule")}
-          data-testid="button-videocall"
+          onClick={() => onNavigate?.("prescreens")}
+          data-testid="button-prescreens"
         >
-          <Video className="h-12 w-12 text-blue-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
-          <p className="text-slate-700 font-semibold text-sm text-center">VideoCall</p>
+          <Sparkles className="h-24 w-24 text-purple-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <p className="text-slate-700 font-semibold text-sm text-center">Prescreens</p>
+        </div>
+
+        <div
+          className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
+          onClick={() => onNavigate?.("ancillary")}
+          data-testid="button-ancillary-portal"
+        >
+          <ClipboardList className="h-24 w-24 text-emerald-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <p className="text-slate-700 font-semibold text-sm text-center">Ancillary Portal</p>
         </div>
       </div>
 
