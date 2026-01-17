@@ -134,12 +134,84 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const vitalwaveRevenue = vitalwaveRecords.reduce((sum, r) => sum + parseAmount((r as any).claim_paid_amount || r.paid_amount || r.amount), 0);
   const totalRevenue = brainwaveRevenue + ultrasoundRevenue + vitalwaveRevenue;
 
-  // Count claims with payments vs pending
+  // Financial metrics by status
+  const getClaimStatus = (r: BillingRecord): "pending" | "submitted" | "paid" => {
+    const status = ((r as any).billing_status || r.status || "").toLowerCase();
+    const paidAmount = parseAmount((r as any).claim_paid_amount || r.paid_amount);
+    if (paidAmount > 0 || status.includes("paid") || status.includes("complete")) return "paid";
+    if (status.includes("submit") || status.includes("sent") || status.includes("process")) return "submitted";
+    return "pending";
+  };
+
+  // Filter records from start of current year
+  const currentYear = new Date().getFullYear();
+  const startOfYear = new Date(currentYear, 0, 1);
+  const ytdRecords = records.filter(r => {
+    const date = r.date ? new Date(r.date) : null;
+    return date && date >= startOfYear;
+  });
+
+  // Count by status for each service (YTD)
+  const brainwaveYTD = brainwaveRecords.filter(r => {
+    const date = r.date ? new Date(r.date) : null;
+    return date && date >= startOfYear;
+  });
+  const ultrasoundYTD = ultrasoundRecords.filter(r => {
+    const date = r.date ? new Date(r.date) : null;
+    return date && date >= startOfYear;
+  });
+  const vitalwaveYTD = vitalwaveRecords.filter(r => {
+    const date = r.date ? new Date(r.date) : null;
+    return date && date >= startOfYear;
+  });
+
+  const brainwavePending = brainwaveYTD.filter(r => getClaimStatus(r) === "pending").length;
+  const brainwaveSubmitted = brainwaveYTD.filter(r => getClaimStatus(r) === "submitted").length;
+  const brainwavePaidCount = brainwaveYTD.filter(r => getClaimStatus(r) === "paid").length;
+
+  const ultrasoundPending = ultrasoundYTD.filter(r => getClaimStatus(r) === "pending").length;
+  const ultrasoundSubmitted = ultrasoundYTD.filter(r => getClaimStatus(r) === "submitted").length;
+  const ultrasoundPaidCount = ultrasoundYTD.filter(r => getClaimStatus(r) === "paid").length;
+
+  const vitalwavePending = vitalwaveYTD.filter(r => getClaimStatus(r) === "pending").length;
+  const vitalwaveSubmitted = vitalwaveYTD.filter(r => getClaimStatus(r) === "submitted").length;
+  const vitalwavePaidCount = vitalwaveYTD.filter(r => getClaimStatus(r) === "paid").length;
+
+  const totalPendingClaims = brainwavePending + ultrasoundPending + vitalwavePending;
+  const totalSubmittedClaims = brainwaveSubmitted + ultrasoundSubmitted + vitalwaveSubmitted;
+  const totalPaidClaims = brainwavePaidCount + ultrasoundPaidCount + vitalwavePaidCount;
+
+  // Legacy counts for backward compatibility
   const brainwavePaid = brainwaveRecords.filter(r => parseAmount((r as any).claim_paid_amount) > 0).length;
   const ultrasoundPaid = ultrasoundRecords.filter(r => parseAmount((r as any).claim_paid_amount) > 0).length;
   const vitalwavePaid = vitalwaveRecords.filter(r => parseAmount((r as any).claim_paid_amount) > 0).length;
   const totalPaid = brainwavePaid + ultrasoundPaid + vitalwavePaid;
   const totalPending = totalCount - totalPaid;
+
+  // Calculate average claim value
+  const avgClaimValue = totalPaidClaims > 0 ? totalRevenue / totalPaidClaims : 0;
+
+  // Monthly revenue data for chart (last 6 months)
+  const monthlyRevenue = useMemo(() => {
+    const months: { month: string; revenue: number; claims: number }[] = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
+      const monthName = monthDate.toLocaleDateString("en-US", { month: "short" });
+      
+      const monthRecords = records.filter(r => {
+        const date = r.date ? new Date(r.date) : null;
+        return date && date >= monthDate && date <= monthEnd;
+      });
+      
+      const revenue = monthRecords.reduce((sum, r) => sum + parseAmount((r as any).claim_paid_amount || r.paid_amount || r.amount), 0);
+      months.push({ month: monthName, revenue, claims: monthRecords.length });
+    }
+    return months;
+  }, [records]);
+
+  const maxMonthlyRevenue = Math.max(...monthlyRevenue.map(m => m.revenue), 1);
 
   const formatCurrency = (amount: number): string => {
     if (amount >= 1000) {
@@ -307,7 +379,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* BrainWave Patient Tracking */}
-              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-violet-300">
+              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100 smoke-fill-violet cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-violet-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center">
                     <Brain className="h-5 w-5 text-white" />
@@ -333,7 +405,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-blue-300">
+              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 smoke-fill-blue cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-blue-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-5 w-5 text-white" />
@@ -359,7 +431,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-red-300">
+              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100 smoke-fill-red cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-red-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-rose-600 flex items-center justify-center">
                     <Heart className="h-5 w-5 text-white" />
@@ -450,81 +522,87 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* BrainWave */}
-              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-violet-300">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100 smoke-fill-violet cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-violet-300">
+                <div className="flex items-center gap-2 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center">
                     <Brain className="h-5 w-5 text-white" />
                   </div>
                   <div>
                     <p className="font-bold text-violet-800">BrainWave</p>
-                    <p className="text-xs text-violet-600">Recent patients</p>
+                    <p className="text-xs text-violet-600">{currentYear} YTD</p>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
-                    <button 
-                      key={i} 
-                      className="w-full flex justify-between items-center text-sm hover:bg-violet-100/50 rounded-lg py-1 px-1 transition-colors"
-                      onClick={() => handleNavigateToService("brainwave")}
-                      data-testid={`button-billing-brainwave-${i}`}
-                    >
-                      <span className="text-slate-700 truncate max-w-[110px] font-medium">{r.patient_name || "Unknown"}</span>
-                      <span className="text-violet-600 font-semibold text-xs">{formatDate(r.date)}</span>
-                    </button>
-                  )) : <p className="text-sm text-slate-500 py-1">No recent records</p>}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center p-1.5 rounded-lg bg-amber-50 border border-amber-100">
+                    <p className="text-lg font-bold text-amber-700">{brainwavePending}</p>
+                    <p className="text-[10px] text-amber-600 font-medium">To Submit</p>
+                  </div>
+                  <div className="text-center p-1.5 rounded-lg bg-blue-50 border border-blue-100">
+                    <p className="text-lg font-bold text-blue-700">{brainwaveSubmitted}</p>
+                    <p className="text-[10px] text-blue-600 font-medium">Submitted</p>
+                  </div>
+                  <div className="text-center p-1.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                    <p className="text-lg font-bold text-emerald-700">{brainwavePaidCount}</p>
+                    <p className="text-[10px] text-emerald-600 font-medium">Paid</p>
+                  </div>
                 </div>
+                <p className="text-xs text-violet-600 font-semibold text-center">{formatCurrency(brainwaveRevenue)} Collected</p>
               </div>
 
               {/* Ultrasound */}
-              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-blue-300">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 smoke-fill-blue cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-blue-300">
+                <div className="flex items-center gap-2 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-5 w-5 text-white" />
                   </div>
                   <div>
                     <p className="font-bold text-blue-800">Ultrasound</p>
-                    <p className="text-xs text-blue-600">Recent patients</p>
+                    <p className="text-xs text-blue-600">{currentYear} YTD</p>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
-                    <button 
-                      key={i} 
-                      className="w-full flex justify-between items-center text-sm hover:bg-blue-100/50 rounded-lg py-1 px-1 transition-colors"
-                      onClick={() => handleNavigateToService("ultrasound")}
-                      data-testid={`button-billing-ultrasound-${i}`}
-                    >
-                      <span className="text-slate-700 truncate max-w-[110px] font-medium">{r.patient_name || "Unknown"}</span>
-                      <span className="text-blue-600 font-semibold text-xs">{formatDate(r.date)}</span>
-                    </button>
-                  )) : <p className="text-sm text-slate-500 py-1">No recent records</p>}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center p-1.5 rounded-lg bg-amber-50 border border-amber-100">
+                    <p className="text-lg font-bold text-amber-700">{ultrasoundPending}</p>
+                    <p className="text-[10px] text-amber-600 font-medium">To Submit</p>
+                  </div>
+                  <div className="text-center p-1.5 rounded-lg bg-blue-50 border border-blue-100">
+                    <p className="text-lg font-bold text-blue-700">{ultrasoundSubmitted}</p>
+                    <p className="text-[10px] text-blue-600 font-medium">Submitted</p>
+                  </div>
+                  <div className="text-center p-1.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                    <p className="text-lg font-bold text-emerald-700">{ultrasoundPaidCount}</p>
+                    <p className="text-[10px] text-emerald-600 font-medium">Paid</p>
+                  </div>
                 </div>
+                <p className="text-xs text-blue-600 font-semibold text-center">{formatCurrency(ultrasoundRevenue)} Collected</p>
               </div>
 
               {/* VitalWave */}
-              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-red-300">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100 smoke-fill-red cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-red-300">
+                <div className="flex items-center gap-2 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-rose-600 flex items-center justify-center">
                     <Heart className="h-5 w-5 text-white" />
                   </div>
                   <div>
                     <p className="font-bold text-red-800">VitalWave</p>
-                    <p className="text-xs text-red-600">Recent patients</p>
+                    <p className="text-xs text-red-600">{currentYear} YTD</p>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
-                    <button 
-                      key={i} 
-                      className="w-full flex justify-between items-center text-sm hover:bg-red-100/50 rounded-lg py-1 px-1 transition-colors"
-                      onClick={() => handleNavigateToService("vitalwave")}
-                      data-testid={`button-billing-vitalwave-${i}`}
-                    >
-                      <span className="text-slate-700 truncate max-w-[110px] font-medium">{r.patient_name || "Unknown"}</span>
-                      <span className="text-red-600 font-semibold text-xs">{formatDate(r.date)}</span>
-                    </button>
-                  )) : <p className="text-sm text-slate-500 py-1">No recent records</p>}
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center p-1.5 rounded-lg bg-amber-50 border border-amber-100">
+                    <p className="text-lg font-bold text-amber-700">{vitalwavePending}</p>
+                    <p className="text-[10px] text-amber-600 font-medium">To Submit</p>
+                  </div>
+                  <div className="text-center p-1.5 rounded-lg bg-blue-50 border border-blue-100">
+                    <p className="text-lg font-bold text-blue-700">{vitalwaveSubmitted}</p>
+                    <p className="text-[10px] text-blue-600 font-medium">Submitted</p>
+                  </div>
+                  <div className="text-center p-1.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                    <p className="text-lg font-bold text-emerald-700">{vitalwavePaidCount}</p>
+                    <p className="text-[10px] text-emerald-600 font-medium">Paid</p>
+                  </div>
                 </div>
+                <p className="text-xs text-red-600 font-semibold text-center">{formatCurrency(vitalwaveRevenue)} Collected</p>
               </div>
             </div>
           )}
@@ -542,52 +620,105 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
         </div>
         <div className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg">
-                <DollarSign className="h-8 w-8 text-white" strokeWidth={2.5} />
-              </div>
-              {billingLoading ? (
-                <div className="flex flex-col gap-2 animate-pulse">
-                  <div className="flex items-center gap-2">
-                    <div className="w-20 h-6 rounded-lg bg-slate-200/70" />
-                    <div className="w-20 h-6 rounded-lg bg-slate-200/70" />
-                    <div className="w-20 h-6 rounded-lg bg-slate-200/70" />
-                  </div>
-                  <div className="w-32 h-4 rounded bg-slate-200/70" />
-                </div>
-              ) : totalRevenue > 0 ? (
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 rounded-lg bg-purple-100 text-purple-700 font-bold border border-purple-200">{formatCurrency(brainwaveRevenue)}</span>
-                    <span className="px-3 py-1 rounded-lg bg-blue-100 text-blue-700 font-bold border border-blue-200">{formatCurrency(ultrasoundRevenue)}</span>
-                    <span className="px-3 py-1 rounded-lg bg-red-100 text-red-700 font-bold border border-red-200">{formatCurrency(vitalwaveRevenue)}</span>
-                  </div>
-                  <p className="text-slate-700 font-bold">{formatCurrency(totalRevenue)} Total Collected</p>
-                </div>
-              ) : (
-                <div className="flex items-center gap-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-amber-600">{totalPending}</p>
-                    <p className="text-xs text-slate-600 font-medium">Claims Pending</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-emerald-600">{totalPaid}</p>
-                    <p className="text-xs text-slate-600 font-medium">Claims Paid</p>
-                  </div>
-                </div>
-              )}
+          {billingLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-purple-700 rounded-lg"
-              onClick={handleViewAllBilling}
-              data-testid="button-view-finance"
-            >
-              View Details
-            </Button>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Left: Key Metrics */}
+              <div className="space-y-3">
+                {/* Total Revenue Card */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg">
+                        <DollarSign className="h-6 w-6 text-white" strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-emerald-700">{formatCurrency(totalRevenue)}</p>
+                        <p className="text-xs text-emerald-600 font-medium">Total Revenue Collected</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-slate-700">{currentYear} YTD</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Revenue by Service */}
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="p-3 rounded-xl bg-violet-50 border border-violet-200 text-center">
+                    <p className="text-lg font-bold text-violet-700">{formatCurrency(brainwaveRevenue)}</p>
+                    <p className="text-[10px] text-violet-600 font-medium">BrainWave</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-center">
+                    <p className="text-lg font-bold text-blue-700">{formatCurrency(ultrasoundRevenue)}</p>
+                    <p className="text-[10px] text-blue-600 font-medium">Ultrasound</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-center">
+                    <p className="text-lg font-bold text-red-700">{formatCurrency(vitalwaveRevenue)}</p>
+                    <p className="text-[10px] text-red-600 font-medium">VitalWave</p>
+                  </div>
+                </div>
+
+                {/* Summary Stats */}
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="p-2 rounded-lg bg-amber-50 border border-amber-100 text-center">
+                    <p className="text-xl font-bold text-amber-700">{totalPendingClaims}</p>
+                    <p className="text-[9px] text-amber-600 font-medium">Pending</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-blue-50 border border-blue-100 text-center">
+                    <p className="text-xl font-bold text-blue-700">{totalSubmittedClaims}</p>
+                    <p className="text-[9px] text-blue-600 font-medium">Submitted</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-100 text-center">
+                    <p className="text-xl font-bold text-emerald-700">{totalPaidClaims}</p>
+                    <p className="text-[9px] text-emerald-600 font-medium">Paid</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-purple-50 border border-purple-100 text-center">
+                    <p className="text-xl font-bold text-purple-700">{formatCurrency(avgClaimValue)}</p>
+                    <p className="text-[9px] text-purple-600 font-medium">Avg Claim</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Revenue Chart */}
+              <div className="p-4 rounded-xl bg-slate-50/50 border border-slate-200">
+                <p className="text-sm font-bold text-slate-700 mb-3">Monthly Revenue (Last 6 Months)</p>
+                <div className="flex items-end justify-between gap-2 h-32">
+                  {monthlyRevenue.map((m, idx) => (
+                    <div key={idx} className="flex flex-col items-center flex-1">
+                      <div 
+                        className="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-md transition-all duration-300 hover:from-emerald-600 hover:to-emerald-500"
+                        style={{ 
+                          height: `${Math.max((m.revenue / maxMonthlyRevenue) * 100, 5)}%`,
+                          minHeight: '8px'
+                        }}
+                        title={`${m.month}: ${formatCurrency(m.revenue)}`}
+                      />
+                      <p className="text-[10px] text-slate-600 font-medium mt-1">{m.month}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-sm bg-emerald-500" />
+                    <p className="text-[10px] text-slate-600">Revenue</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-purple-700 rounded-lg text-xs h-7"
+                    onClick={handleViewAllBilling}
+                    data-testid="button-view-finance"
+                  >
+                    View Details
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </button>
     </div>
