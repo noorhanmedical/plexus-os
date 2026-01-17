@@ -115,7 +115,7 @@ function AppSidebar({
   const debouncedQuery = useDebounce(searchQuery, 100);
   const [selectedClinics, setSelectedClinics] = useState<Set<string>>(new Set(getAllSelectableIds()));
   const [clinicSectionOpen, setClinicSectionOpen] = useState(false);
-  const [expandedClinics, setExpandedClinics] = useState<Set<string>>(new Set(["nwpg", "servmd"]));
+  const [expandedClinics, setExpandedClinics] = useState<Set<string>>(new Set());
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
     queryKey: [`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`],
@@ -205,7 +205,14 @@ function AppSidebar({
     <Sidebar className="border-r border-[#1e1e38]/50">
       <NightSkyBackdrop starCount={80} showShootingStars={true} showHorizonGlow={true} />
       
-      <SidebarHeader className="p-4 border-b border-slate-700/30 relative">
+      <SidebarHeader className="p-4 border-b border-slate-700/30 relative overflow-hidden">
+        {/* Stars in header */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute w-1 h-1 rounded-full bg-white/60 top-2 left-8 animate-pulse" style={{ animationDelay: '0s' }} />
+          <div className="absolute w-0.5 h-0.5 rounded-full bg-white/40 top-6 right-12 animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute w-1 h-1 rounded-full bg-white/50 bottom-3 left-16 animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute w-0.5 h-0.5 rounded-full bg-white/30 top-4 right-6 animate-pulse" style={{ animationDelay: '1.5s' }} />
+        </div>
         <button
           onClick={onClearPatient}
           className="flex items-center gap-3 w-full text-left hover:bg-white/5 rounded-lg p-2 -m-1 relative z-10 transition-colors"
@@ -215,8 +222,8 @@ function AppSidebar({
             <div className="w-2.5 h-2.5 rounded-full bg-[#4a9a7c] animate-pulse shadow-[0_0_10px_rgba(74,154,124,0.5)]"></div>
           </div>
           <div>
-            <p className="text-slate-400 text-[10px] font-semibold tracking-[0.2em] uppercase">Clinical EMR</p>
-            <h1 className="font-light text-lg text-white/90 tracking-tight">Plexus</h1>
+            <p className="text-teal-400 text-[10px] font-semibold tracking-[0.15em] uppercase">Plexus Ancillaries</p>
+            <h1 className="font-light text-lg text-white/90 tracking-tight">Clinical EMR</h1>
           </div>
         </button>
       </SidebarHeader>
@@ -438,6 +445,7 @@ function MainContent() {
   const [telemedFacility, setTelemedFacility] = useState<string>("");
   const [telemedPatientSearch, setTelemedPatientSearch] = useState("");
   const [telemedNote, setTelemedNote] = useState("");
+  const [telemedNoteType, setTelemedNoteType] = useState<string>("progress");
   const [isDictating, setIsDictating] = useState(false);
 
   useEffect(() => {
@@ -593,18 +601,27 @@ function MainContent() {
           </main>
 
           {/* Right Panel - Telemedicine (Collapsible) */}
-          <aside className={`bg-gradient-to-b from-slate-900 to-slate-950 border-l border-slate-700/50 hidden lg:flex flex-col transition-all duration-300 ${rightPanelOpen ? 'w-72' : 'w-12'}`}>
+          <aside className={`bg-gradient-to-b from-slate-900 to-slate-950 border-l border-slate-700/50 hidden lg:flex flex-col transition-all duration-300 relative overflow-hidden ${rightPanelOpen ? 'w-72' : 'w-12'}`}>
+            {/* Stars in telemedicine panel */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute w-1 h-1 rounded-full bg-white/40 top-20 left-6 animate-pulse" style={{ animationDelay: '0.2s' }} />
+              <div className="absolute w-0.5 h-0.5 rounded-full bg-white/30 top-40 right-8 animate-pulse" style={{ animationDelay: '0.8s' }} />
+              <div className="absolute w-1 h-1 rounded-full bg-white/35 top-60 left-12 animate-pulse" style={{ animationDelay: '1.2s' }} />
+              <div className="absolute w-0.5 h-0.5 rounded-full bg-white/25 top-32 right-4 animate-pulse" style={{ animationDelay: '1.8s' }} />
+              <div className="absolute w-0.5 h-0.5 rounded-full bg-white/30 bottom-20 left-8 animate-pulse" style={{ animationDelay: '0.5s' }} />
+            </div>
+            
             {/* Collapse Toggle */}
             <button
               onClick={() => setRightPanelOpen(!rightPanelOpen)}
-              className="flex items-center justify-center h-12 border-b border-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors"
+              className="flex items-center justify-center h-12 border-b border-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors relative z-10"
               data-testid="button-toggle-right-panel"
             >
               {rightPanelOpen ? <PanelRightClose className="h-5 w-5" /> : <PanelRightOpen className="h-5 w-5" />}
             </button>
 
             {rightPanelOpen ? (
-              <ScrollArea className="flex-1">
+              <ScrollArea className="flex-1 relative z-10">
                 <div className="p-4 flex flex-col">
                   <div className="mb-4">
                     <h3 className="text-white font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
@@ -671,12 +688,26 @@ function MainContent() {
                     Start Video
                   </Button>
 
+                  {/* Note Type */}
+                  <div className="mb-3">
+                    <label className="text-xs text-slate-400 mb-1.5 block">Note Type</label>
+                    <Select value={telemedNoteType} onValueChange={setTelemedNoteType}>
+                      <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white h-9" data-testid="select-note-type">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="progress">Progress Note</SelectItem>
+                        <SelectItem value="hp">H&P</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   {/* Instant Note */}
                   <div className="mb-3">
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-xs text-slate-400 flex items-center gap-1.5">
                         <FileText className="h-3.5 w-3.5" />
-                        Instant Note
+                        {telemedNoteType === 'progress' ? 'Progress Note' : 'H&P Note'}
                       </label>
                       <Button
                         variant="ghost"
