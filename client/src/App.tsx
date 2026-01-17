@@ -206,28 +206,30 @@ function AppSidebar({
     <Sidebar className="border-r border-[#1e1e38]/50">
       <NightSkyBackdrop starCount={80} showShootingStars={true} showHorizonGlow={true} />
       
-      <SidebarHeader className="p-4 border-b border-slate-700/30 relative overflow-hidden">
+      <SidebarHeader className="p-4 border-b border-slate-700/30 relative">
         {/* Stars in header */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute w-1 h-1 rounded-full bg-white/60 top-2 left-8 animate-pulse" style={{ animationDelay: '0s' }} />
           <div className="absolute w-0.5 h-0.5 rounded-full bg-white/40 top-6 right-12 animate-pulse" style={{ animationDelay: '0.5s' }} />
           <div className="absolute w-1 h-1 rounded-full bg-white/50 bottom-3 left-16 animate-pulse" style={{ animationDelay: '1s' }} />
           <div className="absolute w-0.5 h-0.5 rounded-full bg-white/30 top-4 right-6 animate-pulse" style={{ animationDelay: '1.5s' }} />
         </div>
-        <div className="flex items-center justify-between relative z-10">
+        <div className="flex items-center justify-between gap-2 relative z-10">
           <button
             onClick={onClearPatient}
-            className="flex items-center gap-3 text-left hover:bg-white/5 rounded-lg p-2 -m-1 transition-colors"
+            className="flex items-center gap-3 text-left hover:bg-white/5 rounded-lg p-2 -m-1 transition-colors flex-1 min-w-0"
             data-testid="nav-home-logo"
           >
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#1a3d2e]/80 to-[#0f2920]/80 flex items-center justify-center border border-[#2d5a47]/60 shadow-lg shadow-teal-900/20">
+            <div className="h-12 w-12 shrink-0 rounded-lg bg-gradient-to-br from-[#1a3d2e]/80 to-[#0f2920]/80 flex items-center justify-center border border-[#2d5a47]/60 shadow-lg shadow-teal-900/20">
               <div className="w-3 h-3 rounded-full bg-[#4a9a7c] animate-pulse shadow-[0_0_10px_rgba(74,154,124,0.5)]"></div>
             </div>
-            <div>
-              <h1 className="font-medium text-xl text-white/90 tracking-tight">Plexus Ancillaries</h1>
+            <div className="min-w-0">
+              <h1 className="font-medium text-xl text-white/90 tracking-tight truncate">Plexus Ancillaries</h1>
             </div>
           </button>
-          <ThemeToggle />
+          <div className="shrink-0">
+            <ThemeToggle />
+          </div>
         </div>
       </SidebarHeader>
 
