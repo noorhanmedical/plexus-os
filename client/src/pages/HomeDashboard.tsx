@@ -470,7 +470,6 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                     <p className="text-lg font-bold text-red-700">{vitalwaveCount}</p>
                     <p className="text-xs text-red-600 font-medium">Vital</p>
                   </div>
-                  <p className="text-slate-700 font-bold ml-2">{totalCount} Total Records</p>
                 </>
               )}
             </div>
@@ -497,7 +496,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : records.length === 0 ? (
             <p className="text-slate-600 text-center py-6">No billing records</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-200">
               {/* BrainWave */}
               <div className="p-4 service-tile-violet cursor-pointer transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
@@ -637,25 +636,6 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                 </div>
 
-                {/* Summary Stats */}
-                <div className="grid grid-cols-4 gap-3">
-                  <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl text-black">{totalPendingClaims}</p>
-                    <p className="text-[10px] text-black">Pending</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl text-black">{totalSubmittedClaims}</p>
-                    <p className="text-[10px] text-black">Submitted</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl text-black">{totalPaidClaims}</p>
-                    <p className="text-[10px] text-black">Paid</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl text-black">{formatCurrency(avgClaimValue)}</p>
-                    <p className="text-[10px] text-black">Avg Claim</p>
-                  </div>
-                </div>
               </div>
 
               {/* Right: Revenue Chart */}
