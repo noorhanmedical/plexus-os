@@ -232,69 +232,47 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       {/* Row 1: Schedule, Prescreens, Ancillary Portal, Patient Database */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <button
-          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center min-h-[160px] p-6 cursor-pointer group`}
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-lg drop-shadow-sm">Schedule</p>
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-3">
+            <Calendar className="h-7 w-7 text-indigo-800" />
           </div>
-          <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Calendar className="h-8 w-8 text-indigo-800" />
-            </div>
-            <p className="text-slate-600 text-sm">Daily appointments</p>
-          </div>
+          <p className="text-[#1a0a28] font-semibold text-lg">Schedule</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center min-h-[160px] p-6 cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-lg drop-shadow-sm">Prescreens</p>
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-3">
+            <Sparkles className="h-7 w-7 text-violet-800" />
           </div>
-          <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Sparkles className="h-8 w-8 text-indigo-800" />
-            </div>
-            <p className="text-slate-600 text-sm">Patient eligibility</p>
-          </div>
+          <p className="text-[#1a0a28] font-semibold text-lg">Prescreens</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center min-h-[160px] p-6 cursor-pointer group`}
           onClick={() => onNavigate?.("ancillary")}
           data-testid="button-ancillary-portal"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-2 border-b border-white/10">
-            <Stethoscope className="h-5 w-5 text-white" />
-            <p className="text-white font-bold text-lg drop-shadow-sm">Ancillary Portal</p>
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-200/60 to-teal-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-3">
+            <Stethoscope className="h-7 w-7 text-emerald-800" />
           </div>
-          <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-200/60 to-teal-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <ClipboardList className="h-8 w-8 text-emerald-800" />
-            </div>
-            <p className="text-slate-600 text-sm">Service tracking</p>
-          </div>
+          <p className="text-[#1a0a28] font-semibold text-lg">Ancillary Portal</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col min-h-[180px] cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center min-h-[160px] p-6 cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-patient-database"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-2 border-b border-white/10">
-            <Users className="h-5 w-5 text-white" />
-            <p className="text-white font-bold text-lg drop-shadow-sm">Patient Database</p>
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-200/60 to-blue-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg mb-3">
+            <Users className="h-7 w-7 text-cyan-800" />
           </div>
-          <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-200/60 to-blue-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Users className="h-8 w-8 text-cyan-800" />
-            </div>
-            <p className="text-slate-600 text-sm">Patient records</p>
-          </div>
+          <p className="text-[#1a0a28] font-semibold text-lg">Patient Database</p>
         </button>
       </div>
 
