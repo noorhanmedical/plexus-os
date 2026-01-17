@@ -567,14 +567,14 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left: Key Metrics */}
-              <div className="space-y-4">
-                {/* Total Revenue Card */}
-                <div className="p-5 rounded-xl bg-slate-50/80 border border-slate-200">
+              <div className="space-y-0">
+                {/* Total Revenue */}
+                <div className="p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <DollarSign className="h-8 w-8 text-green-600" strokeWidth={2} />
+                      <DollarSign className="h-10 w-10 text-green-600 transition-transform duration-300 hover:scale-110" strokeWidth={2.5} />
                       <div>
-                        <p className="text-3xl text-black">{formatCurrency(totalRevenue)}</p>
+                        <p className="text-3xl font-bold text-black">{formatCurrency(totalRevenue)}</p>
                         <p className="text-sm text-black">Total Revenue Collected</p>
                       </div>
                     </div>
@@ -586,23 +586,23 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
                 {/* Revenue by Service */}
                 <div className="grid grid-cols-3 gap-0">
-                  <div className="p-5 service-tile-violet cursor-pointer">
+                  <div className="p-5 service-tile-violet cursor-pointer group">
                     <div className="flex items-center gap-3 mb-3">
-                      <Brain className="h-10 w-10 text-violet-600" strokeWidth={2.5} />
+                      <Brain className="h-10 w-10 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                       <p className="text-base font-semibold text-black">BrainWave</p>
                     </div>
                     <p className="text-2xl font-bold text-black">{formatCurrency(brainwaveRevenue)}</p>
                   </div>
-                  <div className="p-5 service-tile-blue cursor-pointer">
+                  <div className="p-5 service-tile-blue cursor-pointer group">
                     <div className="flex items-center gap-3 mb-3">
-                      <UltrasoundProbeIcon className="h-10 w-10 text-blue-600" />
+                      <UltrasoundProbeIcon className="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-12" />
                       <p className="text-base font-semibold text-black">Ultrasound</p>
                     </div>
                     <p className="text-2xl font-bold text-black">{formatCurrency(ultrasoundRevenue)}</p>
                   </div>
-                  <div className="p-5 service-tile-red cursor-pointer">
+                  <div className="p-5 service-tile-red cursor-pointer group">
                     <div className="flex items-center gap-3 mb-3">
-                      <Heart className="h-10 w-10 text-red-600" strokeWidth={2.5} />
+                      <Heart className="h-10 w-10 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                       <p className="text-base font-semibold text-black">VitalWave</p>
                     </div>
                     <p className="text-2xl font-bold text-black">{formatCurrency(vitalwaveRevenue)}</p>
