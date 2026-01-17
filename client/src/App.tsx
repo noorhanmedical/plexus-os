@@ -96,7 +96,7 @@ function AppSidebar({
           </div>
           <div>
             <p className="text-slate-400 text-[10px] font-semibold tracking-[0.2em] uppercase">Clinical EMR</p>
-            <h1 className="font-light text-lg text-white/90 tracking-tight">Plexus</h1>
+            <h1 className="font-light text-lg text-white/90 tracking-tight">Plexus Ancillaries</h1>
           </div>
         </button>
       </SidebarHeader>
