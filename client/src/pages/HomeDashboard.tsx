@@ -447,43 +447,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           <Receipt className="h-5 w-5 text-white" />
           <p className="text-white font-bold text-lg drop-shadow-sm">Billing Dashboard</p>
         </div>
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              {billingLoading ? (
-                <div className="flex items-center gap-2 animate-pulse">
-                  <div className="w-14 h-8 rounded-lg bg-slate-200/70" />
-                  <div className="w-14 h-8 rounded-lg bg-slate-200/70" />
-                  <div className="w-14 h-8 rounded-lg bg-slate-200/70" />
-                </div>
-              ) : (
-                <>
-                  <div className="text-center px-3 py-1 rounded-lg bg-violet-100/70 border border-violet-200">
-                    <p className="text-lg font-bold text-violet-800">{brainwaveCount}</p>
-                    <p className="text-xs text-violet-600 font-medium">Brain</p>
-                  </div>
-                  <div className="text-center px-3 py-1 rounded-lg bg-blue-100/70 border border-blue-200">
-                    <p className="text-lg font-bold text-blue-700">{ultrasoundCount}</p>
-                    <p className="text-xs text-blue-600 font-medium">Ultra</p>
-                  </div>
-                  <div className="text-center px-3 py-1 rounded-lg bg-red-100/70 border border-red-200">
-                    <p className="text-lg font-bold text-red-700">{vitalwaveCount}</p>
-                    <p className="text-xs text-red-600 font-medium">Vital</p>
-                  </div>
-                </>
-              )}
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-purple-700 rounded-lg"
-              onClick={handleViewAllBilling}
-              data-testid="button-view-all-billing"
-            >
-              View All
-            </Button>
-          </div>
-
+        <div className="p-0">
           {billingLoading ? (
             <div className="flex items-center justify-center py-6">
               <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
