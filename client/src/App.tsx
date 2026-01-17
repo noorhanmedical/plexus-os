@@ -14,7 +14,6 @@ import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
 import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Building2, ChevronDown, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   SidebarProvider,
   Sidebar,
@@ -62,6 +61,14 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 
+type ClinicSelection = "all" | "spring" | "veterans";
+
+const clinics = [
+  { id: "all" as ClinicSelection, label: "All Clinics", description: "View all locations" },
+  { id: "spring" as ClinicSelection, label: "Spring Clinic", description: "Spring location" },
+  { id: "veterans" as ClinicSelection, label: "Veterans Clinic", description: "Veterans location" },
+];
+
 function AppSidebar({ 
   selectedPatient,
   onPatientSelect,
@@ -72,6 +79,8 @@ function AppSidebar({
   onClearPatient: () => void;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedClinic, setSelectedClinic] = useState<ClinicSelection>("all");
+  const [clinicMenuOpen, setClinicMenuOpen] = useState(false);
   const debouncedQuery = useDebounce(searchQuery, 100);
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
@@ -81,6 +90,7 @@ function AppSidebar({
   });
 
   const patients = searchResults?.data || [];
+  const selectedClinicData = clinics.find(c => c.id === selectedClinic) || clinics[0];
 
   return (
     <Sidebar className="border-r border-[#1e1e38]/50">
@@ -103,6 +113,56 @@ function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent className="p-3 relative">
+        {/* Clinic Selection */}
+        <SidebarGroup className="relative z-10 mb-4">
+          <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            Clinic
+          </SidebarGroupLabel>
+          
+          <div className="relative">
+            <button
+              onClick={() => setClinicMenuOpen(!clinicMenuOpen)}
+              className="w-full flex items-center justify-between p-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:bg-slate-800/70 transition-colors cursor-pointer"
+              data-testid="button-clinic-selector"
+            >
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-teal-400" />
+                <div className="text-left">
+                  <p className="text-white text-sm font-medium">New Wave Physicians Group</p>
+                  <p className="text-slate-400 text-xs">{selectedClinicData.label}</p>
+                </div>
+              </div>
+              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${clinicMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {clinicMenuOpen && (
+              <div className="mt-1 bg-slate-800/70 border border-slate-700/50 rounded-lg overflow-hidden">
+                {clinics.map((clinic) => (
+                  <button
+                    key={clinic.id}
+                    onClick={() => {
+                      setSelectedClinic(clinic.id);
+                      setClinicMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between p-2.5 hover:bg-slate-700/50 transition-colors ${
+                      selectedClinic === clinic.id ? 'bg-teal-900/30' : ''
+                    }`}
+                    data-testid={`button-clinic-${clinic.id}`}
+                  >
+                    <div className="text-left">
+                      <p className="text-white text-sm">{clinic.label}</p>
+                      <p className="text-slate-500 text-xs">{clinic.description}</p>
+                    </div>
+                    {selectedClinic === clinic.id && (
+                      <Check className="h-4 w-4 text-teal-400" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </SidebarGroup>
+
+        {/* Patient Search */}
         <SidebarGroup className="relative z-10">
           <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
             Patient Search

@@ -1,8 +1,7 @@
 import { useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp, RefreshCw, Video, Database, FileText } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp, RefreshCw, Video, Database, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { UltrasoundProbeIcon } from "@/components/service-icons";
 
@@ -83,33 +82,22 @@ function normalizeBillingRecord(record: BillingRecord): BillingRecord {
   };
 }
 
-function getStatusColor(status: string | undefined): string {
-  if (!status) return "bg-slate-100 text-slate-700 border-slate-200";
-  const s = status.toLowerCase();
-  if (s.includes("complete") || s.includes("done")) return "bg-emerald-100 text-emerald-700 border-emerald-200";
-  if (s.includes("schedule") || s.includes("pending")) return "bg-amber-100 text-amber-700 border-amber-200";
-  if (s.includes("eligible") || s.includes("ready")) return "bg-blue-100 text-blue-700 border-blue-200";
-  return "bg-slate-100 text-slate-700 border-slate-200";
-}
-
 export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
-  const { data: billingData, isLoading: billingLoading, isError: billingError, refetch: refetchBilling } = useQuery<BillingResponse>({
+  const { data: billingData, isLoading: billingLoading, refetch: refetchBilling } = useQuery<BillingResponse>({
     queryKey: ["/api/billing/list?limit=50&cursor=0"],
   });
 
-  const { data: catalogResponse, isLoading: catalogLoading } = useQuery<CatalogResponse>({
+  const { data: catalogResponse } = useQuery<CatalogResponse>({
     queryKey: ["/api/ancillary/catalog"],
   });
 
   const catalogItems = catalogResponse?.data || [];
   const firstAncillaryCode = catalogItems[0]?.ancillary_code || "";
 
-  const { data: ancillaryPatientsData, isLoading: ancillaryLoading, isError: ancillaryError } = useQuery<AncillaryPatientsResponse>({
+  const { data: ancillaryPatientsData } = useQuery<AncillaryPatientsResponse>({
     queryKey: [`/api/ancillary/patients?ancillary_code=${firstAncillaryCode}&limit=10`],
     enabled: !!firstAncillaryCode,
   });
-
-  const ancillaryPatients = ancillaryPatientsData?.results || [];
 
   const rawRecords = billingData?.rows || [];
   const records = rawRecords.map(normalizeBillingRecord);
@@ -170,7 +158,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   };
 
   const glassCardStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl overflow-hidden";
-  const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl smoke-fill glass-tile-hover";
+  const squareTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl smoke-fill glass-tile-hover aspect-square";
 
   const ancillaryDuePatients = useMemo(() => {
     const now = new Date();
@@ -240,55 +228,43 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </Button>
       </div>
 
-      {/* ROW 1: Patient Prescreens, Patient Database, VideoCall */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <button
-          className={`${glassTileStyle} flex flex-col min-h-[160px] cursor-pointer group`}
+      {/* ROW 1: Square tiles with big icons - Schedule, Patient Prescreens, Patient Database, VideoCall */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div
+          className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
+          onClick={() => onNavigate?.("schedule")}
+          data-testid="button-schedule"
+        >
+          <Calendar className="h-12 w-12 text-indigo-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <p className="text-slate-700 font-semibold text-sm text-center">Schedule</p>
+        </div>
+
+        <div
+          className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-base drop-shadow-sm">Patient Prescreens</p>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center gap-3 flex-1">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Sparkles className="h-7 w-7 text-indigo-800" />
-            </div>
-            <p className="text-slate-600 text-sm">Patient eligibility</p>
-          </div>
-        </button>
+          <Sparkles className="h-12 w-12 text-purple-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <p className="text-slate-700 font-semibold text-sm text-center">Patient Prescreens</p>
+        </div>
 
-        <button
-          className={`${glassTileStyle} flex flex-col min-h-[160px] cursor-pointer group`}
+        <div
+          className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-patient-database"
         >
-          <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-base drop-shadow-sm">Patient Database</p>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center gap-3 flex-1">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-200/60 to-emerald-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Database className="h-7 w-7 text-teal-800" />
-            </div>
-            <p className="text-slate-600 text-sm">All patient records</p>
-          </div>
-        </button>
+          <Database className="h-12 w-12 text-teal-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <p className="text-slate-700 font-semibold text-sm text-center">Patient Database</p>
+        </div>
 
-        <button
-          className={`${glassTileStyle} flex flex-col min-h-[160px] cursor-pointer group`}
+        <div
+          className={`${squareTileStyle} flex flex-col items-center justify-center p-4 cursor-pointer group`}
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-videocall"
         >
-          <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-base drop-shadow-sm">VideoCall</p>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center gap-3 flex-1">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-200/60 to-sky-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Video className="h-7 w-7 text-blue-800" />
-            </div>
-            <p className="text-slate-600 text-sm">Virtual appointments</p>
-          </div>
-        </button>
+          <Video className="h-12 w-12 text-blue-700 mb-3 group-hover:scale-110 transition-transform duration-300" />
+          <p className="text-slate-700 font-semibold text-sm text-center">VideoCall</p>
+        </div>
       </div>
 
       {/* ROW 2: Ancillary Service Patient Tracker */}
@@ -309,17 +285,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-x divide-white/20">
             {/* BrainWave Patient Tracking */}
-            <div className="smoke-fill-section-violet py-4 px-5 min-h-[140px]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-                  <Brain className="h-4 w-4 text-violet-700" />
-                </div>
+            <div className="smoke-fill-section-violet py-5 px-5 min-h-[160px]">
+              <div className="flex items-center gap-4 mb-4">
+                <Brain className="h-10 w-10 text-violet-700" />
                 <div>
-                  <p className="font-semibold text-violet-800 text-sm">BrainWave</p>
-                  <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} due</p>
+                  <p className="font-bold text-violet-800 text-base">BrainWave</p>
+                  <p className="text-sm text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} due</p>
                 </div>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").slice(0, 2).map((patient, idx) => (
                   <div key={idx} className="flex justify-between items-center text-sm">
                     <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
@@ -335,17 +309,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
 
             {/* Ultrasound Patient Tracking */}
-            <div className="smoke-fill-section-blue py-4 px-5 min-h-[140px]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-                  <UltrasoundProbeIcon className="h-4 w-4 text-blue-600" />
-                </div>
+            <div className="smoke-fill-section-blue py-5 px-5 min-h-[160px]">
+              <div className="flex items-center gap-4 mb-4">
+                <UltrasoundProbeIcon className="h-10 w-10 text-blue-600" />
                 <div>
-                  <p className="font-semibold text-blue-700 text-sm">Ultrasound</p>
-                  <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} due</p>
+                  <p className="font-bold text-blue-700 text-base">Ultrasound</p>
+                  <p className="text-sm text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} due</p>
                 </div>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 2).map((patient, idx) => (
                   <div key={idx} className="flex justify-between items-center text-sm">
                     <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
@@ -361,17 +333,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
 
             {/* VitalWave Patient Tracking */}
-            <div className="smoke-fill-section-red py-4 px-5 min-h-[140px]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-                  <Heart className="h-4 w-4 text-red-600" />
-                </div>
+            <div className="smoke-fill-section-red py-5 px-5 min-h-[160px]">
+              <div className="flex items-center gap-4 mb-4">
+                <Heart className="h-10 w-10 text-red-600" />
                 <div>
-                  <p className="font-semibold text-red-700 text-sm">VitalWave</p>
-                  <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} due</p>
+                  <p className="font-bold text-red-700 text-base">VitalWave</p>
+                  <p className="text-sm text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} due</p>
                 </div>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 2).map((patient, idx) => (
                   <div key={idx} className="flex justify-between items-center text-sm">
                     <span className="text-slate-700 truncate max-w-[100px]">{patient.name}</span>
@@ -389,7 +359,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         )}
       </div>
 
-      {/* ROW 3: Billing Overview (combined) + Finance Dashboard */}
+      {/* ROW 3: Billing Overview + Finance Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Billing Overview - Combined tile with service columns */}
         <div 
@@ -423,15 +393,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 </div>
                 <div className="space-y-1">
                   {last3Brainwave.length > 0 ? last3Brainwave.map((r, i) => (
-                    <button 
+                    <div 
                       key={i} 
-                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors"
+                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors cursor-pointer"
                       onClick={(e) => { e.stopPropagation(); handleNavigateToService("brainwave"); }}
-                      data-testid={`button-billing-brainwave-${i}`}
+                      data-testid={`billing-brainwave-${i}`}
                     >
                       <span className="text-slate-700 truncate max-w-[80px]">{r.patient_name || "Unknown"}</span>
                       <span className="text-slate-600 font-medium text-xs">{formatDate(r.date)}</span>
-                    </button>
+                    </div>
                   )) : <p className="text-sm text-slate-500">No recent records</p>}
                 </div>
               </div>
@@ -449,15 +419,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 </div>
                 <div className="space-y-1">
                   {last3Ultrasound.length > 0 ? last3Ultrasound.map((r, i) => (
-                    <button 
+                    <div 
                       key={i} 
-                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors"
+                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors cursor-pointer"
                       onClick={(e) => { e.stopPropagation(); handleNavigateToService("ultrasound"); }}
-                      data-testid={`button-billing-ultrasound-${i}`}
+                      data-testid={`billing-ultrasound-${i}`}
                     >
                       <span className="text-slate-700 truncate max-w-[80px]">{r.patient_name || "Unknown"}</span>
                       <span className="text-slate-600 font-medium text-xs">{formatDate(r.date)}</span>
-                    </button>
+                    </div>
                   )) : <p className="text-sm text-slate-500">No recent records</p>}
                 </div>
               </div>
@@ -475,15 +445,15 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 </div>
                 <div className="space-y-1">
                   {last3Vitalwave.length > 0 ? last3Vitalwave.map((r, i) => (
-                    <button 
+                    <div 
                       key={i} 
-                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors"
+                      className="w-full flex justify-between items-center text-sm hover:bg-white/30 rounded-lg p-1 transition-colors cursor-pointer"
                       onClick={(e) => { e.stopPropagation(); handleNavigateToService("vitalwave"); }}
-                      data-testid={`button-billing-vitalwave-${i}`}
+                      data-testid={`billing-vitalwave-${i}`}
                     >
                       <span className="text-slate-700 truncate max-w-[80px]">{r.patient_name || "Unknown"}</span>
                       <span className="text-slate-600 font-medium text-xs">{formatDate(r.date)}</span>
-                    </button>
+                    </div>
                   )) : <p className="text-sm text-slate-500">No recent records</p>}
                 </div>
               </div>
@@ -492,8 +462,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </div>
 
         {/* Finance Dashboard */}
-        <button
-          className={`${glassTileStyle} flex flex-col min-h-[200px] cursor-pointer group`}
+        <div
+          className={`${glassCardStyle} flex flex-col min-h-[200px] cursor-pointer group smoke-fill glass-tile-hover`}
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
@@ -532,7 +502,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </>
             )}
           </div>
-        </button>
+        </div>
       </div>
 
       {/* ROW 4: Notes + Revenue Trend */}
@@ -555,17 +525,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="text-center p-2 rounded-xl bg-violet-50/60 border border-violet-200/30">
-                <Brain className="h-4 w-4 text-violet-700 mx-auto mb-1" />
+                <Brain className="h-5 w-5 text-violet-700 mx-auto mb-1" />
                 <p className="text-lg font-bold text-violet-800">{notesPending.brainwave}</p>
                 <p className="text-xs text-violet-600">BrainWave</p>
               </div>
               <div className="text-center p-2 rounded-xl bg-blue-50/60 border border-blue-200/30">
-                <UltrasoundProbeIcon className="h-4 w-4 text-blue-600 mx-auto mb-1" />
+                <UltrasoundProbeIcon className="h-5 w-5 text-blue-600 mx-auto mb-1" />
                 <p className="text-lg font-bold text-blue-700">{notesPending.ultrasound}</p>
                 <p className="text-xs text-blue-600">Ultrasound</p>
               </div>
               <div className="text-center p-2 rounded-xl bg-red-50/60 border border-red-200/30">
-                <Heart className="h-4 w-4 text-red-600 mx-auto mb-1" />
+                <Heart className="h-5 w-5 text-red-600 mx-auto mb-1" />
                 <p className="text-lg font-bold text-red-700">{notesPending.vitalwave}</p>
                 <p className="text-xs text-red-600">VitalWave</p>
               </div>
@@ -574,8 +544,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </div>
 
         {/* Revenue Trend */}
-        <button
-          className={`${glassTileStyle} flex flex-col min-h-[200px] cursor-pointer group`}
+        <div
+          className={`${glassCardStyle} flex flex-col min-h-[200px] cursor-pointer group smoke-fill glass-tile-hover`}
           onClick={handleViewAllBilling}
           data-testid="button-revenue-trend"
         >
@@ -596,7 +566,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
             <p className="text-slate-600 text-sm font-medium">{formatCurrency(totalRevenue)} Total Revenue</p>
           </div>
-        </button>
+        </div>
       </div>
     </div>
   );
