@@ -586,17 +586,26 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
                 {/* Revenue by Service */}
                 <div className="grid grid-cols-3 gap-0">
-                  <div className="p-3 service-tile-violet cursor-pointer text-center">
+                  <div className="p-4 service-tile-violet cursor-pointer">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Brain className="h-6 w-6 text-violet-600" />
+                      <p className="text-xs text-black">BrainWave</p>
+                    </div>
                     <p className="text-xl text-black">{formatCurrency(brainwaveRevenue)}</p>
-                    <p className="text-xs text-black">BrainWave</p>
                   </div>
-                  <div className="p-3 service-tile-blue cursor-pointer text-center">
+                  <div className="p-4 service-tile-blue cursor-pointer">
+                    <div className="flex items-center gap-2 mb-2">
+                      <UltrasoundProbeIcon className="h-6 w-6 text-blue-600" />
+                      <p className="text-xs text-black">Ultrasound</p>
+                    </div>
                     <p className="text-xl text-black">{formatCurrency(ultrasoundRevenue)}</p>
-                    <p className="text-xs text-black">Ultrasound</p>
                   </div>
-                  <div className="p-3 service-tile-red cursor-pointer text-center">
+                  <div className="p-4 service-tile-red cursor-pointer">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Heart className="h-6 w-6 text-red-600" />
+                      <p className="text-xs text-black">VitalWave</p>
+                    </div>
                     <p className="text-xl text-black">{formatCurrency(vitalwaveRevenue)}</p>
-                    <p className="text-xs text-black">VitalWave</p>
                   </div>
                 </div>
 
