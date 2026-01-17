@@ -242,14 +242,14 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-lg drop-shadow-sm">Schedule</p>
-          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Calendar className="h-8 w-8 text-indigo-800" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Calendar className="h-10 w-10 text-indigo-800" />
             </div>
-            <p className="text-slate-600 text-sm">Daily appointments</p>
+            <div className="text-center">
+              <p className="text-[#1a0a28] font-semibold">Schedule</p>
+              <p className="text-slate-500 text-xs">Daily appointments</p>
+            </div>
           </div>
         </button>
 
@@ -258,14 +258,14 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-lg drop-shadow-sm">Prescreens</p>
-          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-4 flex-1">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <Sparkles className="h-8 w-8 text-indigo-800" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Sparkles className="h-10 w-10 text-indigo-800" />
             </div>
-            <p className="text-slate-600 text-sm">Patient eligibility</p>
+            <div className="text-center">
+              <p className="text-[#1a0a28] font-semibold">Prescreens</p>
+              <p className="text-slate-500 text-xs">Patient eligibility</p>
+            </div>
           </div>
         </button>
 
@@ -274,40 +274,24 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={handleViewAllBilling}
           data-testid="button-finance"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
-            <TrendingUp className="h-5 w-5 text-white" />
-            <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
-          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-200/60 to-slate-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <DollarSign className="h-7 w-7 text-indigo-800" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-200/60 to-teal-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <DollarSign className="h-10 w-10 text-emerald-800" />
+            </div>
+            <div className="text-center">
+              <p className="text-[#1a0a28] font-semibold">Finance</p>
             </div>
             {billingLoading ? (
               <div className="flex flex-col items-center gap-2 animate-pulse">
                 <div className="flex items-center gap-2">
-                  <div className="w-16 h-5 rounded-full bg-slate-200/70" />
-                  <div className="w-16 h-5 rounded-full bg-slate-200/70" />
-                  <div className="w-16 h-5 rounded-full bg-slate-200/70" />
+                  <div className="w-14 h-4 rounded-full bg-slate-200/70" />
+                  <div className="w-14 h-4 rounded-full bg-slate-200/70" />
                 </div>
-                <div className="w-24 h-4 rounded bg-slate-200/70" />
               </div>
             ) : totalRevenue > 0 ? (
-              <>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-purple-100/70 text-purple-700 font-semibold border border-purple-200/50">{formatCurrency(brainwaveRevenue)}</span>
-                  <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-violet-100/70 text-violet-700 font-semibold border border-violet-200/50">{formatCurrency(ultrasoundRevenue)}</span>
-                  <span className="px-2 py-1 rounded-full backdrop-blur-sm bg-indigo-100/70 text-indigo-700 font-semibold border border-indigo-200/50">{formatCurrency(vitalwaveRevenue)}</span>
-                </div>
-                <p className="text-slate-600 text-xs font-medium">{formatCurrency(totalRevenue)} Total Collected</p>
-              </>
+              <p className="text-emerald-700 text-sm font-semibold">{formatCurrency(totalRevenue)}</p>
             ) : (
-              <>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-purple-700">{totalPending}</p>
-                  <p className="text-xs text-slate-600">Claims Pending</p>
-                </div>
-                <p className="text-slate-500 text-xs">No payments recorded yet</p>
-              </>
+              <p className="text-slate-500 text-xs">{totalPending} pending</p>
             )}
           </div>
         </button>
@@ -317,37 +301,25 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={handleViewAllBilling}
           data-testid="button-billing-overview"
         >
-          <div className="w-full h-14 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center border-b border-white/10">
-            <p className="text-white font-bold text-lg drop-shadow-sm">Billing Dashboard</p>
-          </div>
           <div className="p-6 flex flex-col items-center justify-center gap-3 flex-1">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-200/60 to-purple-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <Receipt className="h-10 w-10 text-violet-800" />
+            </div>
+            <div className="text-center">
+              <p className="text-[#1a0a28] font-semibold">Billing</p>
+            </div>
             {billingLoading ? (
-              <div className="flex flex-col items-center gap-3 animate-pulse">
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-xl bg-slate-200/70" />
-                  <div className="w-16 h-16 rounded-xl bg-slate-200/70" />
-                  <div className="w-16 h-16 rounded-xl bg-slate-200/70" />
-                </div>
-                <div className="w-20 h-4 rounded bg-slate-200/70" />
+              <div className="flex items-center gap-2 animate-pulse">
+                <div className="w-8 h-4 rounded bg-slate-200/70" />
+                <div className="w-8 h-4 rounded bg-slate-200/70" />
+                <div className="w-8 h-4 rounded bg-slate-200/70" />
               </div>
             ) : (
-              <>
-                <div className="flex items-center gap-3">
-                  <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-violet-100/50 border border-violet-200/30">
-                    <p className="text-2xl font-bold text-violet-800">{brainwaveCount}</p>
-                    <p className="text-xs text-violet-700">Brain</p>
-                  </div>
-                  <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-blue-100/50 border border-blue-200/30">
-                    <p className="text-2xl font-bold text-blue-700">{ultrasoundCount}</p>
-                    <p className="text-xs text-blue-600">Ultra</p>
-                  </div>
-                  <div className="text-center px-3 py-2 rounded-xl backdrop-blur-sm bg-red-100/50 border border-red-200/30">
-                    <p className="text-2xl font-bold text-red-700">{vitalwaveCount}</p>
-                    <p className="text-xs text-red-600">Vital</p>
-                  </div>
-                </div>
-                <p className="text-slate-600 text-sm font-medium">{totalCount} Total</p>
-              </>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-2 py-0.5 rounded-full bg-violet-100/70 text-violet-700 font-medium">{brainwaveCount}</span>
+                <span className="px-2 py-0.5 rounded-full bg-blue-100/70 text-blue-700 font-medium">{ultrasoundCount}</span>
+                <span className="px-2 py-0.5 rounded-full bg-red-100/70 text-red-700 font-medium">{vitalwaveCount}</span>
+              </div>
             )}
           </div>
         </button>
