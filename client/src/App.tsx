@@ -148,14 +148,43 @@ function AppSidebar({
 
   const toggleLocation = (locationId: string, clinicId: string) => {
     const newSelected = new Set(selectedClinics);
+    const clinic = clinicData.find(c => c.id === clinicId);
+    if (!clinic) return;
+
     if (newSelected.has(locationId)) {
       newSelected.delete(locationId);
+      // Check if all locations for this clinic are now unchecked - if so, uncheck the clinic
+      const hasAnyLocationSelected = clinic.locations.some(loc => newSelected.has(loc.id));
+      if (!hasAnyLocationSelected) {
+        newSelected.delete(clinicId);
+      }
     } else {
       newSelected.add(locationId);
       newSelected.add(clinicId);
     }
     setSelectedClinics(newSelected);
   };
+
+  // Check if a clinic is in indeterminate state (some but not all locations selected)
+  const isClinicIndeterminate = (clinicId: string) => {
+    const clinic = clinicData.find(c => c.id === clinicId);
+    if (!clinic || clinic.locations.length === 0) return false;
+    
+    const selectedCount = clinic.locations.filter(loc => selectedClinics.has(loc.id)).length;
+    return selectedCount > 0 && selectedCount < clinic.locations.length;
+  };
+
+  // Check if all locations of a clinic are selected
+  const isClinicFullySelected = (clinicId: string) => {
+    const clinic = clinicData.find(c => c.id === clinicId);
+    if (!clinic) return false;
+    if (clinic.locations.length === 0) return selectedClinics.has(clinicId);
+    return clinic.locations.every(loc => selectedClinics.has(loc.id));
+  };
+
+  // Check if Select All is in indeterminate state
+  const isSomeSelected = allIds.some(id => selectedClinics.has(id));
+  const isSelectAllIndeterminate = isSomeSelected && !isAllSelected;
 
   return (
     <Sidebar className="border-r border-[#1e1e38]/50">
@@ -190,9 +219,9 @@ function AppSidebar({
             <div className="flex items-center space-x-2 pb-2 border-b border-slate-700/30">
               <Checkbox 
                 id="select-all" 
-                checked={isAllSelected}
+                checked={isSelectAllIndeterminate ? "indeterminate" : isAllSelected}
                 onCheckedChange={toggleAll}
-                className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=indeterminate]:bg-teal-600/50 data-[state=indeterminate]:border-teal-600"
                 data-testid="checkbox-select-all"
               />
               <label 
@@ -204,14 +233,18 @@ function AppSidebar({
             </div>
 
             {/* Clinics and Locations */}
-            {clinicData.map((clinic) => (
+            {clinicData.map((clinic) => {
+              const indeterminate = isClinicIndeterminate(clinic.id);
+              const fullySelected = isClinicFullySelected(clinic.id);
+              
+              return (
               <div key={clinic.id} className="space-y-1">
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id={clinic.id}
-                    checked={selectedClinics.has(clinic.id)}
+                    checked={indeterminate ? "indeterminate" : fullySelected}
                     onCheckedChange={() => toggleClinic(clinic.id)}
-                    className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                    className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=indeterminate]:bg-teal-600/50 data-[state=indeterminate]:border-teal-600"
                     data-testid={`checkbox-clinic-${clinic.id}`}
                   />
                   <label 
@@ -247,7 +280,8 @@ function AppSidebar({
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         </SidebarGroup>
 
