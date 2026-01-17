@@ -11,7 +11,7 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Building2, ChevronDown, Check } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -61,44 +61,6 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 
-interface Clinic {
-  id: string;
-  name: string;
-}
-
-interface Organization {
-  id: string;
-  name: string;
-  clinics: Clinic[];
-}
-
-const organizations: Organization[] = [
-  {
-    id: "newwave",
-    name: "New Wave Physicians Group",
-    clinics: [
-      { id: "spring", name: "Spring Clinic" },
-      { id: "veterans", name: "Veterans Clinic" },
-    ],
-  },
-  {
-    id: "taylor",
-    name: "Taylor Family Practice",
-    clinics: [
-      { id: "taylor-main", name: "Main Office" },
-      { id: "taylor-west", name: "West Branch" },
-    ],
-  },
-  {
-    id: "servemd",
-    name: "ServeMD",
-    clinics: [
-      { id: "servemd-downtown", name: "Downtown Clinic" },
-      { id: "servemd-north", name: "North Campus" },
-    ],
-  },
-];
-
 function AppSidebar({ 
   selectedPatient,
   onPatientSelect,
@@ -109,9 +71,6 @@ function AppSidebar({
   onClearPatient: () => void;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOrgId, setSelectedOrgId] = useState<string>("newwave");
-  const [selectedClinicId, setSelectedClinicId] = useState<string>("spring");
-  const [orgMenuOpen, setOrgMenuOpen] = useState(false);
   const debouncedQuery = useDebounce(searchQuery, 100);
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
@@ -121,8 +80,6 @@ function AppSidebar({
   });
 
   const patients = searchResults?.data || [];
-  const selectedOrg = organizations.find(o => o.id === selectedOrgId) || organizations[0];
-  const selectedClinic = selectedOrg.clinics.find(c => c.id === selectedClinicId) || selectedOrg.clinics[0];
 
   return (
     <Sidebar className="border-r border-[#1e1e38]/50">
@@ -139,76 +96,18 @@ function AppSidebar({
           </div>
           <div>
             <p className="text-slate-400 text-[10px] font-semibold tracking-[0.2em] uppercase">Clinical EMR</p>
-            <h1 className="font-light text-lg text-white/90 tracking-tight">Plexus Ancillaries</h1>
+            <h1 className="font-light text-lg text-white/90 tracking-tight">Plexus</h1>
           </div>
         </button>
       </SidebarHeader>
 
-      <SidebarContent className="p-3 relative flex flex-col h-full">
-        {/* Organization/Clinic Selection - Top Section */}
-        <SidebarGroup className="relative z-10 flex-shrink-0">
+      <SidebarContent className="p-3 relative">
+        <SidebarGroup className="relative z-10">
           <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
-            Organization
-          </SidebarGroupLabel>
-          
-          <div className="relative">
-            <button
-              onClick={() => setOrgMenuOpen(!orgMenuOpen)}
-              className="w-full flex items-center justify-between p-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:bg-slate-800/70 transition-colors cursor-pointer"
-              data-testid="button-org-selector"
-            >
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-teal-400" />
-                <div className="text-left">
-                  <p className="text-white text-sm font-medium truncate">{selectedOrg.name}</p>
-                  <p className="text-slate-400 text-xs">{selectedClinic?.name || 'Select clinic'}</p>
-                </div>
-              </div>
-              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform flex-shrink-0 ${orgMenuOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {orgMenuOpen && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800/95 backdrop-blur-sm border border-slate-700/50 rounded-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
-                {organizations.map((org) => (
-                  <div key={org.id}>
-                    <div className="px-3 py-2 bg-slate-900/50 border-b border-slate-700/30">
-                      <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider">{org.name}</p>
-                    </div>
-                    {org.clinics.map((clinic) => (
-                      <button
-                        key={clinic.id}
-                        onClick={() => {
-                          setSelectedOrgId(org.id);
-                          setSelectedClinicId(clinic.id);
-                          setOrgMenuOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-4 py-2 hover:bg-slate-700/50 transition-colors ${
-                          selectedOrgId === org.id && selectedClinicId === clinic.id ? 'bg-teal-900/30' : ''
-                        }`}
-                        data-testid={`button-clinic-${clinic.id}`}
-                      >
-                        <p className="text-white text-sm">{clinic.name}</p>
-                        {selectedOrgId === org.id && selectedClinicId === clinic.id && (
-                          <Check className="h-4 w-4 text-teal-400" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </SidebarGroup>
-
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Patient Search - Bottom Half */}
-        <SidebarGroup className="relative z-10 flex-1 min-h-0 flex flex-col">
-          <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2 flex-shrink-0">
             Patient Search
           </SidebarGroupLabel>
           
-          <div className="relative mb-3 flex-shrink-0">
+          <div className="relative mb-3">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
             <Input
               type="text"
@@ -230,7 +129,7 @@ function AppSidebar({
           </div>
 
           {selectedPatient && (
-            <div className="mb-3 p-2 bg-teal-900/30 border border-teal-700/50 rounded-lg flex-shrink-0">
+            <div className="mb-3 p-2 bg-teal-900/30 border border-teal-700/50 rounded-lg">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-teal-700 flex items-center justify-center text-white text-xs font-medium">
                   {selectedPatient.first_name?.[0]}{selectedPatient.last_name?.[0]}
@@ -252,54 +151,45 @@ function AppSidebar({
             </div>
           )}
 
-          <div className="flex-1 min-h-0 overflow-hidden">
-            {isLoading && debouncedQuery.length >= 2 && (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-5 w-5 text-teal-400 animate-spin" />
-              </div>
-            )}
+          {isLoading && debouncedQuery.length >= 2 && (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-5 w-5 text-teal-400 animate-spin" />
+            </div>
+          )}
 
-            {!isLoading && debouncedQuery.length >= 2 && patients.length === 0 && (
-              <p className="text-slate-500 text-sm text-center py-4">No patients found</p>
-            )}
+          {!isLoading && debouncedQuery.length >= 2 && patients.length === 0 && (
+            <p className="text-slate-500 text-sm text-center py-4">No patients found</p>
+          )}
 
-            {patients.length > 0 && (
-              <ScrollArea className="h-full">
-                <SidebarMenu className="space-y-1">
-                  {patients.map((patient) => (
-                    <SidebarMenuItem key={patient.patient_uuid}>
-                      <SidebarMenuButton
-                        onClick={() => {
-                          onPatientSelect(patient);
-                          setSearchQuery("");
-                        }}
-                        isActive={selectedPatient?.patient_uuid === patient.patient_uuid}
-                        className="text-slate-300/80 hover:text-white hover:bg-white/5"
-                        data-testid={`patient-result-${patient.patient_uuid}`}
-                      >
-                        <User className="h-4 w-4 text-slate-500" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {patient.last_name}, {patient.first_name}
-                          </p>
-                          {patient.dob && (
-                            <p className="text-xs text-slate-500">{patient.dob}</p>
-                          )}
-                        </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </ScrollArea>
-            )}
-
-            {!isLoading && debouncedQuery.length < 2 && !selectedPatient && (
-              <div className="text-slate-500 text-sm text-center py-8">
-                <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>Type at least 2 characters to search</p>
-              </div>
-            )}
-          </div>
+          {patients.length > 0 && (
+            <ScrollArea className="h-[calc(100vh-320px)]">
+              <SidebarMenu className="space-y-1">
+                {patients.map((patient) => (
+                  <SidebarMenuItem key={patient.patient_uuid}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        onPatientSelect(patient);
+                        setSearchQuery("");
+                      }}
+                      isActive={selectedPatient?.patient_uuid === patient.patient_uuid}
+                      className="text-slate-300/80 hover:text-white hover:bg-white/5"
+                      data-testid={`patient-result-${patient.patient_uuid}`}
+                    >
+                      <User className="h-4 w-4 text-slate-500" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {patient.last_name}, {patient.first_name}
+                        </p>
+                        {patient.dob && (
+                          <p className="text-xs text-slate-500">{patient.dob}</p>
+                        )}
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </ScrollArea>
+          )}
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>

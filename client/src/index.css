@@ -307,86 +307,35 @@
     z-index: 1;
   }
 
-  /* Section-specific smoke fills for individual columns - fills from header to bottom */
+  /* Section-specific smoke fills for individual columns */
   .smoke-fill-section-violet {
     position: relative;
     overflow: hidden;
+    transition: background-color 0.3s ease;
   }
 
-  .smoke-fill-section-violet::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(196, 181, 253, 0.8) 0%, rgba(221, 214, 254, 0.6) 50%, rgba(237, 233, 254, 0.4) 100%);
-    opacity: 0;
-    transform: translateY(-100%);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .smoke-fill-section-violet:hover::before {
-    opacity: 1;
-    transform: translateY(0%);
-  }
-
-  .smoke-fill-section-violet > * {
-    position: relative;
-    z-index: 1;
+  .smoke-fill-section-violet:hover {
+    background: linear-gradient(to top, rgba(196, 181, 253, 0.7) 0%, rgba(221, 214, 254, 0.5) 50%, rgba(237, 233, 254, 0.3) 100%);
   }
 
   .smoke-fill-section-blue {
     position: relative;
     overflow: hidden;
+    transition: background-color 0.3s ease;
   }
 
-  .smoke-fill-section-blue::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(147, 197, 253, 0.8) 0%, rgba(191, 219, 254, 0.6) 50%, rgba(219, 234, 254, 0.4) 100%);
-    opacity: 0;
-    transform: translateY(-100%);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .smoke-fill-section-blue:hover::before {
-    opacity: 1;
-    transform: translateY(0%);
-  }
-
-  .smoke-fill-section-blue > * {
-    position: relative;
-    z-index: 1;
+  .smoke-fill-section-blue:hover {
+    background: linear-gradient(to top, rgba(147, 197, 253, 0.7) 0%, rgba(191, 219, 254, 0.5) 50%, rgba(219, 234, 254, 0.3) 100%);
   }
 
   .smoke-fill-section-red {
     position: relative;
     overflow: hidden;
+    transition: background-color 0.3s ease;
   }
 
-  .smoke-fill-section-red::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(252, 165, 165, 0.8) 0%, rgba(254, 202, 202, 0.6) 50%, rgba(254, 226, 226, 0.4) 100%);
-    opacity: 0;
-    transform: translateY(-100%);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .smoke-fill-section-red:hover::before {
-    opacity: 1;
-    transform: translateY(0%);
-  }
-
-  .smoke-fill-section-red > * {
-    position: relative;
-    z-index: 1;
+  .smoke-fill-section-red:hover {
+    background: linear-gradient(to top, rgba(252, 165, 165, 0.7) 0%, rgba(254, 202, 202, 0.5) 50%, rgba(254, 226, 226, 0.3) 100%);
   }
 
   /* Violet smoke for BrainWave */
