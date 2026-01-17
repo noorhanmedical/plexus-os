@@ -283,11 +283,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
   return (
     <div className="space-y-5 p-4 min-h-full relative">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1a0a28]">Clinical Dashboard</h1>
-          <p className="text-slate-500 text-sm">Patient management overview</p>
-        </div>
+      <div className="flex items-center justify-end">
         <Button
           variant="outline"
           size="sm"
@@ -379,20 +375,20 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* BrainWave Patient Tracking */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200 smoke-fill-violet cursor-pointer transition-all duration-300 hover:shadow-lg">
+              <div className="p-4 rounded-xl smoke-fill-violet cursor-pointer transition-all duration-300 hover:shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#5b21b6] to-[#1e1b4b] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
                     <Brain className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">BrainWave</p>
+                    <p className="font-semibold text-slate-900">BrainWave</p>
                     <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} patients due</p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm py-1">
-                      <span className="text-slate-900 truncate max-w-[120px] font-medium">{patient.name}</span>
+                      <span className="text-slate-900 truncate max-w-[120px]">{patient.name}</span>
                       <Badge className="bg-slate-200 text-slate-700 border-slate-300 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
@@ -405,20 +401,20 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200 smoke-fill-blue cursor-pointer transition-all duration-300 hover:shadow-lg">
+              <div className="p-4 rounded-xl smoke-fill-blue cursor-pointer transition-all duration-300 hover:shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3730a3] to-[#1e1b4b] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">Ultrasound</p>
+                    <p className="font-semibold text-slate-900">Ultrasound</p>
                     <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm py-1">
-                      <span className="text-slate-900 truncate max-w-[120px] font-medium">{patient.name}</span>
+                      <span className="text-slate-900 truncate max-w-[120px]">{patient.name}</span>
                       <Badge className="bg-slate-200 text-slate-700 border-slate-300 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
@@ -431,20 +427,20 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200 smoke-fill-red cursor-pointer transition-all duration-300 hover:shadow-lg">
+              <div className="p-4 rounded-xl smoke-fill-red cursor-pointer transition-all duration-300 hover:shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#4338ca] to-[#1e1b4b] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
                     <Heart className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">VitalWave</p>
+                    <p className="font-semibold text-slate-900">VitalWave</p>
                     <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm py-1">
-                      <span className="text-slate-900 truncate max-w-[120px] font-medium">{patient.name}</span>
+                      <span className="text-slate-900 truncate max-w-[120px]">{patient.name}</span>
                       <Badge className="bg-slate-200 text-slate-700 border-slate-300 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
@@ -522,92 +518,92 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* BrainWave */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200 smoke-fill-violet cursor-pointer transition-all duration-300 hover:shadow-lg">
+              <div className="p-4 rounded-xl smoke-fill-violet cursor-pointer transition-all duration-300 hover:shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#5b21b6] to-[#1e1b4b] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
                     <Brain className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">BrainWave</p>
+                    <p className="font-semibold text-slate-900">BrainWave</p>
                     <p className="text-xs text-slate-500">{currentYear} YTD</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{brainwavePending}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">To Submit</p>
+                    <p className="text-2xl text-slate-900">{brainwavePending}</p>
+                    <p className="text-[10px] text-slate-500">To Submit</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{brainwaveSubmitted}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Submitted</p>
+                    <p className="text-2xl text-slate-900">{brainwaveSubmitted}</p>
+                    <p className="text-[10px] text-slate-500">Submitted</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{brainwavePaidCount}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Paid</p>
+                    <p className="text-2xl text-slate-900">{brainwavePaidCount}</p>
+                    <p className="text-[10px] text-slate-500">Paid</p>
                   </div>
                 </div>
                 <div className="pt-3 border-t border-slate-200">
-                  <p className="text-sm font-bold text-slate-900 text-center">{formatCurrency(brainwaveRevenue)} <span className="font-normal text-slate-500">collected</span></p>
+                  <p className="text-sm text-slate-900 text-center">{formatCurrency(brainwaveRevenue)} <span className="text-slate-500">collected</span></p>
                 </div>
               </div>
 
               {/* Ultrasound */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200 smoke-fill-blue cursor-pointer transition-all duration-300 hover:shadow-lg">
+              <div className="p-4 rounded-xl smoke-fill-blue cursor-pointer transition-all duration-300 hover:shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3730a3] to-[#1e1b4b] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">Ultrasound</p>
+                    <p className="font-semibold text-slate-900">Ultrasound</p>
                     <p className="text-xs text-slate-500">{currentYear} YTD</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{ultrasoundPending}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">To Submit</p>
+                    <p className="text-2xl text-slate-900">{ultrasoundPending}</p>
+                    <p className="text-[10px] text-slate-500">To Submit</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{ultrasoundSubmitted}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Submitted</p>
+                    <p className="text-2xl text-slate-900">{ultrasoundSubmitted}</p>
+                    <p className="text-[10px] text-slate-500">Submitted</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{ultrasoundPaidCount}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Paid</p>
+                    <p className="text-2xl text-slate-900">{ultrasoundPaidCount}</p>
+                    <p className="text-[10px] text-slate-500">Paid</p>
                   </div>
                 </div>
                 <div className="pt-3 border-t border-slate-200">
-                  <p className="text-sm font-bold text-slate-900 text-center">{formatCurrency(ultrasoundRevenue)} <span className="font-normal text-slate-500">collected</span></p>
+                  <p className="text-sm text-slate-900 text-center">{formatCurrency(ultrasoundRevenue)} <span className="text-slate-500">collected</span></p>
                 </div>
               </div>
 
               {/* VitalWave */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200 smoke-fill-red cursor-pointer transition-all duration-300 hover:shadow-lg">
+              <div className="p-4 rounded-xl smoke-fill-red cursor-pointer transition-all duration-300 hover:shadow-lg border border-slate-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#4338ca] to-[#1e1b4b] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
                     <Heart className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">VitalWave</p>
+                    <p className="font-semibold text-slate-900">VitalWave</p>
                     <p className="text-xs text-slate-500">{currentYear} YTD</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{vitalwavePending}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">To Submit</p>
+                    <p className="text-2xl text-slate-900">{vitalwavePending}</p>
+                    <p className="text-[10px] text-slate-500">To Submit</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{vitalwaveSubmitted}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Submitted</p>
+                    <p className="text-2xl text-slate-900">{vitalwaveSubmitted}</p>
+                    <p className="text-[10px] text-slate-500">Submitted</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{vitalwavePaidCount}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Paid</p>
+                    <p className="text-2xl text-slate-900">{vitalwavePaidCount}</p>
+                    <p className="text-[10px] text-slate-500">Paid</p>
                   </div>
                 </div>
                 <div className="pt-3 border-t border-slate-200">
-                  <p className="text-sm font-bold text-slate-900 text-center">{formatCurrency(vitalwaveRevenue)} <span className="font-normal text-slate-500">collected</span></p>
+                  <p className="text-sm text-slate-900 text-center">{formatCurrency(vitalwaveRevenue)} <span className="text-slate-500">collected</span></p>
                 </div>
               </div>
             </div>
@@ -642,12 +638,12 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                         <DollarSign className="h-7 w-7 text-white" strokeWidth={2.5} />
                       </div>
                       <div>
-                        <p className="text-3xl font-black text-slate-900">{formatCurrency(totalRevenue)}</p>
+                        <p className="text-3xl text-slate-900">{formatCurrency(totalRevenue)}</p>
                         <p className="text-sm text-slate-500">Total Revenue Collected</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-slate-600">{currentYear} YTD</p>
+                      <p className="text-sm text-slate-600">{currentYear} YTD</p>
                     </div>
                   </div>
                 </div>
@@ -655,36 +651,36 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 {/* Revenue by Service */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-xl font-black text-slate-900">{formatCurrency(brainwaveRevenue)}</p>
-                    <p className="text-xs text-slate-500 font-medium">BrainWave</p>
+                    <p className="text-xl text-slate-900">{formatCurrency(brainwaveRevenue)}</p>
+                    <p className="text-xs text-slate-500">BrainWave</p>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-xl font-black text-slate-900">{formatCurrency(ultrasoundRevenue)}</p>
-                    <p className="text-xs text-slate-500 font-medium">Ultrasound</p>
+                    <p className="text-xl text-slate-900">{formatCurrency(ultrasoundRevenue)}</p>
+                    <p className="text-xs text-slate-500">Ultrasound</p>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-xl font-black text-slate-900">{formatCurrency(vitalwaveRevenue)}</p>
-                    <p className="text-xs text-slate-500 font-medium">VitalWave</p>
+                    <p className="text-xl text-slate-900">{formatCurrency(vitalwaveRevenue)}</p>
+                    <p className="text-xs text-slate-500">VitalWave</p>
                   </div>
                 </div>
 
                 {/* Summary Stats */}
                 <div className="grid grid-cols-4 gap-3">
                   <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl font-black text-slate-900">{totalPendingClaims}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Pending</p>
+                    <p className="text-2xl text-slate-900">{totalPendingClaims}</p>
+                    <p className="text-[10px] text-slate-500">Pending</p>
                   </div>
                   <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl font-black text-slate-900">{totalSubmittedClaims}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Submitted</p>
+                    <p className="text-2xl text-slate-900">{totalSubmittedClaims}</p>
+                    <p className="text-[10px] text-slate-500">Submitted</p>
                   </div>
                   <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl font-black text-slate-900">{totalPaidClaims}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Paid</p>
+                    <p className="text-2xl text-slate-900">{totalPaidClaims}</p>
+                    <p className="text-[10px] text-slate-500">Paid</p>
                   </div>
                   <div className="p-3 rounded-lg bg-slate-50/80 border border-slate-200 text-center">
-                    <p className="text-2xl font-black text-slate-900">{formatCurrency(avgClaimValue)}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Avg Claim</p>
+                    <p className="text-2xl text-slate-900">{formatCurrency(avgClaimValue)}</p>
+                    <p className="text-[10px] text-slate-500">Avg Claim</p>
                   </div>
                 </div>
               </div>
@@ -692,7 +688,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* Right: Revenue Chart */}
               <div className="p-5 rounded-xl bg-slate-50/80 border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm font-bold text-slate-900">Monthly Revenue</p>
+                  <p className="text-sm text-slate-900">Monthly Revenue</p>
                   <p className="text-xs text-slate-500">Last 6 Months</p>
                 </div>
                 <div className="flex items-end justify-between gap-3 h-36">

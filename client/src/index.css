@@ -307,36 +307,22 @@
     z-index: 1;
   }
 
-  /* Violet smoke for BrainWave */
+  /* Purple fill for BrainWave - fills entire tile on hover */
   .smoke-fill-violet {
     position: relative;
     overflow: hidden;
-    background: rgba(230, 230, 250, 0.7);
+    background: rgba(248, 250, 252, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
   }
 
-  .smoke-fill-violet::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center bottom, #DDD6FE 0%, transparent 70%);
-    opacity: 0;
-    transform: translateY(100%) scale(0.8);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    z-index: 0;
+  .smoke-fill-violet:hover {
+    background: #C4B5FD;
   }
 
-  .smoke-fill-violet:hover::before {
-    opacity: 0.7;
-    transform: translateY(20%) scale(1.2);
-  }
-
-  .smoke-fill-violet:active::before {
-    opacity: 1;
-    transform: translateY(0%) scale(1.5);
-    background: radial-gradient(ellipse at center bottom, #DDD6FE 0%, #C4B5FD 50%, transparent 80%);
+  .smoke-fill-violet:active {
+    background: #A78BFA;
   }
 
   .smoke-fill-violet > * {
@@ -344,36 +330,22 @@
     z-index: 1;
   }
 
-  /* Blue smoke for Ultrasound */
+  /* Blue fill for Ultrasound - fills entire tile on hover */
   .smoke-fill-blue {
     position: relative;
     overflow: hidden;
-    background: rgba(230, 230, 250, 0.7);
+    background: rgba(248, 250, 252, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
   }
 
-  .smoke-fill-blue::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center bottom, #BFDBFE 0%, transparent 70%);
-    opacity: 0;
-    transform: translateY(100%) scale(0.8);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    z-index: 0;
+  .smoke-fill-blue:hover {
+    background: #93C5FD;
   }
 
-  .smoke-fill-blue:hover::before {
-    opacity: 0.7;
-    transform: translateY(20%) scale(1.2);
-  }
-
-  .smoke-fill-blue:active::before {
-    opacity: 1;
-    transform: translateY(0%) scale(1.5);
-    background: radial-gradient(ellipse at center bottom, #BFDBFE 0%, #93C5FD 50%, transparent 80%);
+  .smoke-fill-blue:active {
+    background: #60A5FA;
   }
 
   .smoke-fill-blue > * {
@@ -381,36 +353,22 @@
     z-index: 1;
   }
 
-  /* Red smoke for VitalWave */
+  /* Red fill for VitalWave - fills entire tile on hover */
   .smoke-fill-red {
     position: relative;
     overflow: hidden;
-    background: rgba(230, 230, 250, 0.7);
+    background: rgba(248, 250, 252, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
   }
 
-  .smoke-fill-red::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center bottom, #FECACA 0%, transparent 70%);
-    opacity: 0;
-    transform: translateY(100%) scale(0.8);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-    z-index: 0;
+  .smoke-fill-red:hover {
+    background: #FCA5A5;
   }
 
-  .smoke-fill-red:hover::before {
-    opacity: 0.7;
-    transform: translateY(20%) scale(1.2);
-  }
-
-  .smoke-fill-red:active::before {
-    opacity: 1;
-    transform: translateY(0%) scale(1.5);
-    background: radial-gradient(ellipse at center bottom, #FECACA 0%, #FCA5A5 50%, transparent 80%);
+  .smoke-fill-red:active {
+    background: #F87171;
   }
 
   .smoke-fill-red > * {
