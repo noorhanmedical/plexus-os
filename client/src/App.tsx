@@ -114,7 +114,7 @@ function AppSidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 100);
   const [selectedClinics, setSelectedClinics] = useState<Set<string>>(new Set(getAllSelectableIds()));
-  const [clinicSectionOpen, setClinicSectionOpen] = useState(true);
+  const [clinicSectionOpen, setClinicSectionOpen] = useState(false);
   const [expandedClinics, setExpandedClinics] = useState<Set<string>>(new Set(["nwpg", "servmd"]));
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
