@@ -77,7 +77,6 @@ const organizations: Organization[] = [
     id: "newwave",
     name: "New Wave Physicians Group",
     clinics: [
-      { id: "all-newwave", name: "All Clinics" },
       { id: "spring", name: "Spring Clinic" },
       { id: "veterans", name: "Veterans Clinic" },
     ],
@@ -86,7 +85,6 @@ const organizations: Organization[] = [
     id: "taylor",
     name: "Taylor Family Practice",
     clinics: [
-      { id: "all-taylor", name: "All Clinics" },
       { id: "taylor-main", name: "Main Office" },
       { id: "taylor-west", name: "West Branch" },
     ],
@@ -95,11 +93,8 @@ const organizations: Organization[] = [
     id: "servemd",
     name: "ServeMD",
     clinics: [
-      { id: "all-servemd", name: "All Clinics" },
-      { id: "servemd-suncity", name: "Suncity" },
-      { id: "servemd-tempe", name: "Tempe" },
-      { id: "servemd-glendale", name: "Glendale" },
-      { id: "servemd-prescott", name: "Prescott" },
+      { id: "servemd-downtown", name: "Downtown Clinic" },
+      { id: "servemd-north", name: "North Campus" },
     ],
   },
 ];
@@ -115,42 +110,8 @@ function AppSidebar({
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrgId, setSelectedOrgId] = useState<string>("newwave");
-  const [selectedClinicIds, setSelectedClinicIds] = useState<string[]>(["all-newwave"]);
+  const [selectedClinicId, setSelectedClinicId] = useState<string>("spring");
   const [orgMenuOpen, setOrgMenuOpen] = useState(false);
-
-  const toggleClinicSelection = (orgId: string, clinicId: string) => {
-    if (orgId !== selectedOrgId) {
-      setSelectedOrgId(orgId);
-      setSelectedClinicIds([clinicId]);
-    } else {
-      if (clinicId.startsWith("all-")) {
-        setSelectedClinicIds([clinicId]);
-      } else {
-        const allClinicId = `all-${orgId}`;
-        let newSelection = selectedClinicIds.filter(id => id !== allClinicId);
-        if (newSelection.includes(clinicId)) {
-          newSelection = newSelection.filter(id => id !== clinicId);
-          if (newSelection.length === 0) {
-            newSelection = [allClinicId];
-          }
-        } else {
-          newSelection = [...newSelection, clinicId];
-        }
-        setSelectedClinicIds(newSelection);
-      }
-    }
-  };
-
-  const getSelectedClinicsLabel = () => {
-    if (selectedClinicIds.length === 1 && selectedClinicIds[0].startsWith("all-")) {
-      return "All Clinics";
-    }
-    if (selectedClinicIds.length === 1) {
-      const clinic = selectedOrg.clinics.find(c => c.id === selectedClinicIds[0]);
-      return clinic?.name || "Select clinic";
-    }
-    return `${selectedClinicIds.length} clinics selected`;
-  };
   const debouncedQuery = useDebounce(searchQuery, 100);
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
@@ -161,6 +122,7 @@ function AppSidebar({
 
   const patients = searchResults?.data || [];
   const selectedOrg = organizations.find(o => o.id === selectedOrgId) || organizations[0];
+  const selectedClinic = selectedOrg.clinics.find(c => c.id === selectedClinicId) || selectedOrg.clinics[0];
 
   return (
     <Sidebar className="border-r border-[#1e1e38]/50">
@@ -199,41 +161,41 @@ function AppSidebar({
                 <Building2 className="h-4 w-4 text-teal-400" />
                 <div className="text-left">
                   <p className="text-white text-sm font-medium truncate">{selectedOrg.name}</p>
-                  <p className="text-slate-400 text-xs">{getSelectedClinicsLabel()}</p>
+                  <p className="text-slate-400 text-xs">{selectedClinic?.name || 'Select clinic'}</p>
                 </div>
               </div>
-              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-300 ease-out flex-shrink-0 ${orgMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform flex-shrink-0 ${orgMenuOpen ? 'rotate-180' : ''}`} />
             </button>
-            <div className={`absolute top-full left-0 right-0 mt-1 bg-slate-800/95 backdrop-blur-sm border border-slate-700/50 rounded-lg z-50 max-h-80 overflow-y-auto transition-all duration-300 ease-out origin-top ${orgMenuOpen ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
-              {organizations.map((org) => (
-                <div key={org.id}>
-                  <div className="px-3 py-2 bg-slate-900/50 border-b border-slate-700/30">
-                    <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider">{org.name}</p>
-                  </div>
-                  {org.clinics.map((clinic) => {
-                    const isSelected = selectedOrgId === org.id && selectedClinicIds.includes(clinic.id);
-                    const isAllOption = clinic.id.startsWith("all-");
-                    return (
+            {orgMenuOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800/95 backdrop-blur-sm border border-slate-700/50 rounded-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
+                {organizations.map((org) => (
+                  <div key={org.id}>
+                    <div className="px-3 py-2 bg-slate-900/50 border-b border-slate-700/30">
+                      <p className="text-slate-300 text-xs font-semibold uppercase tracking-wider">{org.name}</p>
+                    </div>
+                    {org.clinics.map((clinic) => (
                       <button
                         key={clinic.id}
-                        onClick={() => toggleClinicSelection(org.id, clinic.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-700/50 transition-colors ${
-                          isSelected ? 'bg-teal-900/30' : ''
+                        onClick={() => {
+                          setSelectedOrgId(org.id);
+                          setSelectedClinicId(clinic.id);
+                          setOrgMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-4 py-2 hover:bg-slate-700/50 transition-colors ${
+                          selectedOrgId === org.id && selectedClinicId === clinic.id ? 'bg-teal-900/30' : ''
                         }`}
                         data-testid={`button-clinic-${clinic.id}`}
                       >
-                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                          isSelected ? 'bg-teal-500 border-teal-500' : 'border-slate-500'
-                        }`}>
-                          {isSelected && <Check className="h-3 w-3 text-white" />}
-                        </div>
-                        <p className={`text-sm ${isAllOption ? 'text-teal-400 font-medium' : 'text-white'}`}>{clinic.name}</p>
+                        <p className="text-white text-sm">{clinic.name}</p>
+                        {selectedOrgId === org.id && selectedClinicId === clinic.id && (
+                          <Check className="h-4 w-4 text-teal-400" />
+                        )}
                       </button>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </SidebarGroup>
 
