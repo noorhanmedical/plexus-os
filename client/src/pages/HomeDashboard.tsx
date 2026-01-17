@@ -300,46 +300,38 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       {/* Row 1: Schedule, Prescreens, Ancillary Portal, Patient Database - BOLD TILES */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4338ca] to-[#1e1b4b] backdrop-blur-sm border-2 border-white/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-xl mb-3">
-            <Calendar className="h-10 w-10 text-white" strokeWidth={2.5} />
-          </div>
+          <Calendar className="h-16 w-16 text-indigo-700 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
           <p className="text-[#1a0a28] font-bold text-lg">Schedule</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#5b21b6] to-[#1e1b4b] backdrop-blur-sm border-2 border-white/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-xl mb-3">
-            <Sparkles className="h-10 w-10 text-white" strokeWidth={2.5} />
-          </div>
+          <Sparkles className="h-16 w-16 text-violet-700 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
           <p className="text-[#1a0a28] font-bold text-lg">Prescreens</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("ancillary")}
           data-testid="button-ancillary-portal"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#3730a3] to-[#1e1b4b] backdrop-blur-sm border-2 border-white/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-xl mb-3">
-            <Stethoscope className="h-10 w-10 text-white" strokeWidth={2.5} />
-          </div>
+          <Stethoscope className="h-16 w-16 text-purple-700 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
           <p className="text-[#1a0a28] font-bold text-lg">Ancillary Portal</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-patient-database"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4f46e5] to-[#1e1b4b] backdrop-blur-sm border-2 border-white/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-xl mb-3">
-            <Users className="h-10 w-10 text-white" strokeWidth={2.5} />
-          </div>
+          <Users className="h-16 w-16 text-indigo-600 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
           <p className="text-[#1a0a28] font-bold text-lg">Patient Database</p>
         </button>
       </div>
@@ -362,7 +354,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3">
               {/* BrainWave Patient Tracking */}
-              <div className="p-4 service-tile-violet cursor-pointer transition-all duration-300 group">
+              <div className="p-4 service-tile-violet cursor-pointer transition-all duration-300 group min-h-[160px]">
                 <div className="flex items-center gap-3 mb-3">
                   <Brain className="h-10 w-10 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
@@ -370,9 +362,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                     <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} patients due</p>
                   </div>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2 min-h-[72px]">
                   {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").slice(0, 3).map((patient, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-sm py-0.5">
+                    <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-black truncate max-w-[140px]">{patient.name}</span>
                       <Badge className="bg-slate-200 text-black border-slate-300 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
@@ -380,13 +372,13 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                     </div>
                   ))}
                   {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length === 0 && (
-                    <p className="text-sm text-black py-1">No patients due</p>
+                    <p className="text-sm text-black">No patients due</p>
                   )}
                 </div>
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="p-4 service-tile-blue cursor-pointer transition-all duration-300 group">
+              <div className="p-4 service-tile-blue cursor-pointer transition-all duration-300 group min-h-[160px]">
                 <div className="flex items-center gap-3 mb-3">
                   <UltrasoundProbeIcon className="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
@@ -394,9 +386,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                     <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
                   </div>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2 min-h-[72px]">
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 3).map((patient, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-sm py-0.5">
+                    <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-black truncate max-w-[140px]">{patient.name}</span>
                       <Badge className="bg-slate-200 text-black border-slate-300 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
@@ -404,13 +396,13 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                     </div>
                   ))}
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length === 0 && (
-                    <p className="text-sm text-black py-1">No patients due</p>
+                    <p className="text-sm text-black">No patients due</p>
                   )}
                 </div>
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="p-4 service-tile-red cursor-pointer transition-all duration-300 group">
+              <div className="p-4 service-tile-red cursor-pointer transition-all duration-300 group min-h-[160px]">
                 <div className="flex items-center gap-3 mb-3">
                   <Heart className="h-10 w-10 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
@@ -418,9 +410,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                     <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
                   </div>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2 min-h-[72px]">
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 3).map((patient, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-sm py-0.5">
+                    <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-black truncate max-w-[140px]">{patient.name}</span>
                       <Badge className="bg-slate-200 text-black border-slate-300 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
@@ -428,7 +420,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                     </div>
                   ))}
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length === 0 && (
-                    <p className="text-sm text-black py-1">No patients due</p>
+                    <p className="text-sm text-black">No patients due</p>
                   )}
                 </div>
               </div>
