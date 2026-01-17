@@ -48,7 +48,7 @@ interface Patient {
 }
 
 const mainTabs = [
-  { id: "home" as MainTab, label: "Home", icon: Home },
+  { id: "home" as MainTab, label: "Plexus Ancillaries", icon: Home },
   { id: "schedule" as MainTab, label: "Schedule", icon: Calendar },
   { id: "prescreens" as MainTab, label: "Prescreens", icon: ClipboardList },
   { id: "ancillary" as MainTab, label: "Ancillary", icon: Activity },
@@ -543,7 +543,7 @@ function MainContent() {
                     }`}
                   >
                     <Home className="h-3.5 w-3.5" />
-                    <span>Home</span>
+                    <span>Plexus Ancillaries</span>
                   </button>
                   
                   <button
