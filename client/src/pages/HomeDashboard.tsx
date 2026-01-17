@@ -148,9 +148,16 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     return `$${amount.toFixed(0)}`;
   };
 
-  const last3Brainwave = brainwaveRecords.slice(0, 3);
-  const last3Ultrasound = ultrasoundRecords.slice(0, 3);
-  const last3Vitalwave = vitalwaveRecords.slice(0, 3);
+  // Sort by date descending (most recent first) then take top 3
+  const sortByDateDesc = (a: BillingRecord, b: BillingRecord) => {
+    const dateA = new Date(a.date || a.date_of_service || 0).getTime();
+    const dateB = new Date(b.date || b.date_of_service || 0).getTime();
+    return dateB - dateA;
+  };
+
+  const last3Brainwave = [...brainwaveRecords].sort(sortByDateDesc).slice(0, 3);
+  const last3Ultrasound = [...ultrasoundRecords].sort(sortByDateDesc).slice(0, 3);
+  const last3Vitalwave = [...vitalwaveRecords].sort(sortByDateDesc).slice(0, 3);
 
   const handleViewAllBilling = () => {
     if (onNavigate) {
@@ -376,7 +383,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-x divide-white/20">
               {/* BrainWave Patient Tracking */}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 smoke-fill-section-violet rounded-l-xl">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
                     <Brain className="h-4 w-4 text-violet-700" />
@@ -402,7 +409,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 smoke-fill-section-blue">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-4 w-4 text-blue-600" />
@@ -428,7 +435,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 smoke-fill-section-red rounded-r-xl">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
                     <Heart className="h-4 w-4 text-red-600" />
@@ -494,7 +501,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-x divide-white/20">
               {/* BrainWave */}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 smoke-fill-section-violet rounded-l-xl">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-300/60 to-purple-400/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
                     <Brain className="h-4 w-4 text-violet-700" />
@@ -520,7 +527,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound */}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 smoke-fill-section-blue">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-200/60 to-cyan-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-4 w-4 text-blue-600" />
@@ -546,7 +553,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave */}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 smoke-fill-section-red rounded-r-xl">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-200/60 to-rose-300/60 backdrop-blur-sm border border-white/30 flex items-center justify-center">
                     <Heart className="h-4 w-4 text-red-600" />

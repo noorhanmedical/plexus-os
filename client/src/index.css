@@ -273,7 +273,7 @@
     background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
   }
 
-  /* Smoke fill animation for tiles - more pronounced */
+  /* Smoke fill animation for tiles - fills entire tile */
   .smoke-fill {
     position: relative;
     overflow: hidden;
@@ -283,28 +283,59 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 120% 100% at center bottom, #C4B5FD 0%, #E6E6FA 30%, transparent 65%);
+    background: linear-gradient(to top, #C4B5FD 0%, #DDD6FE 40%, #E6E6FA 100%);
     opacity: 0;
-    transform: translateY(100%) scale(0.8);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(100%);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
     z-index: 0;
   }
 
   .smoke-fill:hover::before {
-    opacity: 0.85;
-    transform: translateY(10%) scale(1.3);
+    opacity: 0.9;
+    transform: translateY(0%);
   }
 
   .smoke-fill:active::before {
     opacity: 1;
-    transform: translateY(-10%) scale(1.6);
-    background: radial-gradient(ellipse 140% 120% at center bottom, #A78BFA 0%, #C4B5FD 40%, #E6E6FA 70%, transparent 90%);
+    transform: translateY(0%);
+    background: linear-gradient(to top, #A78BFA 0%, #C4B5FD 50%, #DDD6FE 100%);
   }
 
   .smoke-fill > * {
     position: relative;
     z-index: 1;
+  }
+
+  /* Section-specific smoke fills for individual columns */
+  .smoke-fill-section-violet {
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+
+  .smoke-fill-section-violet:hover {
+    background: linear-gradient(to top, rgba(196, 181, 253, 0.7) 0%, rgba(221, 214, 254, 0.5) 50%, rgba(237, 233, 254, 0.3) 100%);
+  }
+
+  .smoke-fill-section-blue {
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+
+  .smoke-fill-section-blue:hover {
+    background: linear-gradient(to top, rgba(147, 197, 253, 0.7) 0%, rgba(191, 219, 254, 0.5) 50%, rgba(219, 234, 254, 0.3) 100%);
+  }
+
+  .smoke-fill-section-red {
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+
+  .smoke-fill-section-red:hover {
+    background: linear-gradient(to top, rgba(252, 165, 165, 0.7) 0%, rgba(254, 202, 202, 0.5) 50%, rgba(254, 226, 226, 0.3) 100%);
   }
 
   /* Violet smoke for BrainWave */
