@@ -273,7 +273,7 @@
     background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
   }
 
-  /* Smoke fill animation for tiles */
+  /* Smoke fill animation for tiles - more pronounced */
   .smoke-fill {
     position: relative;
     overflow: hidden;
@@ -283,23 +283,23 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center bottom, #E6E6FA 0%, transparent 70%);
+    background: radial-gradient(ellipse 120% 100% at center bottom, #C4B5FD 0%, #E6E6FA 30%, transparent 65%);
     opacity: 0;
     transform: translateY(100%) scale(0.8);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
     z-index: 0;
   }
 
   .smoke-fill:hover::before {
-    opacity: 0.5;
-    transform: translateY(20%) scale(1.2);
+    opacity: 0.85;
+    transform: translateY(10%) scale(1.3);
   }
 
   .smoke-fill:active::before {
-    opacity: 0.9;
-    transform: translateY(0%) scale(1.5);
-    background: radial-gradient(ellipse at center bottom, #E6E6FA 0%, #E6E6FA 50%, transparent 80%);
+    opacity: 1;
+    transform: translateY(-10%) scale(1.6);
+    background: radial-gradient(ellipse 140% 120% at center bottom, #A78BFA 0%, #C4B5FD 40%, #E6E6FA 70%, transparent 90%);
   }
 
   .smoke-fill > * {
@@ -418,21 +418,21 @@
     z-index: 1;
   }
 
-  /* Cursor glow effect */
+  /* Cursor glow effect - more pronounced */
   .cursor-glow {
     position: fixed;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(230, 230, 250, 0.4) 0%, rgba(200, 180, 220, 0.2) 40%, transparent 70%);
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.6) 0%, rgba(196, 181, 253, 0.4) 30%, rgba(230, 230, 250, 0.2) 50%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
     transform: translate(-50%, -50%);
     z-index: 0;
     transition: opacity 0.3s ease;
-    filter: blur(40px);
+    filter: blur(50px);
   }
 
-  /* Hazy blur effect on tile hover */
+  /* Hazy blur effect on tile hover - more pronounced */
   .glass-tile-hover {
     position: relative;
     transition: transform 0.2s ease, box-shadow 0.3s ease;
@@ -441,14 +441,14 @@
   .glass-tile-hover::after {
     content: '';
     position: absolute;
-    inset: -20px;
-    background: radial-gradient(ellipse at center, rgba(230, 230, 250, 0.5) 0%, transparent 70%);
+    inset: -30px;
+    background: radial-gradient(ellipse at center, rgba(167, 139, 250, 0.5) 0%, rgba(196, 181, 253, 0.3) 40%, transparent 70%);
     border-radius: inherit;
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
     z-index: -1;
-    filter: blur(20px);
+    filter: blur(25px);
   }
 
   .glass-tile-hover:hover::after {
@@ -456,7 +456,7 @@
   }
 
   .glass-tile-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(200, 180, 220, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(167, 139, 250, 0.35), 0 4px 16px rgba(196, 181, 253, 0.25);
   }
 }
