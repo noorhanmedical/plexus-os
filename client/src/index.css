@@ -307,22 +307,46 @@
     z-index: 1;
   }
 
-  /* Service tile styles - no background change on hover */
+  /* Service tile styles with top-to-bottom color fill on hover */
   .service-tile-violet,
   .service-tile-blue,
   .service-tile-red {
     position: relative;
     overflow: hidden;
-    background: rgba(248, 250, 252, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: transparent;
     transition: all 0.3s ease;
   }
 
-  .service-tile-violet:hover,
-  .service-tile-blue:hover,
-  .service-tile-red:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  .service-tile-violet::before,
+  .service-tile-blue::before,
+  .service-tile-red::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .service-tile-violet::before {
+    background: linear-gradient(to bottom, #C4B5FD 0%, #DDD6FE 50%, #EDE9FE 100%);
+  }
+
+  .service-tile-blue::before {
+    background: linear-gradient(to bottom, #93C5FD 0%, #BFDBFE 50%, #DBEAFE 100%);
+  }
+
+  .service-tile-red::before {
+    background: linear-gradient(to bottom, #FCA5A5 0%, #FECACA 50%, #FEE2E2 100%);
+  }
+
+  .service-tile-violet:hover::before,
+  .service-tile-blue:hover::before,
+  .service-tile-red:hover::before {
+    opacity: 1;
+    transform: translateY(0%);
   }
 
   .service-tile-violet > *,
