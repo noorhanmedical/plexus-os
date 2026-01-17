@@ -307,7 +307,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* BrainWave Patient Tracking */}
-              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100">
+              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-violet-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center">
                     <Brain className="h-5 w-5 text-white" />
@@ -333,7 +333,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100">
+              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-blue-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-5 w-5 text-white" />
@@ -359,7 +359,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100">
+              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-red-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-rose-600 flex items-center justify-center">
                     <Heart className="h-5 w-5 text-white" />
@@ -450,7 +450,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* BrainWave */}
-              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100">
+              <div className="p-3 rounded-xl bg-violet-50/50 border border-violet-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-violet-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center">
                     <Brain className="h-5 w-5 text-white" />
@@ -476,7 +476,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound */}
-              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100">
+              <div className="p-3 rounded-xl bg-blue-50/50 border border-blue-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-blue-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center">
                     <UltrasoundProbeIcon className="h-5 w-5 text-white" />
@@ -502,7 +502,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave */}
-              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100">
+              <div className="p-3 rounded-xl bg-red-50/50 border border-red-100 smoke-fill cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-red-300">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-rose-600 flex items-center justify-center">
                     <Heart className="h-5 w-5 text-white" />
