@@ -551,93 +551,64 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           <TrendingUp className="h-5 w-5 text-white" />
           <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
         </div>
-        <div className="p-5">
+        <div className="p-0">
           {billingLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left: Key Metrics */}
-              <div className="space-y-0">
-                {/* Total Revenue */}
-                <div className="p-5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <DollarSign className="h-10 w-10 text-green-600 transition-transform duration-300 hover:scale-110" strokeWidth={2.5} />
-                      <div>
-                        <p className="text-3xl font-bold text-black">{formatCurrency(totalRevenue)}</p>
-                        <p className="text-sm text-black">Total Revenue Collected</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-black">{currentYear} YTD</p>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-200">
+              {/* BrainWave Revenue */}
+              <div className="p-5 service-tile-violet cursor-pointer group min-h-[200px] flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <Brain className="h-14 w-14 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <div>
+                    <p className="font-semibold text-black text-lg">BrainWave</p>
+                    <p className="text-xs text-black">{currentYear} YTD</p>
                   </div>
                 </div>
-
-                {/* Revenue by Service */}
-                <div className="grid grid-cols-3 gap-0 divide-x divide-slate-200">
-                  <div className="p-5 service-tile-violet cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Brain className="h-12 w-12 text-violet-600 transition-transform duration-300 group-hover:scale-110" strokeWidth={2.5} />
-                      <p className="text-base font-semibold text-black">BrainWave</p>
-                    </div>
-                    <p className="text-2xl font-bold text-black">{formatCurrency(brainwaveRevenue)}</p>
-                  </div>
-                  <div className="p-5 service-tile-blue cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3">
-                      <UltrasoundProbeIcon className="h-12 w-12 text-blue-600 transition-transform duration-300 group-hover:scale-110 -rotate-[20deg]" />
-                      <p className="text-base font-semibold text-black">Ultrasound</p>
-                    </div>
-                    <p className="text-2xl font-bold text-black">{formatCurrency(ultrasoundRevenue)}</p>
-                  </div>
-                  <div className="p-5 service-tile-red cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Heart className="h-12 w-12 text-red-600 transition-transform duration-300 group-hover:scale-110" strokeWidth={2.5} />
-                      <p className="text-base font-semibold text-black">VitalWave</p>
-                    </div>
-                    <p className="text-2xl font-bold text-black">{formatCurrency(vitalwaveRevenue)}</p>
+                <p className="text-3xl font-bold text-black mb-2">{formatCurrency(brainwaveRevenue)}</p>
+                <p className="text-sm text-black">Revenue Collected</p>
+                <div className="mt-auto pt-4 border-t border-slate-200">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-black">{brainwavePaidCount} claims paid</span>
                   </div>
                 </div>
-
               </div>
 
-              {/* Right: Revenue Chart */}
-              <div className="p-5 rounded-xl bg-slate-50/80 border border-slate-200">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-black">Monthly Revenue</p>
-                  <p className="text-xs text-black">Last 6 Months</p>
-                </div>
-                <div className="flex items-end justify-between gap-3 h-36">
-                  {monthlyRevenue.map((m, idx) => (
-                    <div key={idx} className="flex flex-col items-center flex-1">
-                      <div 
-                        className="w-full bg-gradient-to-t from-[#3730a3] to-[#5b21b6] rounded-t-md transition-all duration-300 hover:from-[#4338ca] hover:to-[#6d28d9]"
-                        style={{ 
-                          height: `${Math.max((m.revenue / maxMonthlyRevenue) * 100, 8)}%`,
-                          minHeight: '12px'
-                        }}
-                        title={`${m.month}: ${formatCurrency(m.revenue)}`}
-                      />
-                      <p className="text-xs text-black mt-2">{m.month}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-[#3730a3] to-[#5b21b6]" />
-                    <p className="text-xs text-black">Revenue</p>
+              {/* Ultrasound Revenue */}
+              <div className="p-5 service-tile-blue cursor-pointer group min-h-[200px] flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <UltrasoundProbeIcon className="h-14 w-14 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                  <div>
+                    <p className="font-semibold text-black text-lg">Ultrasound</p>
+                    <p className="text-xs text-black">{currentYear} YTD</p>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-black rounded-lg text-xs h-7"
-                    onClick={handleViewAllBilling}
-                    data-testid="button-view-finance"
-                  >
-                    View Details
-                  </Button>
+                </div>
+                <p className="text-3xl font-bold text-black mb-2">{formatCurrency(ultrasoundRevenue)}</p>
+                <p className="text-sm text-black">Revenue Collected</p>
+                <div className="mt-auto pt-4 border-t border-slate-200">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-black">{ultrasoundPaidCount} claims paid</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* VitalWave Revenue */}
+              <div className="p-5 service-tile-red cursor-pointer group min-h-[200px] flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <Heart className="h-14 w-14 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <div>
+                    <p className="font-semibold text-black text-lg">VitalWave</p>
+                    <p className="text-xs text-black">{currentYear} YTD</p>
+                  </div>
+                </div>
+                <p className="text-3xl font-bold text-black mb-2">{formatCurrency(vitalwaveRevenue)}</p>
+                <p className="text-sm text-black">Revenue Collected</p>
+                <div className="mt-auto pt-4 border-t border-slate-200">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-black">{vitalwavePaidCount} claims paid</span>
+                  </div>
                 </div>
               </div>
             </div>
