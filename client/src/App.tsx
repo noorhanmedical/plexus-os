@@ -11,10 +11,11 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, Check } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, ChevronDown, ChevronRight, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   SidebarProvider,
@@ -111,6 +112,8 @@ function AppSidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 100);
   const [selectedClinics, setSelectedClinics] = useState<Set<string>>(new Set(getAllSelectableIds()));
+  const [clinicSectionOpen, setClinicSectionOpen] = useState(true);
+  const [expandedClinics, setExpandedClinics] = useState<Set<string>>(new Set(["nwpg", "servmd"]));
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
     queryKey: [`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`],
@@ -186,6 +189,16 @@ function AppSidebar({
   const isSomeSelected = allIds.some(id => selectedClinics.has(id));
   const isSelectAllIndeterminate = isSomeSelected && !isAllSelected;
 
+  const toggleClinicExpanded = (clinicId: string) => {
+    const newExpanded = new Set(expandedClinics);
+    if (newExpanded.has(clinicId)) {
+      newExpanded.delete(clinicId);
+    } else {
+      newExpanded.add(clinicId);
+    }
+    setExpandedClinics(newExpanded);
+  };
+
   return (
     <Sidebar className="border-r border-[#1e1e38]/50">
       <NightSkyBackdrop starCount={80} showShootingStars={true} showHorizonGlow={true} />
@@ -207,82 +220,109 @@ function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent className="p-3 relative">
-        {/* Clinic Selection Section */}
+        {/* Clinic Selection Section - Elegant Collapsible */}
         <SidebarGroup className="relative z-10 mb-4">
-          <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-2">
-            <Building2 className="h-3.5 w-3.5" />
-            Select Clinic
-          </SidebarGroupLabel>
-          
-          <div className="space-y-2 bg-slate-900/30 rounded-lg p-3 border border-slate-700/30">
-            {/* Select All */}
-            <div className="flex items-center space-x-2 pb-2 border-b border-slate-700/30">
-              <Checkbox 
-                id="select-all" 
-                checked={isSelectAllIndeterminate ? "indeterminate" : isAllSelected}
-                onCheckedChange={toggleAll}
-                className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=indeterminate]:bg-teal-600/50 data-[state=indeterminate]:border-teal-600"
-                data-testid="checkbox-select-all"
-              />
-              <label 
-                htmlFor="select-all" 
-                className="text-sm font-medium text-white cursor-pointer"
-              >
-                Select All
-              </label>
-            </div>
-
-            {/* Clinics and Locations */}
-            {clinicData.map((clinic) => {
-              const indeterminate = isClinicIndeterminate(clinic.id);
-              const fullySelected = isClinicFullySelected(clinic.id);
-              
-              return (
-              <div key={clinic.id} className="space-y-1">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={clinic.id}
-                    checked={indeterminate ? "indeterminate" : fullySelected}
-                    onCheckedChange={() => toggleClinic(clinic.id)}
-                    className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=indeterminate]:bg-teal-600/50 data-[state=indeterminate]:border-teal-600"
-                    data-testid={`checkbox-clinic-${clinic.id}`}
-                  />
-                  <label 
-                    htmlFor={clinic.id} 
-                    className="text-sm text-slate-200 cursor-pointer flex items-center gap-1.5"
-                  >
-                    <Building2 className="h-3.5 w-3.5 text-slate-400" />
-                    {clinic.label}
-                  </label>
-                </div>
-                
-                {/* Locations */}
-                {clinic.locations.length > 0 && (
-                  <div className="ml-6 space-y-1">
-                    {clinic.locations.map((location) => (
-                      <div key={location.id} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={location.id}
-                          checked={selectedClinics.has(location.id)}
-                          onCheckedChange={() => toggleLocation(location.id, clinic.id)}
-                          className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 h-3.5 w-3.5"
-                          data-testid={`checkbox-location-${location.id}`}
-                        />
-                        <label 
-                          htmlFor={location.id} 
-                          className="text-xs text-slate-400 cursor-pointer flex items-center gap-1"
-                        >
-                          <MapPin className="h-3 w-3" />
-                          {location.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+          <Collapsible open={clinicSectionOpen} onOpenChange={setClinicSectionOpen}>
+            <CollapsibleTrigger className="w-full flex items-center justify-between py-2 px-1 text-slate-300 hover:text-white transition-colors group" data-testid="button-toggle-clinic-filter">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-teal-400" />
+                <span className="text-sm font-medium">Clinic Filter</span>
+                {!isAllSelected && (
+                  <span className="text-xs text-teal-400 bg-teal-900/40 px-1.5 py-0.5 rounded">
+                    {Array.from(selectedClinics).filter(id => clinicData.some(c => c.id === id)).length} selected
+                  </span>
                 )}
               </div>
-              );
-            })}
-          </div>
+              <ChevronDown className={`h-4 w-4 text-slate-500 transition-transform duration-200 ${clinicSectionOpen ? '' : '-rotate-90'}`} />
+            </CollapsibleTrigger>
+            
+            <CollapsibleContent className="mt-2">
+              <div className="space-y-1">
+                {/* Select All - Elegant inline */}
+                <div 
+                  className="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
+                  onClick={toggleAll}
+                >
+                  <Checkbox 
+                    id="select-all" 
+                    checked={isSelectAllIndeterminate ? "indeterminate" : isAllSelected}
+                    onCheckedChange={toggleAll}
+                    className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=indeterminate]:bg-teal-600/50 data-[state=indeterminate]:border-teal-600"
+                    data-testid="checkbox-select-all"
+                  />
+                  <label className="text-sm text-slate-200 cursor-pointer flex-1">
+                    All Clinics
+                  </label>
+                </div>
+
+                <div className="h-px bg-slate-700/50 my-1" />
+
+                {/* Clinics with collapsible locations */}
+                {clinicData.map((clinic) => {
+                  const indeterminate = isClinicIndeterminate(clinic.id);
+                  const fullySelected = isClinicFullySelected(clinic.id);
+                  const hasLocations = clinic.locations.length > 0;
+                  const isExpanded = expandedClinics.has(clinic.id);
+                  
+                  return (
+                    <div key={clinic.id}>
+                      <div className="flex items-center gap-1">
+                        {hasLocations && (
+                          <button
+                            onClick={() => toggleClinicExpanded(clinic.id)}
+                            className="p-0.5 text-slate-500 hover:text-white transition-colors"
+                            data-testid={`button-expand-${clinic.id}`}
+                          >
+                            <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+                          </button>
+                        )}
+                        <div 
+                          className={`flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-white/5 cursor-pointer transition-colors flex-1 ${!hasLocations ? 'ml-5' : ''}`}
+                          onClick={() => toggleClinic(clinic.id)}
+                        >
+                          <Checkbox 
+                            id={clinic.id}
+                            checked={indeterminate ? "indeterminate" : fullySelected}
+                            onCheckedChange={() => toggleClinic(clinic.id)}
+                            className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 data-[state=indeterminate]:bg-teal-600/50 data-[state=indeterminate]:border-teal-600"
+                            data-testid={`checkbox-clinic-${clinic.id}`}
+                          />
+                          <label className="text-sm text-slate-300 cursor-pointer flex-1">
+                            {clinic.label}
+                          </label>
+                        </div>
+                      </div>
+                      
+                      {/* Locations - Collapsible */}
+                      {hasLocations && isExpanded && (
+                        <div className="ml-7 space-y-0.5 mt-0.5">
+                          {clinic.locations.map((location) => (
+                            <div 
+                              key={location.id} 
+                              className="flex items-center gap-2 py-1 px-2 rounded-md hover:bg-white/5 cursor-pointer transition-colors"
+                              onClick={() => toggleLocation(location.id, clinic.id)}
+                            >
+                              <Checkbox 
+                                id={location.id}
+                                checked={selectedClinics.has(location.id)}
+                                onCheckedChange={() => toggleLocation(location.id, clinic.id)}
+                                className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 h-3.5 w-3.5"
+                                data-testid={`checkbox-location-${location.id}`}
+                              />
+                              <MapPin className="h-3 w-3 text-slate-500" />
+                              <label className="text-xs text-slate-400 cursor-pointer flex-1">
+                                {location.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </SidebarGroup>
 
         {/* Patient Search Section - Now below clinic filter */}
@@ -390,6 +430,7 @@ function MainContent() {
     return saved ? JSON.parse(saved) : null;
   });
   const [billingServiceFilter, setBillingServiceFilter] = useState<string>("all");
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
 
   useEffect(() => {
     localStorage.setItem("plexus_main_tab", mainTab);
@@ -543,68 +584,88 @@ function MainContent() {
             {renderContent()}
           </main>
 
-          {/* Right Panel - Telemedicine */}
-          <aside className="w-72 bg-gradient-to-b from-slate-900 to-slate-950 border-l border-slate-700/50 p-4 hidden lg:flex flex-col">
-            <div className="mb-4">
-              <h3 className="text-white font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
-                <Video className="h-4 w-4 text-teal-400" />
-                Telemedicine
-              </h3>
-              <p className="text-slate-500 text-xs mt-1">Start instant video consultations</p>
-            </div>
+          {/* Right Panel - Telemedicine (Collapsible) */}
+          <aside className={`bg-gradient-to-b from-slate-900 to-slate-950 border-l border-slate-700/50 hidden lg:flex flex-col transition-all duration-300 ${rightPanelOpen ? 'w-72' : 'w-12'}`}>
+            {/* Collapse Toggle */}
+            <button
+              onClick={() => setRightPanelOpen(!rightPanelOpen)}
+              className="flex items-center justify-center h-12 border-b border-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors"
+              data-testid="button-toggle-right-panel"
+            >
+              {rightPanelOpen ? <PanelRightClose className="h-5 w-5" /> : <PanelRightOpen className="h-5 w-5" />}
+            </button>
 
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 mb-4">
-              <div className="flex items-center justify-center mb-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center shadow-lg shadow-teal-900/30">
-                  <Video className="h-10 w-10 text-white" />
+            {rightPanelOpen ? (
+              <div className="p-4 flex flex-col flex-1">
+                <div className="mb-4">
+                  <h3 className="text-white font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
+                    <Video className="h-4 w-4 text-teal-400" />
+                    Telemedicine
+                  </h3>
+                  <p className="text-slate-500 text-xs mt-1">Start instant video consultations</p>
                 </div>
-              </div>
-              
-              <Button
-                onClick={() => {
-                  // Placeholder for video start functionality
-                  alert("Starting video consultation...");
-                }}
-                className="w-full bg-teal-600 text-white"
-                size="lg"
-                data-testid="button-start-video"
-              >
-                <Video className="h-5 w-5 mr-2" />
-                Start Instant Video
-              </Button>
-            </div>
 
-            <div className="space-y-3 flex-1">
-              <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                  <span className="text-xs text-slate-400 uppercase tracking-wide">Ready</span>
-                </div>
-                <p className="text-slate-300 text-sm">Video system online</p>
-              </div>
-              
-              <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
-                <p className="text-slate-400 text-xs mb-1">Quick Actions</p>
-                <div className="space-y-2">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start text-slate-300"
-                    data-testid="button-schedule-call"
+                <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 mb-4">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center shadow-lg shadow-teal-900/30">
+                      <Video className="h-10 w-10 text-white" />
+                    </div>
+                  </div>
+                  
+                  <Button
+                    onClick={() => {
+                      alert("Starting video consultation...");
+                    }}
+                    className="w-full bg-teal-600 text-white"
+                    size="lg"
+                    data-testid="button-start-video"
                   >
-                    Schedule a Call
-                  </Button>
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start text-slate-300"
-                    data-testid="button-view-history"
-                  >
-                    View Call History
+                    <Video className="h-5 w-5 mr-2" />
+                    Start Instant Video
                   </Button>
                 </div>
+
+                <div className="space-y-3 flex-1">
+                  <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                      <span className="text-xs text-slate-400 uppercase tracking-wide">Ready</span>
+                    </div>
+                    <p className="text-slate-300 text-sm">Video system online</p>
+                  </div>
+                  
+                  <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                    <p className="text-slate-400 text-xs mb-1">Quick Actions</p>
+                    <div className="space-y-2">
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start text-slate-300"
+                        data-testid="button-schedule-call"
+                      >
+                        Schedule a Call
+                      </Button>
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start text-slate-300"
+                        data-testid="button-view-history"
+                      >
+                        View Call History
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Collapsed state - just icons */
+              <div className="flex flex-col items-center py-4 gap-4">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center">
+                  <Video className="h-4 w-4 text-white" />
+                </div>
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" title="Video system online" />
+              </div>
+            )}
           </aside>
         </div>
       </div>
