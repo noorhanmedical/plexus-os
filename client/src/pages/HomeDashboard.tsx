@@ -586,26 +586,26 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
                 {/* Revenue by Service */}
                 <div className="grid grid-cols-3 gap-0">
-                  <div className="p-4 service-tile-violet cursor-pointer">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Brain className="h-6 w-6 text-violet-600" />
-                      <p className="text-xs text-black">BrainWave</p>
+                  <div className="p-5 service-tile-violet cursor-pointer">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Brain className="h-10 w-10 text-violet-600" strokeWidth={2.5} />
+                      <p className="text-base font-semibold text-black">BrainWave</p>
                     </div>
-                    <p className="text-xl text-black">{formatCurrency(brainwaveRevenue)}</p>
+                    <p className="text-2xl font-bold text-black">{formatCurrency(brainwaveRevenue)}</p>
                   </div>
-                  <div className="p-4 service-tile-blue cursor-pointer">
-                    <div className="flex items-center gap-2 mb-2">
-                      <UltrasoundProbeIcon className="h-6 w-6 text-blue-600" />
-                      <p className="text-xs text-black">Ultrasound</p>
+                  <div className="p-5 service-tile-blue cursor-pointer">
+                    <div className="flex items-center gap-3 mb-3">
+                      <UltrasoundProbeIcon className="h-10 w-10 text-blue-600" />
+                      <p className="text-base font-semibold text-black">Ultrasound</p>
                     </div>
-                    <p className="text-xl text-black">{formatCurrency(ultrasoundRevenue)}</p>
+                    <p className="text-2xl font-bold text-black">{formatCurrency(ultrasoundRevenue)}</p>
                   </div>
-                  <div className="p-4 service-tile-red cursor-pointer">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Heart className="h-6 w-6 text-red-600" />
-                      <p className="text-xs text-black">VitalWave</p>
+                  <div className="p-5 service-tile-red cursor-pointer">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Heart className="h-10 w-10 text-red-600" strokeWidth={2.5} />
+                      <p className="text-base font-semibold text-black">VitalWave</p>
                     </div>
-                    <p className="text-xl text-black">{formatCurrency(vitalwaveRevenue)}</p>
+                    <p className="text-2xl font-bold text-black">{formatCurrency(vitalwaveRevenue)}</p>
                   </div>
                 </div>
 
