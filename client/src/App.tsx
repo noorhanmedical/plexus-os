@@ -11,8 +11,10 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, Check } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   SidebarProvider,
@@ -61,6 +63,42 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 
+// Clinic and location data structure
+const clinicData = [
+  { 
+    id: "nwpg", 
+    label: "NWPG", 
+    locations: [
+      { id: "nwpg-spring", label: "Spring" },
+      { id: "nwpg-veterans", label: "Veterans" }
+    ]
+  },
+  { 
+    id: "taylor", 
+    label: "Taylor Family Practice", 
+    locations: []
+  },
+  { 
+    id: "servmd", 
+    label: "ServMD", 
+    locations: [
+      { id: "servmd-glendale", label: "Glendale" },
+      { id: "servmd-suncity", label: "Sun City" },
+      { id: "servmd-prescott", label: "Prescott" }
+    ]
+  }
+];
+
+// Get all selectable IDs (clinics + locations)
+const getAllSelectableIds = () => {
+  const ids: string[] = [];
+  clinicData.forEach(clinic => {
+    ids.push(clinic.id);
+    clinic.locations.forEach(loc => ids.push(loc.id));
+  });
+  return ids;
+};
+
 function AppSidebar({ 
   selectedPatient,
   onPatientSelect,
@@ -72,6 +110,7 @@ function AppSidebar({
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 100);
+  const [selectedClinics, setSelectedClinics] = useState<Set<string>>(new Set(getAllSelectableIds()));
 
   const { data: searchResults, isLoading } = useQuery<{ ok: boolean; data: Patient[] }>({
     queryKey: [`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=20`],
@@ -80,6 +119,43 @@ function AppSidebar({
   });
 
   const patients = searchResults?.data || [];
+
+  const allIds = getAllSelectableIds();
+  const isAllSelected = allIds.every(id => selectedClinics.has(id));
+
+  const toggleAll = () => {
+    if (isAllSelected) {
+      setSelectedClinics(new Set());
+    } else {
+      setSelectedClinics(new Set(allIds));
+    }
+  };
+
+  const toggleClinic = (clinicId: string) => {
+    const newSelected = new Set(selectedClinics);
+    const clinic = clinicData.find(c => c.id === clinicId);
+    if (!clinic) return;
+
+    if (newSelected.has(clinicId)) {
+      newSelected.delete(clinicId);
+      clinic.locations.forEach(loc => newSelected.delete(loc.id));
+    } else {
+      newSelected.add(clinicId);
+      clinic.locations.forEach(loc => newSelected.add(loc.id));
+    }
+    setSelectedClinics(newSelected);
+  };
+
+  const toggleLocation = (locationId: string, clinicId: string) => {
+    const newSelected = new Set(selectedClinics);
+    if (newSelected.has(locationId)) {
+      newSelected.delete(locationId);
+    } else {
+      newSelected.add(locationId);
+      newSelected.add(clinicId);
+    }
+    setSelectedClinics(newSelected);
+  };
 
   return (
     <Sidebar className="border-r border-[#1e1e38]/50">
@@ -102,6 +178,80 @@ function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent className="p-3 relative">
+        {/* Clinic Selection Section */}
+        <SidebarGroup className="relative z-10 mb-4">
+          <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-2">
+            <Building2 className="h-3.5 w-3.5" />
+            Select Clinic
+          </SidebarGroupLabel>
+          
+          <div className="space-y-2 bg-slate-900/30 rounded-lg p-3 border border-slate-700/30">
+            {/* Select All */}
+            <div className="flex items-center space-x-2 pb-2 border-b border-slate-700/30">
+              <Checkbox 
+                id="select-all" 
+                checked={isAllSelected}
+                onCheckedChange={toggleAll}
+                className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                data-testid="checkbox-select-all"
+              />
+              <label 
+                htmlFor="select-all" 
+                className="text-sm font-medium text-white cursor-pointer"
+              >
+                Select All
+              </label>
+            </div>
+
+            {/* Clinics and Locations */}
+            {clinicData.map((clinic) => (
+              <div key={clinic.id} className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={clinic.id}
+                    checked={selectedClinics.has(clinic.id)}
+                    onCheckedChange={() => toggleClinic(clinic.id)}
+                    className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
+                    data-testid={`checkbox-clinic-${clinic.id}`}
+                  />
+                  <label 
+                    htmlFor={clinic.id} 
+                    className="text-sm text-slate-200 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                    {clinic.label}
+                  </label>
+                </div>
+                
+                {/* Locations */}
+                {clinic.locations.length > 0 && (
+                  <div className="ml-6 space-y-1">
+                    {clinic.locations.map((location) => (
+                      <div key={location.id} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={location.id}
+                          checked={selectedClinics.has(location.id)}
+                          onCheckedChange={() => toggleLocation(location.id, clinic.id)}
+                          className="border-slate-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 h-3.5 w-3.5"
+                          data-testid={`checkbox-location-${location.id}`}
+                        />
+                        <label 
+                          htmlFor={location.id} 
+                          className="text-xs text-slate-400 cursor-pointer flex items-center gap-1"
+                        >
+                          <MapPin className="h-3 w-3" />
+                          {location.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </SidebarGroup>
+
+        {/* Patient Search Section - Now below clinic filter */}
         <SidebarGroup className="relative z-10">
           <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
             Patient Search
@@ -162,7 +312,7 @@ function AppSidebar({
           )}
 
           {patients.length > 0 && (
-            <ScrollArea className="h-[calc(100vh-320px)]">
+            <ScrollArea className="h-[calc(100vh-520px)]">
               <SidebarMenu className="space-y-1">
                 {patients.map((patient) => (
                   <SidebarMenuItem key={patient.patient_uuid}>
@@ -358,6 +508,70 @@ function MainContent() {
           <main className="flex-1 overflow-auto p-6 bg-slate-100">
             {renderContent()}
           </main>
+
+          {/* Right Panel - Telemedicine */}
+          <aside className="w-72 bg-gradient-to-b from-slate-900 to-slate-950 border-l border-slate-700/50 p-4 hidden lg:flex flex-col">
+            <div className="mb-4">
+              <h3 className="text-white font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
+                <Video className="h-4 w-4 text-teal-400" />
+                Telemedicine
+              </h3>
+              <p className="text-slate-500 text-xs mt-1">Start instant video consultations</p>
+            </div>
+
+            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 mb-4">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center shadow-lg shadow-teal-900/30">
+                  <Video className="h-10 w-10 text-white" />
+                </div>
+              </div>
+              
+              <Button
+                onClick={() => {
+                  // Placeholder for video start functionality
+                  alert("Starting video consultation...");
+                }}
+                className="w-full bg-teal-600 text-white"
+                size="lg"
+                data-testid="button-start-video"
+              >
+                <Video className="h-5 w-5 mr-2" />
+                Start Instant Video
+              </Button>
+            </div>
+
+            <div className="space-y-3 flex-1">
+              <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                  <span className="text-xs text-slate-400 uppercase tracking-wide">Ready</span>
+                </div>
+                <p className="text-slate-300 text-sm">Video system online</p>
+              </div>
+              
+              <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                <p className="text-slate-400 text-xs mb-1">Quick Actions</p>
+                <div className="space-y-2">
+                  <Button 
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-slate-300"
+                    data-testid="button-schedule-call"
+                  >
+                    Schedule a Call
+                  </Button>
+                  <Button 
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-slate-300"
+                    data-testid="button-view-history"
+                  >
+                    View Call History
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </SidebarProvider>
