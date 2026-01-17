@@ -589,6 +589,8 @@ function MainContent() {
                   <div className="w-2 h-2 rounded-full bg-[#4a9a7c] animate-pulse"></div>
                   <span className="text-xs uppercase tracking-wider font-medium hidden md:inline">Active</span>
                 </div>
+                
+                <ThemeToggle />
               </div>
             </div>
           </div>
