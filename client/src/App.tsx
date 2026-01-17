@@ -11,11 +11,13 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, ChevronDown, ChevronRight, PanelRightClose, PanelRightOpen } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, ChevronDown, ChevronRight, PanelRightClose, PanelRightOpen, Mic, MicOff, FileText, UserSearch } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   SidebarProvider,
@@ -431,6 +433,12 @@ function MainContent() {
   });
   const [billingServiceFilter, setBillingServiceFilter] = useState<string>("all");
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  
+  // Telemedicine state
+  const [telemedFacility, setTelemedFacility] = useState<string>("");
+  const [telemedPatientSearch, setTelemedPatientSearch] = useState("");
+  const [telemedNote, setTelemedNote] = useState("");
+  const [isDictating, setIsDictating] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("plexus_main_tab", mainTab);
@@ -596,67 +604,134 @@ function MainContent() {
             </button>
 
             {rightPanelOpen ? (
-              <div className="p-4 flex flex-col flex-1">
-                <div className="mb-4">
-                  <h3 className="text-white font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
-                    <Video className="h-4 w-4 text-teal-400" />
-                    Telemedicine
-                  </h3>
-                  <p className="text-slate-500 text-xs mt-1">Start instant video consultations</p>
-                </div>
-
-                <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 mb-4">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center shadow-lg shadow-teal-900/30">
-                      <Video className="h-10 w-10 text-white" />
+              <ScrollArea className="flex-1">
+                <div className="p-4 flex flex-col">
+                  <div className="mb-4">
+                    <h3 className="text-white font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
+                      <Video className="h-4 w-4 text-teal-400" />
+                      Telemedicine
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                      <span className="text-xs text-slate-500">System ready</span>
                     </div>
                   </div>
-                  
+
+                  {/* Facility Dropdown */}
+                  <div className="mb-3">
+                    <label className="text-xs text-slate-400 mb-1.5 block">Facility</label>
+                    <Select value={telemedFacility} onValueChange={setTelemedFacility}>
+                      <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white h-9" data-testid="select-telemed-facility">
+                        <SelectValue placeholder="Select facility..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="nwpg-spring">NWPG - Spring</SelectItem>
+                        <SelectItem value="nwpg-veterans">NWPG - Veterans</SelectItem>
+                        <SelectItem value="taylor">Taylor Family Practice</SelectItem>
+                        <SelectItem value="servmd-glendale">ServMD - Glendale</SelectItem>
+                        <SelectItem value="servmd-suncity">ServMD - Sun City</SelectItem>
+                        <SelectItem value="servmd-prescott">ServMD - Prescott</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Patient Search */}
+                  <div className="mb-3">
+                    <label className="text-xs text-slate-400 mb-1.5 block">Patient</label>
+                    <div className="relative">
+                      <UserSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                      <Input
+                        type="text"
+                        placeholder="Search patient..."
+                        value={telemedPatientSearch}
+                        onChange={(e) => setTelemedPatientSearch(e.target.value)}
+                        className="pl-8 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 h-9"
+                        data-testid="input-telemed-patient"
+                      />
+                      {telemedPatientSearch && (
+                        <button
+                          onClick={() => setTelemedPatientSearch("")}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Start Video Button */}
                   <Button
                     onClick={() => {
                       alert("Starting video consultation...");
                     }}
-                    className="w-full bg-teal-600 text-white"
-                    size="lg"
+                    className="w-full bg-teal-600 text-white mb-4"
                     data-testid="button-start-video"
                   >
-                    <Video className="h-5 w-5 mr-2" />
-                    Start Instant Video
+                    <Video className="h-4 w-4 mr-2" />
+                    Start Video
+                  </Button>
+
+                  {/* Instant Note */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs text-slate-400 flex items-center gap-1.5">
+                        <FileText className="h-3.5 w-3.5" />
+                        Instant Note
+                      </label>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`h-7 px-2 ${isDictating ? 'text-red-400 bg-red-900/30' : 'text-slate-400'}`}
+                        onClick={() => setIsDictating(!isDictating)}
+                        data-testid="button-dictation"
+                      >
+                        {isDictating ? (
+                          <>
+                            <MicOff className="h-3.5 w-3.5 mr-1" />
+                            Stop
+                          </>
+                        ) : (
+                          <>
+                            <Mic className="h-3.5 w-3.5 mr-1" />
+                            Dictate
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <Textarea
+                      placeholder="Type or dictate notes..."
+                      value={telemedNote}
+                      onChange={(e) => setTelemedNote(e.target.value)}
+                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 min-h-[120px] text-sm resize-none"
+                      data-testid="textarea-telemed-note"
+                    />
+                    {isDictating && (
+                      <div className="flex items-center gap-2 mt-2 text-xs text-red-400">
+                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                        Listening...
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Save Note Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-slate-700 text-slate-300 hover:text-white"
+                    onClick={() => {
+                      if (telemedNote.trim()) {
+                        alert("Note saved!");
+                        setTelemedNote("");
+                      }
+                    }}
+                    disabled={!telemedNote.trim()}
+                    data-testid="button-save-note"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Save Note
                   </Button>
                 </div>
-
-                <div className="space-y-3 flex-1">
-                  <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                      <span className="text-xs text-slate-400 uppercase tracking-wide">Ready</span>
-                    </div>
-                    <p className="text-slate-300 text-sm">Video system online</p>
-                  </div>
-                  
-                  <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
-                    <p className="text-slate-400 text-xs mb-1">Quick Actions</p>
-                    <div className="space-y-2">
-                      <Button 
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start text-slate-300"
-                        data-testid="button-schedule-call"
-                      >
-                        Schedule a Call
-                      </Button>
-                      <Button 
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start text-slate-300"
-                        data-testid="button-view-history"
-                      >
-                        View Call History
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </ScrollArea>
             ) : (
               /* Collapsed state - just icons */
               <div className="flex flex-col items-center py-4 gap-4">
