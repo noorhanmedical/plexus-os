@@ -11,6 +11,7 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, ChevronDown, ChevronRight, PanelRightClose, PanelRightOpen, Mic, MicOff, FileText, UserSearch } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -213,18 +214,21 @@ function AppSidebar({
           <div className="absolute w-1 h-1 rounded-full bg-white/50 bottom-3 left-16 animate-pulse" style={{ animationDelay: '1s' }} />
           <div className="absolute w-0.5 h-0.5 rounded-full bg-white/30 top-4 right-6 animate-pulse" style={{ animationDelay: '1.5s' }} />
         </div>
-        <button
-          onClick={onClearPatient}
-          className="flex items-center gap-3 w-full text-left hover:bg-white/5 rounded-lg p-2 -m-1 relative z-10 transition-colors"
-          data-testid="nav-home-logo"
-        >
-          <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#1a3d2e]/80 to-[#0f2920]/80 flex items-center justify-center border border-[#2d5a47]/60 shadow-lg shadow-teal-900/20">
-            <div className="w-3 h-3 rounded-full bg-[#4a9a7c] animate-pulse shadow-[0_0_10px_rgba(74,154,124,0.5)]"></div>
-          </div>
-          <div>
-            <h1 className="font-medium text-xl text-white/90 tracking-tight">Plexus Ancillaries</h1>
-          </div>
-        </button>
+        <div className="flex items-center justify-between relative z-10">
+          <button
+            onClick={onClearPatient}
+            className="flex items-center gap-3 text-left hover:bg-white/5 rounded-lg p-2 -m-1 transition-colors"
+            data-testid="nav-home-logo"
+          >
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-[#1a3d2e]/80 to-[#0f2920]/80 flex items-center justify-center border border-[#2d5a47]/60 shadow-lg shadow-teal-900/20">
+              <div className="w-3 h-3 rounded-full bg-[#4a9a7c] animate-pulse shadow-[0_0_10px_rgba(74,154,124,0.5)]"></div>
+            </div>
+            <div>
+              <h1 className="font-medium text-xl text-white/90 tracking-tight">Plexus Ancillaries</h1>
+            </div>
+          </button>
+          <ThemeToggle />
+        </div>
       </SidebarHeader>
 
       <SidebarContent className="p-3 relative">
