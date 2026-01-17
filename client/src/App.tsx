@@ -222,8 +222,7 @@ function AppSidebar({
             <div className="w-2.5 h-2.5 rounded-full bg-[#4a9a7c] animate-pulse shadow-[0_0_10px_rgba(74,154,124,0.5)]"></div>
           </div>
           <div>
-            <p className="text-teal-400 text-[10px] font-semibold tracking-[0.15em] uppercase">Plexus Ancillaries</p>
-            <h1 className="font-light text-lg text-white/90 tracking-tight">Clinical EMR</h1>
+            <h1 className="font-light text-lg text-white/90 tracking-tight">Plexus Ancillaries</h1>
           </div>
         </button>
       </SidebarHeader>
