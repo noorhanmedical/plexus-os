@@ -362,9 +362,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3">
               {/* BrainWave Patient Tracking */}
-              <div className="p-4 service-tile-violet cursor-pointer transition-all duration-300">
+              <div className="p-4 service-tile-violet cursor-pointer transition-all duration-300 group">
                 <div className="flex items-center gap-3 mb-3">
-                  <Brain className="h-10 w-10 text-violet-600" />
+                  <Brain className="h-10 w-10 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-black">BrainWave</p>
                     <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} patients due</p>
@@ -386,9 +386,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="p-4 service-tile-blue cursor-pointer transition-all duration-300">
+              <div className="p-4 service-tile-blue cursor-pointer transition-all duration-300 group">
                 <div className="flex items-center gap-3 mb-3">
-                  <UltrasoundProbeIcon className="h-10 w-10 text-blue-600" />
+                  <UltrasoundProbeIcon className="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
                     <p className="font-semibold text-black">Ultrasound</p>
                     <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
@@ -410,9 +410,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="p-4 service-tile-red cursor-pointer transition-all duration-300">
+              <div className="p-4 service-tile-red cursor-pointer transition-all duration-300 group">
                 <div className="flex items-center gap-3 mb-3">
-                  <Heart className="h-10 w-10 text-red-600" />
+                  <Heart className="h-10 w-10 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-black">VitalWave</p>
                     <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
@@ -462,9 +462,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-200">
               {/* BrainWave */}
-              <div className="p-5 service-tile-violet cursor-pointer transition-all duration-300">
+              <div className="p-5 service-tile-violet cursor-pointer transition-all duration-300 group">
                 <div className="flex items-center gap-3 mb-4">
-                  <Brain className="h-10 w-10 text-violet-600" />
+                  <Brain className="h-10 w-10 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-black text-lg">BrainWave</p>
                     <p className="text-xs text-black">{currentYear} YTD</p>
@@ -490,9 +490,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* Ultrasound */}
-              <div className="p-5 service-tile-blue cursor-pointer transition-all duration-300">
+              <div className="p-5 service-tile-blue cursor-pointer transition-all duration-300 group">
                 <div className="flex items-center gap-3 mb-4">
-                  <UltrasoundProbeIcon className="h-10 w-10 text-blue-600" />
+                  <UltrasoundProbeIcon className="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
                     <p className="font-semibold text-black text-lg">Ultrasound</p>
                     <p className="text-xs text-black">{currentYear} YTD</p>
@@ -518,9 +518,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
 
               {/* VitalWave */}
-              <div className="p-5 service-tile-red cursor-pointer transition-all duration-300">
+              <div className="p-5 service-tile-red cursor-pointer transition-all duration-300 group">
                 <div className="flex items-center gap-3 mb-4">
-                  <Heart className="h-10 w-10 text-red-600" />
+                  <Heart className="h-10 w-10 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-black text-lg">VitalWave</p>
                     <p className="text-xs text-black">{currentYear} YTD</p>
@@ -595,7 +595,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-5 service-tile-blue cursor-pointer group">
                     <div className="flex items-center gap-3 mb-3">
-                      <UltrasoundProbeIcon className="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-12" />
+                      <UltrasoundProbeIcon className="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                       <p className="text-base font-semibold text-black">Ultrasound</p>
                     </div>
                     <p className="text-2xl font-bold text-black">{formatCurrency(ultrasoundRevenue)}</p>
