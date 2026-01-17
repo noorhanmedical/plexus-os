@@ -338,7 +338,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
       {/* Row 2: Ancillary Service Patient Tracker */}
       <button 
-        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer smoke-fill`}
+        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer`}
         onClick={() => onNavigate?.("ancillary")}
         data-testid="button-ancillary-card"
       >
@@ -431,7 +431,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
       {/* Row 3: Billing Dashboard */}
       <button 
-        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer smoke-fill`}
+        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer`}
         onClick={handleViewAllBilling}
         data-testid="button-billing-dashboard"
       >
@@ -543,7 +543,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
       {/* Row 4: Finance Dashboard */}
       <button 
-        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer smoke-fill`}
+        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer`}
         onClick={handleViewAllBilling}
         data-testid="button-finance-dashboard"
       >
