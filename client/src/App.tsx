@@ -11,7 +11,7 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Building2, ChevronRight, Check } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -162,7 +162,7 @@ function AppSidebar({
           )}
 
           {patients.length > 0 && (
-            <ScrollArea className="h-[200px]">
+            <ScrollArea className="h-[calc(100vh-320px)]">
               <SidebarMenu className="space-y-1">
                 {patients.map((patient) => (
                   <SidebarMenuItem key={patient.patient_uuid}>
@@ -190,38 +190,6 @@ function AppSidebar({
               </SidebarMenu>
             </ScrollArea>
           )}
-        </SidebarGroup>
-
-        <SidebarGroup className="relative z-10 mt-4">
-          <SidebarGroupLabel className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
-            Clinics
-          </SidebarGroupLabel>
-          <SidebarMenu className="space-y-1">
-            <SidebarMenuItem>
-              <SidebarMenuButton className="text-slate-300/80 hover:text-white hover:bg-white/5" data-testid="clinic-main">
-                <div className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span>Main Clinic</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="text-slate-300/80 hover:text-white hover:bg-white/5" data-testid="clinic-north">
-                <div className="h-2 w-2 rounded-full bg-blue-400" />
-                <span>North Campus</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="text-slate-300/80 hover:text-white hover:bg-white/5" data-testid="clinic-south">
-                <div className="h-2 w-2 rounded-full bg-amber-400" />
-                <span>South Campus</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="text-slate-300/80 hover:text-white hover:bg-white/5" data-testid="clinic-west">
-                <div className="h-2 w-2 rounded-full bg-purple-400" />
-                <span>West Medical</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
