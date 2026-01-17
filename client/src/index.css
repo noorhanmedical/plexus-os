@@ -307,8 +307,10 @@
     z-index: 1;
   }
 
-  /* Purple fill for BrainWave - fills entire tile on hover */
-  .smoke-fill-violet {
+  /* Service tile styles - no background change on hover */
+  .service-tile-violet,
+  .service-tile-blue,
+  .service-tile-red {
     position: relative;
     overflow: hidden;
     background: rgba(248, 250, 252, 0.8);
@@ -317,61 +319,15 @@
     transition: all 0.3s ease;
   }
 
-  .smoke-fill-violet:hover {
-    background: #C4B5FD;
+  .service-tile-violet:hover,
+  .service-tile-blue:hover,
+  .service-tile-red:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  .smoke-fill-violet:active {
-    background: #A78BFA;
-  }
-
-  .smoke-fill-violet > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Blue fill for Ultrasound - fills entire tile on hover */
-  .smoke-fill-blue {
-    position: relative;
-    overflow: hidden;
-    background: rgba(248, 250, 252, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
-  }
-
-  .smoke-fill-blue:hover {
-    background: #93C5FD;
-  }
-
-  .smoke-fill-blue:active {
-    background: #60A5FA;
-  }
-
-  .smoke-fill-blue > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Red fill for VitalWave - fills entire tile on hover */
-  .smoke-fill-red {
-    position: relative;
-    overflow: hidden;
-    background: rgba(248, 250, 252, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
-  }
-
-  .smoke-fill-red:hover {
-    background: #FCA5A5;
-  }
-
-  .smoke-fill-red:active {
-    background: #F87171;
-  }
-
-  .smoke-fill-red > * {
+  .service-tile-violet > *,
+  .service-tile-blue > *,
+  .service-tile-red > * {
     position: relative;
     z-index: 1;
   }
