@@ -543,7 +543,7 @@ function MainContent() {
                     }`}
                   >
                     <Home className="h-3.5 w-3.5" />
-                    <span>Plexus Ancillaries</span>
+                    <span>Home</span>
                   </button>
                   
                   <button
