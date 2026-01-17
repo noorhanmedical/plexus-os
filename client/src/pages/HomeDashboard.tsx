@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp, RefreshCw, Users, Stethoscope } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp, RefreshCw, Users, Stethoscope, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { UltrasoundProbeIcon } from "@/components/service-icons";
 
@@ -344,7 +344,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       >
         <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
           <ClipboardList className="h-5 w-5 text-white" />
-          <p className="text-white font-bold text-lg drop-shadow-sm">Ancillary Service Patient Tracker</p>
+          <div className="flex items-center gap-2">
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+            <p className="text-white font-bold text-lg drop-shadow-sm">Ancillary Service Patient Tracker</p>
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+          </div>
         </div>
         <div className="p-0">
           {billingLoading ? (
@@ -437,7 +441,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       >
         <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
           <Receipt className="h-5 w-5 text-white" />
-          <p className="text-white font-bold text-lg drop-shadow-sm">Billing Dashboard</p>
+          <div className="flex items-center gap-2">
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+            <p className="text-white font-bold text-lg drop-shadow-sm">Billing Dashboard</p>
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+          </div>
         </div>
         <div className="p-0">
           {billingLoading ? (
@@ -549,7 +557,11 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       >
         <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
           <TrendingUp className="h-5 w-5 text-white" />
-          <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
+          <div className="flex items-center gap-2">
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+            <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+          </div>
         </div>
         <div className="p-5">
           {billingLoading ? (
