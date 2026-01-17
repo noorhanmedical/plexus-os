@@ -207,119 +207,98 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   const totalNotesPending = notesPending.brainwave + notesPending.ultrasound + notesPending.vitalwave;
   const avgTimePending = "2.3 days";
 
-  return (
-    <div className="space-y-3 p-3 min-h-full relative">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold text-[#1a0a28]">Dashboard</h1>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={billingLoading}
-          className="gap-1 h-7 text-xs"
-          data-testid="button-refresh-dashboard"
-        >
-          <RefreshCw className={`h-3 w-3 ${billingLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
-      </div>
+  // Dark purplish blue color for all icons
+  const iconColor = "text-[#3d2b5a]";
 
-      {/* ROW 1: Compact tiles with icons - Schedule, Patient Database, Prescreens, Ancillary Portal */}
-      <div className="grid grid-cols-4 gap-2">
+  return (
+    <div className="flex flex-col h-full p-4 gap-4 relative">
+      {/* ROW 1: Square tiles with icons - Schedule, Patient Database, Prescreens, Ancillary Portal */}
+      <div className="grid grid-cols-4 gap-4 flex-shrink-0">
         <div
-          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center p-3 cursor-pointer group"
+          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center aspect-square cursor-pointer group"
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <Calendar className="h-12 w-12 text-indigo-700 mb-2 group-hover:scale-110 transition-transform duration-300" />
-          <p className="text-slate-700 font-semibold text-xs text-center">Schedule</p>
+          <Calendar className={`h-16 w-16 ${iconColor} mb-3 group-hover:scale-110 transition-transform duration-300`} />
+          <p className="text-slate-700 font-semibold text-sm text-center">Schedule</p>
         </div>
 
         <div
-          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center p-3 cursor-pointer group"
+          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center aspect-square cursor-pointer group"
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-patient-database"
         >
-          <Database className="h-12 w-12 text-teal-700 mb-2 group-hover:scale-110 transition-transform duration-300" />
-          <p className="text-slate-700 font-semibold text-xs text-center">Patient Database</p>
+          <Database className={`h-16 w-16 ${iconColor} mb-3 group-hover:scale-110 transition-transform duration-300`} />
+          <p className="text-slate-700 font-semibold text-sm text-center">Patient Database</p>
         </div>
 
         <div
-          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center p-3 cursor-pointer group"
+          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center aspect-square cursor-pointer group"
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <Sparkles className="h-12 w-12 text-purple-700 mb-2 group-hover:scale-110 transition-transform duration-300" />
-          <p className="text-slate-700 font-semibold text-xs text-center">Prescreens</p>
+          <Sparkles className={`h-16 w-16 ${iconColor} mb-3 group-hover:scale-110 transition-transform duration-300`} />
+          <p className="text-slate-700 font-semibold text-sm text-center">Prescreens</p>
         </div>
 
         <div
-          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center p-3 cursor-pointer group"
+          className="backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-2xl smoke-fill glass-tile-hover flex flex-col items-center justify-center aspect-square cursor-pointer group"
           onClick={() => onNavigate?.("ancillary")}
           data-testid="button-ancillary-portal"
         >
-          <ClipboardList className="h-12 w-12 text-emerald-700 mb-2 group-hover:scale-110 transition-transform duration-300" />
-          <p className="text-slate-700 font-semibold text-xs text-center">Ancillary Portal</p>
+          <ClipboardList className={`h-16 w-16 ${iconColor} mb-3 group-hover:scale-110 transition-transform duration-300`} />
+          <p className="text-slate-700 font-semibold text-sm text-center">Ancillary Portal</p>
         </div>
       </div>
 
-      {/* ROW 2: Ancillary Service Patient Tracker - Compact */}
+      {/* ROW 2: Ancillary Service Patient Tracker */}
       <div 
-        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer`}
+        className={`${glassCardStyle} overflow-hidden w-full text-left cursor-pointer flex-1`}
         onClick={() => onNavigate?.("ancillary")}
         data-testid="button-ancillary-card"
       >
-        <div className="w-full h-10 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-2 border-b border-white/10">
-          <ClipboardList className="h-4 w-4 text-white" />
-          <p className="text-white font-bold text-sm drop-shadow-sm">Ancillary Service Patient Tracker</p>
+        <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-2 border-b border-white/10">
+          <ClipboardList className="h-5 w-5 text-white" />
+          <p className="text-white font-bold text-base drop-shadow-sm">Ancillary Service Patient Tracker</p>
         </div>
 
         {billingLoading ? (
-          <div className="flex items-center justify-center py-4">
-            <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
+          <div className="flex items-center justify-center py-6">
+            <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-x divide-white/20">
+          <div className="grid grid-cols-3 gap-0 divide-x divide-white/20 h-[calc(100%-3rem)]">
             {/* BrainWave Patient Tracking */}
-            <div className="smoke-fill-section-violet py-3 px-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Brain className="h-6 w-6 text-violet-700" />
+            <div className="smoke-fill-section-violet py-4 px-5 flex flex-col">
+              <div className="flex items-center gap-3 mb-3">
+                <Brain className="h-8 w-8 text-violet-700" />
                 <div>
-                  <p className="font-bold text-violet-800 text-sm">BrainWave</p>
-                  <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} due</p>
+                  <p className="font-bold text-violet-800 text-base">BrainWave</p>
+                  <p className="text-sm text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} patients due</p>
                 </div>
               </div>
-              {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length === 0 && (
-                <p className="text-xs text-slate-500">No patients due</p>
-              )}
             </div>
 
             {/* Ultrasound Patient Tracking */}
-            <div className="smoke-fill-section-blue py-3 px-4">
-              <div className="flex items-center gap-3 mb-2">
-                <UltrasoundProbeIcon className="h-6 w-6 text-blue-600" />
+            <div className="smoke-fill-section-blue py-4 px-5 flex flex-col">
+              <div className="flex items-center gap-3 mb-3">
+                <UltrasoundProbeIcon className="h-8 w-8 text-blue-600" />
                 <div>
-                  <p className="font-bold text-blue-700 text-sm">Ultrasound</p>
-                  <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} due</p>
+                  <p className="font-bold text-blue-700 text-base">Ultrasound</p>
+                  <p className="text-sm text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
                 </div>
               </div>
-              {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length === 0 && (
-                <p className="text-xs text-slate-500">No patients due</p>
-              )}
             </div>
 
             {/* VitalWave Patient Tracking */}
-            <div className="smoke-fill-section-red py-3 px-4">
-              <div className="flex items-center gap-3 mb-2">
-                <Heart className="h-6 w-6 text-red-600" />
+            <div className="smoke-fill-section-red py-4 px-5 flex flex-col">
+              <div className="flex items-center gap-3 mb-3">
+                <Heart className="h-8 w-8 text-red-600" />
                 <div>
-                  <p className="font-bold text-red-700 text-sm">VitalWave</p>
-                  <p className="text-xs text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} due</p>
+                  <p className="font-bold text-red-700 text-base">VitalWave</p>
+                  <p className="text-sm text-slate-500">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
                 </div>
               </div>
-              {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length === 0 && (
-                <p className="text-xs text-slate-500">No patients due</p>
-              )}
             </div>
           </div>
         )}
