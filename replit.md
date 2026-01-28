@@ -10,21 +10,34 @@ Preferred communication style: Simple, everyday language.
 
 ## Design System
 
+### Dual Theme Support (Epic EMR-Style)
+- **Theme Toggle**: Sun/moon icon in header, persists to localStorage
+- **Pattern**: Dark headers/navigation remain slate-900 with teal accents in both modes; content areas switch between dark and light backgrounds
+
 ### Visual Theme
-- **Color Palette**: Dark EMR theme
-  - Backgrounds: slate-900, slate-800, slate-850
-  - Accents: teal-400/500 (primary), violet-400/500 (AI/analysis), cyan-400 (ultrasound), rose-400 (vitalwave), amber-400 (warnings)
-  - Text: white (primary), slate-300 (secondary), slate-400/500 (tertiary)
-  - Cards: Dark glass effect with backdrop-blur-xl, semi-transparent gradients
-  - Borders: slate-700/50
+- **Color Palette**: Dual-theme EMR design
+  - **Dark Mode**: slate-900/800 backgrounds, light text, glass card effects
+  - **Light Mode**: White/light gray backgrounds, dark text for clinical readability
+  - **Accents**: teal-400/500 (primary), violet-400/500 (AI/analysis), cyan-400 (ultrasound), rose-400 (vitalwave), amber-400 (warnings)
 - **Typography**: Inter font family
 - **Border Radius**: rounded-2xl for cards, rounded-xl for inputs/buttons
 - **Shadows**: Subtle shadows with shadow-xl for glass cards
 
-### Component Patterns
-- Glass cards: `bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 backdrop-blur-xl border border-slate-700/50`
-- Status badges: `bg-{color}-500/20 text-{color}-300 border-{color}-500/30`
-- Inputs: `bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500`
+### Semantic Token Pattern
+Use semantic tokens + dark: variants for theme-aware styling:
+- Backgrounds: `bg-background`, `bg-card`, `bg-muted` + `dark:bg-slate-*` variants
+- Text: `text-foreground`, `text-muted-foreground`
+- Borders: `border-border`
+
+### Status/Priority Badges
+Use light-mode variants for accessibility:
+- Pattern: `bg-{color}-500/20 text-{color}-700 dark:text-{color}-300 border-{color}-500/30`
+
+### Icon Colors
+Pattern: `text-{color}-600 dark:text-{color}-400` for visibility in both modes
+
+### Glass Card Pattern (Dark Mode Only)
+`bg-card border border-border shadow-xl dark:backdrop-blur-xl dark:bg-gradient-to-br dark:from-slate-800/90 dark:via-slate-850/85 dark:to-slate-900/90 dark:border-slate-700/50`
 
 ## System Architecture
 
@@ -210,10 +223,10 @@ shared/
 
 ## Recent Changes
 
+- 2026-01-28: Implemented comprehensive dual-theme (light/dark) support across all major views
+- 2026-01-28: Added ThemeToggle component with localStorage persistence
+- 2026-01-28: Converted hardcoded dark colors to semantic tokens with dark: variants
+- 2026-01-28: Updated status/priority badges with light-mode variants for accessibility
 - 2026-01-28: Added notification system with workflow triggers (prescreen created -> outreach queue, report/service -> billing)
 - 2026-01-28: Implemented mobile bottom navigation with 5 key tabs and floating quick call button
 - 2026-01-28: Connected OutreachCenter and EligibilityTracker patient navigation to main EMR profile
-- 2026-01-28: Applied consistent dark EMR theme across all views (slate-900 backgrounds)
-- 2026-01-28: Added date range filtering to Eligibility Tracker
-- 2026-01-28: Fixed dark theme colors in BillingView table and badges
-- 2026-01-28: Updated PatientDatabaseView with dark glass card styling
