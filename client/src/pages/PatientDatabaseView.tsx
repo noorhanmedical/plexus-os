@@ -11,7 +11,7 @@ import {
   Search, User, Loader2, Phone, Mail, Calendar, 
   Heart, Brain, Sparkles, Pill, FileText,
   Plus, Activity, Stethoscope, CheckCircle2,
-  Shield
+  Shield, ArrowLeft
 } from "lucide-react";
 import type { Patient } from "@shared/schema";
 import { UltrasoundProbeIcon } from "@/components/service-icons";
@@ -184,10 +184,22 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
 
   const isOrderingCode = createPrescreenMutation.isPending ? createPrescreenMutation.variables?.ancillaryCode : null;
 
+  // Mobile: clear patient selection to go back to list
+  const handleMobileBack = () => {
+    setSelectedPatient(null);
+    setAiSuggestions([]);
+  };
+
   return (
     <div className="flex h-full gap-4">
       {/* Left Panel - Patient Search List */}
-      <div className={`w-80 flex-shrink-0 rounded-2xl overflow-hidden ${darkGlassStyle}`}>
+      {/* On mobile: hide when patient selected, show full width. On desktop: always show at 280px */}
+      <div className={`
+        ${selectedPatient ? 'hidden md:flex' : 'flex'} 
+        w-full md:w-[280px] flex-shrink-0 rounded-2xl overflow-hidden flex-col
+        ${darkGlassStyle}
+        transition-all duration-300
+      `}>
         <div className="p-4 border-b border-slate-700/50">
           <h2 className="text-white font-semibold text-lg mb-3 flex items-center gap-2">
             <User className="h-5 w-5 text-teal-400" />
@@ -274,16 +286,34 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
       </div>
 
       {/* Right Panel - Patient Profile */}
-      <div className="flex-1 overflow-hidden">
+      {/* On mobile: hide when no patient, show full width. On desktop: always show */}
+      <div className={`
+        ${selectedPatient ? 'flex' : 'hidden md:flex'} 
+        flex-1 overflow-hidden flex-col
+        transition-all duration-300
+      `}>
         {selectedPatient ? (
           <ScrollArea className="h-full">
             <div className="space-y-4 pr-2">
+              {/* Mobile Back Button */}
+              <div className="md:hidden mb-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleMobileBack}
+                  data-testid="button-mobile-back"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Search
+                </Button>
+              </div>
+
               {/* Demographics Header */}
               <div className={`rounded-2xl overflow-hidden ${glassStyle}`}>
-                <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-teal-500/30 to-teal-600/20 flex items-center justify-center border border-teal-500/30">
-                      <User className="h-10 w-10 text-teal-400" />
+                <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-4 md:p-6">
+                  <div className="flex items-start gap-3 md:gap-4">
+                    <div className="h-14 w-14 md:h-20 md:w-20 rounded-2xl bg-gradient-to-br from-teal-500/30 to-teal-600/20 flex items-center justify-center border border-teal-500/30 flex-shrink-0">
+                      <User className="h-7 w-7 md:h-10 md:w-10 text-teal-400" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
@@ -323,7 +353,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 </div>
                 
                 {/* Contact & Insurance Grid */}
-                <div className="p-4 grid grid-cols-3 gap-4">
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</h3>
                     <div className="space-y-1.5 text-sm">
@@ -366,7 +396,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               </div>
 
               {/* Medical History Section */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className={`${glassStyle} rounded-2xl`}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2 text-slate-700">
@@ -513,7 +543,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">Order any ancillary service directly</p>
                 </div>
-                <div className="p-4 grid grid-cols-5 gap-3">
+                <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                   {ANCILLARY_SERVICES.map((service) => (
                     <button
                       key={service.code}
