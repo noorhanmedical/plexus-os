@@ -203,7 +203,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
   };
 
   const { data: billingData, isLoading, isError, refetch } = useQuery<{ ok: boolean; rows: BillingRecord[]; header?: string[] }>({
-    queryKey: ["/api/billing/list?limit=5000&cursor=0"],
+    queryKey: ["/api/billing/list?limit=100&cursor=0"],
   });
 
   // Dynamic column definitions from API header
@@ -256,7 +256,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     onSuccess: (data) => {
       if (data.ok) {
         toast({ title: "Success", description: "Billing index rebuilt - includes all sheets" });
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=5000&cursor=0"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=100&cursor=0"] });
         refetch();
       } else {
         toast({ title: "Error", description: data.error || "Failed to rebuild index", variant: "destructive" });
@@ -279,7 +279,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
         setInvoiceItems([{ description: "", amount: 0 }]);
         setInvoicePatientId("");
         setInvoiceNotes("");
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=5000&cursor=0"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=100&cursor=0"] });
       } else {
         toast({ title: "Error", description: data.error || "Failed to create invoice", variant: "destructive" });
       }
@@ -299,7 +299,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
         toast({ title: "Success", description: "Billing record added successfully" });
         setIsAddRecordDialogOpen(false);
         setNewRecord(EMPTY_BILLING_RECORD);
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=5000&cursor=0"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=100&cursor=0"] });
       } else {
         toast({ title: "Note", description: "Record saved locally. API write endpoint not yet configured.", variant: "default" });
         setIsAddRecordDialogOpen(false);

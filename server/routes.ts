@@ -368,17 +368,6 @@ export async function registerRoutes(
     status: z.string().min(1, "status is required"),
   });
 
-  const addOrderSchema = z.object({
-    clinician: z.string().min(1, "clinician is required"),
-    patient_uuid: z.string().min(1, "patient_uuid is required"),
-    patient_name: z.string().min(1, "patient_name is required"),
-    date_of_service: z.string().min(1, "date_of_service is required"),
-    services: z.array(z.string()).min(1, "at least one service is required"),
-    pre_procedure_note: z.string().optional().default(""),
-    post_procedure_note: z.string().optional().default(""),
-    billing_notes: z.string().optional().default(""),
-  });
-
   // Helper to convert header/rows format to array of objects
   function convertRowsToObjects(header: string[], rows: any[][]): Record<string, any>[] {
     return rows.map(row => {
@@ -417,43 +406,10 @@ export async function registerRoutes(
     }
   });
 
-  // Add new order to billing spreadsheet
-  app.post("/api/billing/add-order", async (req, res) => {
-    try {
-      const validation = addOrderSchema.safeParse(req.body);
-      if (!validation.success) {
-        return res.status(400).json({ ok: false, error: validation.error.message });
-      }
-      
-      const { clinician, patient_uuid, patient_name, date_of_service, services, pre_procedure_note, post_procedure_note, billing_notes } = validation.data;
-      
-      const data = await plexusPost("billing.addOrder", {
-        clinician,
-        patient_uuid,
-        patient_name,
-        date_of_service,
-        services: services.join(", "),
-        pre_procedure_note,
-        post_procedure_note,
-        billing_notes,
-        status: "Pending",
-      });
-      
-      if (!data.ok) {
-        return res.status(400).json({ ok: false, error: data.error || "Failed to add order" });
-      }
-      
-      res.json(data);
-    } catch (error) {
-      console.error("[billing] Add order failed:", error);
-      res.status(500).json({ ok: false, error: "Failed to add order to billing" });
-    }
-  });
-
   // List all billing records with pagination (uses billing.list for full data)
   app.get("/api/billing/list", async (req, res) => {
     try {
-      const limit = req.query.limit?.toString() || "1000";
+      const limit = req.query.limit?.toString() || "200";
       const cursor = req.query.cursor?.toString() || "0";
       
       const data = await cachedPlexusGet("billing.list", { limit, cursor });

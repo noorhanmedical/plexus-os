@@ -223,10 +223,6 @@ shared/
 
 ## Recent Changes
 
-- 2026-01-28: Created AncillaryOrdering page - integrated ordering workflow with service selection, patient search, and document generation (pre-procedure note, post-procedure note, billing notes)
-- 2026-01-28: Added /api/billing/add-order endpoint to write orders directly to billing spreadsheet via Plexus API
-- 2026-01-28: Removed record limits - billing and patient queries now fetch up to 5000 records to show ALL data
-- 2026-01-28: Replaced iframe-embedded ordering portal with native integrated ordering experience
 - 2026-01-28: Implemented comprehensive dual-theme (light/dark) support across all major views
 - 2026-01-28: Added ThemeToggle component with localStorage persistence
 - 2026-01-28: Converted hardcoded dark colors to semantic tokens with dark: variants

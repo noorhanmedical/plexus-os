@@ -122,7 +122,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
           description: `${variables.ancillaryCode} order placed successfully`,
         });
         queryClient.invalidateQueries({ queryKey: ["/api/prescreens?limit=200"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=5000&cursor=0"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/billing/list?limit=100&cursor=0"] });
       } else {
         toast({
           title: "Order Failed",
