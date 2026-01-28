@@ -38,6 +38,15 @@ import {
 
 type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients" | "outreach" | "eligibility";
 
+// Mobile bottom navigation tabs - key actions for 40+ mobile users
+const mobileNavTabs = [
+  { id: "home" as MainTab, label: "Home", icon: Home },
+  { id: "outreach" as MainTab, label: "Calls", icon: Phone },
+  { id: "patients" as MainTab, label: "Patients", icon: UserSearch },
+  { id: "billing" as MainTab, label: "Billing", icon: Receipt },
+  { id: "prescreens" as MainTab, label: "More", icon: ClipboardList },
+];
+
 interface Patient {
   patient_uuid: string;
   first_name: string;
@@ -480,6 +489,12 @@ function MainContent() {
     }
   };
 
+  // Navigate to a specific patient's EMR profile from any view
+  const handleNavigateToPatient = (patientData: Patient) => {
+    setSelectedPatient(patientData);
+    // Patient profile is shown automatically when selectedPatient is set
+  };
+
   const handleClearPatient = () => {
     setSelectedPatient(null);
     setMainTab("home");
@@ -510,9 +525,9 @@ function MainContent() {
       case "patients":
         return <PatientDatabaseView onNavigate={handleMainTabChange} />;
       case "outreach":
-        return <OutreachCenter onNavigate={handleMainTabChange} />;
+        return <OutreachCenter onNavigate={handleMainTabChange} onPatientSelect={handleNavigateToPatient} />;
       case "eligibility":
-        return <EligibilityTracker onNavigate={handleMainTabChange} />;
+        return <EligibilityTracker onNavigate={handleMainTabChange} onPatientSelect={handleNavigateToPatient} />;
       default:
         return <HomeDashboard onNavigate={handleMainTabChange} />;
     }
@@ -615,7 +630,7 @@ function MainContent() {
             onClearPatient={handleClearPatient} 
           />
           
-          <main className="flex-1 overflow-auto p-0 md:p-6 bg-slate-100">
+          <main className="flex-1 overflow-auto p-0 md:p-6 bg-slate-900 pb-20 md:pb-0">
             {renderContent()}
           </main>
 
@@ -793,6 +808,44 @@ function MainContent() {
             )}
           </aside>
         </div>
+
+        {/* Mobile Bottom Navigation - 44px touch targets, quick access */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700/50 z-50 safe-area-bottom">
+          <div className="flex justify-around items-center h-16">
+            {mobileNavTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = !selectedPatient && mainTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    handleClearPatient();
+                    handleMainTabChange(tab.id);
+                  }}
+                  className={`flex flex-col items-center justify-center min-w-[64px] min-h-[44px] px-3 py-2 rounded-lg transition-colors hover-elevate ${
+                    isActive
+                      ? "text-teal-400 bg-teal-900/30"
+                      : "text-slate-400"
+                  }`}
+                  data-testid={`mobile-nav-${tab.id}`}
+                >
+                  <Icon className="h-5 w-5 mb-0.5" />
+                  <span className="text-[10px] font-medium">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* Floating Quick Call Button - always accessible on mobile */}
+        <Button
+          size="icon"
+          onClick={() => handleMainTabChange("outreach")}
+          className="md:hidden fixed bottom-20 right-4 z-50 rounded-full bg-teal-600 text-white shadow-lg shadow-teal-900/50"
+          data-testid="button-quick-call"
+        >
+          <Phone className="h-6 w-6" />
+        </Button>
       </div>
     </SidebarProvider>
   );

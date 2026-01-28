@@ -47,8 +47,18 @@ interface OutreachPatient {
   created_at: string;
 }
 
+interface PatientData {
+  patient_uuid: string;
+  first_name: string;
+  last_name: string;
+  dob?: string;
+  phone?: string;
+  email?: string;
+}
+
 interface OutreachCenterProps {
   onNavigate?: (tab: string, data?: any) => void;
+  onPatientSelect?: (patient: PatientData) => void;
 }
 
 const glassStyle = "backdrop-blur-xl bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 border border-slate-700/50 shadow-xl";
@@ -68,7 +78,7 @@ const statusConfig = {
   callback: { label: "Callback Requested", color: "bg-violet-500/20 text-violet-300 border-violet-500/30", icon: Phone },
 };
 
-export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
+export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
@@ -533,6 +543,24 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                   >
                     <PhoneCall className="h-4 w-4 mr-2" />
                     Start Call
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="w-full border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50"
+                    onClick={() => {
+                      onPatientSelect?.({
+                        patient_uuid: selectedPatient.patient_uuid,
+                        first_name: selectedPatient.first_name,
+                        last_name: selectedPatient.last_name,
+                        phone: selectedPatient.phone,
+                        email: selectedPatient.email,
+                      });
+                    }}
+                    data-testid="button-view-patient-profile"
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    View Patient Profile
                   </Button>
                 </div>
               </CardContent>

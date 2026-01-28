@@ -51,8 +51,18 @@ interface PatientEligibility {
   service_code?: string;
 }
 
+interface PatientData {
+  patient_uuid: string;
+  first_name: string;
+  last_name: string;
+  dob?: string;
+  phone?: string;
+  email?: string;
+}
+
 interface EligibilityTrackerProps {
   onNavigate?: (tab: string, data?: any) => void;
+  onPatientSelect?: (patient: PatientData) => void;
 }
 
 const glassStyle = "backdrop-blur-xl bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 border border-slate-700/50 shadow-xl";
@@ -100,7 +110,7 @@ const dateRangeOptions = [
   { id: "365", label: "Last Year" },
 ];
 
-export function EligibilityTracker({ onNavigate }: EligibilityTrackerProps) {
+export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityTrackerProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [serviceFilter, setServiceFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -506,7 +516,17 @@ export function EligibilityTracker({ onNavigate }: EligibilityTrackerProps) {
 
                   <Button
                     className="w-full bg-teal-600 hover:bg-teal-700"
-                    onClick={() => onNavigate?.("patients", { patientUuid: selectedPatient.patient_uuid })}
+                    onClick={() => {
+                      // Navigate to EMR profile for this patient
+                      const nameParts = selectedPatient.patient_name.split(" ");
+                      const firstName = nameParts[0] || "";
+                      const lastName = nameParts.slice(1).join(" ") || nameParts[0] || "";
+                      onPatientSelect?.({
+                        patient_uuid: selectedPatient.patient_uuid,
+                        first_name: firstName,
+                        last_name: lastName,
+                      });
+                    }}
                     data-testid="button-view-patient"
                   >
                     <User className="h-4 w-4 mr-2" />
