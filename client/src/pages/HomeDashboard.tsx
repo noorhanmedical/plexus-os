@@ -304,7 +304,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <Calendar className="h-12 w-12 text-teal-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <Calendar className="h-12 w-12 text-violet-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
           <p className="text-foreground font-bold text-sm">Schedule</p>
         </button>
 
@@ -331,7 +331,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("outreach")}
           data-testid="button-outreach-center"
         >
-          <Phone className="h-12 w-12 text-emerald-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <Phone className="h-12 w-12 text-violet-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
           <p className="text-foreground font-bold text-sm">Outreach</p>
         </button>
 
@@ -340,7 +340,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("eligibility")}
           data-testid="button-eligibility-tracker"
         >
-          <Clock className="h-12 w-12 text-amber-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <Clock className="h-12 w-12 text-violet-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
           <p className="text-foreground font-bold text-sm">Eligibility</p>
         </button>
 
@@ -349,7 +349,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("patients")}
           data-testid="button-patient-database"
         >
-          <Users className="h-12 w-12 text-cyan-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <Users className="h-12 w-12 text-violet-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
           <p className="text-foreground font-bold text-sm">Patients</p>
         </button>
       </div>
@@ -398,7 +398,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* Ultrasound Patient Tracking */}
               <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group min-h-[160px] hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-3">
-                  <UltrasoundProbeIcon className="h-12 w-12 text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                  <UltrasoundProbeIcon className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
                     <p className="font-semibold text-foreground text-lg">Ultrasound</p>
                     <p className="text-xs text-muted-foreground">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
@@ -408,7 +408,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-foreground/80 dark:text-slate-300 truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-xs">
+                      <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
@@ -422,7 +422,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* VitalWave Patient Tracking */}
               <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group min-h-[160px] hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-3">
-                  <Heart className="h-12 w-12 text-rose-600 dark:text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Heart className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-foreground text-lg">VitalWave</p>
                     <p className="text-xs text-muted-foreground">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
@@ -432,7 +432,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-foreground/80 dark:text-slate-300 truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30 text-xs">
+                      <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
@@ -502,7 +502,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* Ultrasound */}
               <div className="p-5 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <UltrasoundProbeIcon className="h-12 w-12 text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                  <UltrasoundProbeIcon className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
                     <p className="font-semibold text-foreground text-lg">Ultrasound</p>
                     <p className="text-xs text-muted-foreground">{currentYear} YTD</p>
@@ -523,14 +523,14 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                 </div>
                 <div className="pt-3 border-t border-border dark:border-slate-700/50">
-                  <p className="text-sm text-cyan-600 dark:text-cyan-300 text-center">{formatCurrency(ultrasoundRevenue)} collected</p>
+                  <p className="text-sm text-violet-600 dark:text-violet-300 text-center">{formatCurrency(ultrasoundRevenue)} collected</p>
                 </div>
               </div>
 
               {/* VitalWave */}
               <div className="p-5 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <Heart className="h-12 w-12 text-rose-600 dark:text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Heart className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-foreground text-lg">VitalWave</p>
                     <p className="text-xs text-muted-foreground">{currentYear} YTD</p>
@@ -551,7 +551,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                 </div>
                 <div className="pt-3 border-t border-border dark:border-slate-700/50">
-                  <p className="text-sm text-rose-600 dark:text-rose-300 text-center">{formatCurrency(vitalwaveRevenue)} collected</p>
+                  <p className="text-sm text-violet-600 dark:text-violet-300 text-center">{formatCurrency(vitalwaveRevenue)} collected</p>
                 </div>
               </div>
             </div>
@@ -582,7 +582,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 <div className="p-5 border-b border-border dark:border-slate-700/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <DollarSign className="h-10 w-10 text-emerald-400" strokeWidth={2.5} />
+                      <DollarSign className="h-10 w-10 text-violet-400" strokeWidth={2.5} />
                       <div>
                         <p className="text-3xl font-bold text-foreground">{formatCurrency(totalRevenue)}</p>
                         <p className="text-sm text-muted-foreground">Total Revenue Collected</p>
@@ -603,17 +603,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer group flex flex-col hover:bg-muted dark:hover:bg-slate-700/50 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
-                      <UltrasoundProbeIcon className="h-12 w-12 text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                      <UltrasoundProbeIcon className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                       <p className="text-base font-semibold text-foreground">Ultrasound</p>
                     </div>
-                    <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-300">{formatCurrency(ultrasoundRevenue)}</p>
+                    <p className="text-2xl font-bold text-violet-600 dark:text-violet-300">{formatCurrency(ultrasoundRevenue)}</p>
                   </div>
                   <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer group flex flex-col hover:bg-muted dark:hover:bg-slate-700/50 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
-                      <Heart className="h-12 w-12 text-rose-600 dark:text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                      <Heart className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                       <p className="text-base font-semibold text-foreground">VitalWave</p>
                     </div>
-                    <p className="text-2xl font-bold text-rose-600 dark:text-rose-300">{formatCurrency(vitalwaveRevenue)}</p>
+                    <p className="text-2xl font-bold text-violet-600 dark:text-violet-300">{formatCurrency(vitalwaveRevenue)}</p>
                   </div>
                 </div>
               </div>
@@ -628,7 +628,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {monthlyRevenue.map((m, idx) => (
                     <div key={idx} className="flex flex-col items-center flex-1 h-full justify-end">
                       <div 
-                        className="w-full bg-gradient-to-t from-teal-600 to-teal-400 rounded-t-md transition-all duration-300 hover:from-teal-500 hover:to-teal-300"
+                        className="w-full bg-gradient-to-t from-violet-600 to-violet-400 rounded-t-md transition-all duration-300 hover:from-violet-500 hover:to-violet-300"
                         style={{ 
                           height: `${Math.max((m.revenue / maxMonthlyRevenue) * 100, 8)}%`,
                           minHeight: '12px'
@@ -641,13 +641,13 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 </div>
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-border dark:border-slate-700/50">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-teal-600 to-teal-400" />
+                    <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-violet-600 to-violet-400" />
                     <p className="text-xs text-muted-foreground">Revenue</p>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-teal-400 hover:text-teal-300 rounded-lg text-xs h-7"
+                    className="text-violet-400 hover:text-violet-300 rounded-lg text-xs h-7"
                     onClick={handleViewAllBilling}
                     data-testid="button-view-finance"
                   >
