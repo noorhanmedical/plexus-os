@@ -210,7 +210,10 @@ shared/
 
 ## Recent Changes
 
-- 2026-01-28: Applied consistent dark EMR theme across all views
+- 2026-01-28: Added notification system with workflow triggers (prescreen created -> outreach queue, report/service -> billing)
+- 2026-01-28: Implemented mobile bottom navigation with 5 key tabs and floating quick call button
+- 2026-01-28: Connected OutreachCenter and EligibilityTracker patient navigation to main EMR profile
+- 2026-01-28: Applied consistent dark EMR theme across all views (slate-900 backgrounds)
 - 2026-01-28: Added date range filtering to Eligibility Tracker
 - 2026-01-28: Fixed dark theme colors in BillingView table and badges
 - 2026-01-28: Updated PatientDatabaseView with dark glass card styling
