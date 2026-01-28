@@ -630,7 +630,7 @@ function MainContent() {
             onClearPatient={handleClearPatient} 
           />
           
-          <main className="flex-1 overflow-auto p-0 md:p-6 bg-slate-900 pb-20 md:pb-0">
+          <main className="flex-1 overflow-auto p-0 md:p-6 bg-background pb-20 md:pb-0">
             {renderContent()}
           </main>
 

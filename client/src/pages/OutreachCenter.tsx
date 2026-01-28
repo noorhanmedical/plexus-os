@@ -61,21 +61,21 @@ interface OutreachCenterProps {
   onPatientSelect?: (patient: PatientData) => void;
 }
 
-const glassStyle = "backdrop-blur-xl bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 border border-slate-700/50 shadow-xl";
+const glassStyle = "bg-card border border-border shadow-xl dark:backdrop-blur-xl dark:bg-gradient-to-br dark:from-slate-800/90 dark:via-slate-850/85 dark:to-slate-900/90 dark:border-slate-700/50";
 
 const priorityColors = {
-  high: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-  medium: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-  low: "bg-slate-600/30 text-slate-300 border-slate-500/30",
+  high: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30",
+  medium: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30",
+  low: "bg-muted text-muted-foreground border-border",
 };
 
 const statusConfig = {
-  pending: { label: "Pending", color: "bg-slate-600/30 text-slate-300 border-slate-500/30", icon: Clock },
-  in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-300 border-blue-500/30", icon: PhoneCall },
-  scheduled: { label: "Scheduled", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
-  declined: { label: "Declined", color: "bg-rose-500/20 text-rose-300 border-rose-500/30", icon: PhoneOff },
-  no_answer: { label: "No Answer", color: "bg-amber-500/20 text-amber-300 border-amber-500/30", icon: PhoneMissed },
-  callback: { label: "Callback Requested", color: "bg-violet-500/20 text-violet-300 border-violet-500/30", icon: Phone },
+  pending: { label: "Pending", color: "bg-muted text-muted-foreground border-border", icon: Clock },
+  in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30", icon: PhoneCall },
+  scheduled: { label: "Scheduled", color: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
+  declined: { label: "Declined", color: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30", icon: PhoneOff },
+  no_answer: { label: "No Answer", color: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30", icon: PhoneMissed },
+  callback: { label: "Callback Requested", color: "bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/30", icon: Phone },
 };
 
 export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterProps) {
@@ -168,9 +168,9 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
   };
 
   return (
-    <div className="space-y-4 p-4 min-h-full bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900">
+    <div className="space-y-4 p-4 min-h-full bg-background dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-850 dark:to-slate-900">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Outreach Center</h1>
+        <h1 className="text-2xl font-bold text-foreground">Outreach Center</h1>
         <Button
           variant="outline"
           size="sm"
@@ -188,12 +188,12 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
         <Card className={`${glassStyle} rounded-2xl`}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-slate-600/30">
-                <Clock className="h-5 w-5 text-slate-400" />
+              <div className="p-2 rounded-xl bg-muted dark:bg-slate-600/30">
+                <Clock className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.pending}</p>
-                <p className="text-sm text-slate-400">Pending</p>
+                <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
+                <p className="text-sm text-muted-foreground">Pending</p>
               </div>
             </div>
           </CardContent>
@@ -203,11 +203,11 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-blue-500/20">
-                <PhoneCall className="h-5 w-5 text-blue-400" />
+                <PhoneCall className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.inProgress}</p>
-                <p className="text-sm text-slate-400">In Progress</p>
+                <p className="text-2xl font-bold text-foreground">{stats.inProgress}</p>
+                <p className="text-sm text-muted-foreground">In Progress</p>
               </div>
             </div>
           </CardContent>
@@ -217,11 +217,11 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-emerald-500/20">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.scheduled}</p>
-                <p className="text-sm text-slate-400">Scheduled</p>
+                <p className="text-2xl font-bold text-foreground">{stats.scheduled}</p>
+                <p className="text-sm text-muted-foreground">Scheduled</p>
               </div>
             </div>
           </CardContent>
@@ -231,11 +231,11 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-amber-500/20">
-                <PhoneMissed className="h-5 w-5 text-amber-400" />
+                <PhoneMissed className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.noAnswer}</p>
-                <p className="text-sm text-slate-400">No Answer</p>
+                <p className="text-2xl font-bold text-foreground">{stats.noAnswer}</p>
+                <p className="text-sm text-muted-foreground">No Answer</p>
               </div>
             </div>
           </CardContent>
@@ -247,18 +247,18 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
           <Card className={`${glassStyle} rounded-2xl`}>
             <CardHeader className="pb-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <CardTitle className="text-lg flex items-center gap-2 text-white">
-                  <Phone className="h-5 w-5 text-teal-400" />
+                <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+                  <Phone className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                   Call Queue
                 </CardTitle>
                 <div className="flex flex-wrap gap-2">
                   <div className="relative flex-1 min-w-[180px]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search patients..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 h-9 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500"
+                      className="pl-10 h-9"
                       data-testid="input-search-outreach"
                     />
                   </div>
@@ -297,8 +297,8 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                   <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
                 </div>
               ) : filteredQueue.length === 0 ? (
-                <div className="text-center py-8 text-slate-400">
-                  <Phone className="h-12 w-12 mx-auto mb-3 text-slate-500" />
+                <div className="text-center py-8 text-muted-foreground">
+                  <Phone className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                   <p className="font-medium">No patients in queue</p>
                   <p className="text-sm">Check back later or adjust filters</p>
                 </div>
@@ -310,25 +310,25 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                       return (
                         <div
                           key={patient.patient_uuid}
-                          className={`p-3 rounded-xl border transition-all cursor-pointer hover:bg-slate-700/50 ${
+                          className={`p-3 rounded-xl border transition-all cursor-pointer hover:bg-muted dark:hover:bg-slate-700/50 ${
                             selectedPatient?.patient_uuid === patient.patient_uuid 
                               ? 'bg-teal-500/20 border-teal-500/30' 
-                              : 'bg-slate-800/50 border-slate-700/50'
+                              : 'bg-muted/50 dark:bg-slate-800/50 border-border dark:border-slate-700/50'
                           }`}
                           onClick={() => setSelectedPatient(patient)}
                           data-testid={`outreach-patient-${patient.patient_uuid}`}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-3 flex-1 min-w-0">
-                              <div className="p-2 rounded-xl bg-slate-700/50 shrink-0">
-                                <User className="h-5 w-5 text-slate-300" />
+                              <div className="p-2 rounded-xl bg-muted dark:bg-slate-700/50 shrink-0">
+                                <User className="h-5 w-5 text-muted-foreground" />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="font-semibold text-white truncate">
+                                <p className="font-semibold text-foreground truncate">
                                   {patient.first_name} {patient.last_name}
                                 </p>
-                                <p className="text-sm text-slate-400">{patient.phone || "No phone"}</p>
-                                <p className="text-xs text-slate-500 mt-1 truncate">{patient.reason}</p>
+                                <p className="text-sm text-muted-foreground">{patient.phone || "No phone"}</p>
+                                <p className="text-xs text-muted-foreground/70 mt-1 truncate">{patient.reason}</p>
                               </div>
                             </div>
                             <div className="flex flex-col items-end gap-2 shrink-0">
@@ -340,7 +340,7 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                                 {statusConfig[patient.status].label}
                               </Badge>
                               {patient.contact_attempts > 0 && (
-                                <span className="text-xs text-slate-500">
+                                <span className="text-xs text-muted-foreground/70">
                                   {patient.contact_attempts} attempt{patient.contact_attempts > 1 ? 's' : ''}
                                 </span>
                               )}
@@ -358,7 +358,7 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                                 </Badge>
                               ))}
                               {patient.service_codes.length > 4 && (
-                                <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+                                <Badge variant="outline" className="text-xs border-border text-muted-foreground">
                                   +{patient.service_codes.length - 4}
                                 </Badge>
                               )}
@@ -393,12 +393,12 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-700/50 mb-4">
-                  <p className="font-semibold text-white">
+                <div className="p-3 rounded-xl bg-muted dark:bg-slate-700/50 mb-4">
+                  <p className="font-semibold text-foreground">
                     {selectedPatient.first_name} {selectedPatient.last_name}
                   </p>
-                  <p className="text-sm text-slate-300">{selectedPatient.phone}</p>
-                  <p className="text-xs text-slate-400 mt-1">{selectedPatient.reason}</p>
+                  <p className="text-sm text-muted-foreground">{selectedPatient.phone}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">{selectedPatient.reason}</p>
                 </div>
 
                 <div className="flex justify-center gap-3 mb-4">
@@ -417,7 +417,7 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                   placeholder="Call notes..."
                   value={callNotes}
                   onChange={(e) => setCallNotes(e.target.value)}
-                  className="mb-4 min-h-[80px] bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500"
+                  className="mb-4 min-h-[80px]"
                   data-testid="textarea-call-notes"
                 />
 
@@ -462,15 +462,15 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
           ) : selectedPatient ? (
             <Card className={`${glassStyle} rounded-2xl`}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2 text-white">
-                  <User className="h-5 w-5 text-teal-400" />
+                <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+                  <User className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                   Patient Details
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xl font-bold text-white">
+                    <p className="text-xl font-bold text-foreground">
                       {selectedPatient.first_name} {selectedPatient.last_name}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -483,43 +483,43 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                     </div>
                   </div>
 
-                  <div className="space-y-2 text-sm text-slate-300">
+                  <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-slate-400" />
+                      <Phone className="h-4 w-4" />
                       <span>{selectedPatient.phone || "No phone number"}</span>
                     </div>
                     {selectedPatient.email && (
                       <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-slate-400" />
+                        <MessageSquare className="h-4 w-4" />
                         <span>{selectedPatient.email}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-slate-400" />
+                      <AlertCircle className="h-4 w-4" />
                       <span>{selectedPatient.contact_attempts} contact attempts</span>
                     </div>
                     {selectedPatient.last_contact_attempt && (
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-slate-400" />
+                        <Calendar className="h-4 w-4" />
                         <span>Last: {new Date(selectedPatient.last_contact_attempt).toLocaleDateString()}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-700/50">
-                    <p className="text-xs font-medium text-slate-400 mb-1">Outreach Reason</p>
-                    <p className="text-sm text-slate-300">{selectedPatient.reason}</p>
+                  <div className="p-3 rounded-xl bg-muted dark:bg-slate-700/50">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Outreach Reason</p>
+                    <p className="text-sm text-foreground/80">{selectedPatient.reason}</p>
                   </div>
 
                   {selectedPatient.service_codes.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-slate-400 mb-2">Recommended Services</p>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Recommended Services</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedPatient.service_codes.map((code) => (
                           <Badge 
                             key={code} 
                             variant="outline"
-                            className="bg-violet-500/20 border-violet-500/30 text-violet-300"
+                            className="bg-violet-500/20 border-violet-500/30 text-violet-700 dark:text-violet-300"
                           >
                             {code}
                           </Badge>
@@ -547,7 +547,7 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
 
                   <Button
                     variant="outline"
-                    className="w-full border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50"
+                    className="w-full border-border text-muted-foreground"
                     onClick={() => {
                       onPatientSelect?.({
                         patient_uuid: selectedPatient.patient_uuid,
@@ -568,8 +568,8 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
           ) : (
             <Card className={`${glassStyle} rounded-2xl`}>
               <CardContent className="pt-6">
-                <div className="text-center text-slate-400 py-8">
-                  <ChevronRight className="h-12 w-12 mx-auto mb-3 text-slate-500" />
+                <div className="text-center text-muted-foreground py-8">
+                  <ChevronRight className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                   <p className="font-medium">Select a patient</p>
                   <p className="text-sm">Click on a patient from the queue to view details</p>
                 </div>
@@ -579,24 +579,24 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
 
           <Card className={`${glassStyle} rounded-2xl`}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2 text-slate-300">
-                <MessageSquare className="h-4 w-4 text-teal-400" />
+              <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
+                <MessageSquare className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                 Quick Scripts
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                <div className="p-2 rounded-lg bg-slate-700/50 cursor-pointer hover:bg-slate-600/50 transition-colors">
-                  <p className="font-medium text-slate-200">Appointment Reminder</p>
-                  <p className="text-xs text-slate-400">"Hello, this is calling from..."</p>
+                <div className="p-2 rounded-lg bg-muted dark:bg-slate-700/50 cursor-pointer hover:bg-muted/80 dark:hover:bg-slate-600/50 transition-colors">
+                  <p className="font-medium text-foreground/80">Appointment Reminder</p>
+                  <p className="text-xs text-muted-foreground">"Hello, this is calling from..."</p>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-700/50 cursor-pointer hover:bg-slate-600/50 transition-colors">
-                  <p className="font-medium text-slate-200">Service Scheduling</p>
-                  <p className="text-xs text-slate-400">"We're reaching out about..."</p>
+                <div className="p-2 rounded-lg bg-muted dark:bg-slate-700/50 cursor-pointer hover:bg-muted/80 dark:hover:bg-slate-600/50 transition-colors">
+                  <p className="font-medium text-foreground/80">Service Scheduling</p>
+                  <p className="text-xs text-muted-foreground">"We're reaching out about..."</p>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-700/50 cursor-pointer hover:bg-slate-600/50 transition-colors">
-                  <p className="font-medium text-slate-200">Follow-up Care</p>
-                  <p className="text-xs text-slate-400">"This is a courtesy call..."</p>
+                <div className="p-2 rounded-lg bg-muted dark:bg-slate-700/50 cursor-pointer hover:bg-muted/80 dark:hover:bg-slate-600/50 transition-colors">
+                  <p className="font-medium text-foreground/80">Follow-up Care</p>
+                  <p className="text-xs text-muted-foreground">"This is a courtesy call..."</p>
                 </div>
               </div>
             </CardContent>

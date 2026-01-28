@@ -304,8 +304,8 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
     }
   };
 
-  const glassStyle = "bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 backdrop-blur-xl border border-slate-700/50 shadow-xl";
-  const darkGlassStyle = "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-xl border border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)]";
+  const glassStyle = "bg-card border border-border shadow-xl dark:bg-gradient-to-br dark:from-slate-800/90 dark:via-slate-850/85 dark:to-slate-900/90 dark:backdrop-blur-xl dark:border-slate-700/50";
+  const darkGlassStyle = "bg-card border border-border shadow-lg dark:bg-gradient-to-br dark:from-slate-900/95 dark:via-slate-800/90 dark:to-slate-900/95 dark:backdrop-blur-xl dark:border-slate-700/50";
 
   const isOrderingCode = createPrescreenMutation.isPending ? createPrescreenMutation.variables?.ancillaryCode : null;
 
@@ -330,35 +330,35 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
       <div className={`
         ${mobileView === "dashboard" ? 'flex md:hidden' : 'hidden'} 
         w-full flex-col
-        bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+        bg-background dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900
         overflow-auto
       `}>
         {/* Dashboard Header */}
-        <div className="p-4 border-b border-slate-700/50">
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <ClipboardList className="h-6 w-6 text-teal-400" />
+        <div className="p-4 border-b border-border dark:border-slate-700/50">
+          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <ClipboardList className="h-6 w-6 text-teal-600 dark:text-teal-400" />
             Patient Records
           </h1>
-          <p className="text-sm text-slate-400 mt-1">Clinical EMR Dashboard</p>
+          <p className="text-sm text-muted-foreground mt-1">Clinical EMR Dashboard</p>
         </div>
 
         {/* Quick Stats */}
         <div className="p-4 grid grid-cols-2 gap-3">
-          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+          <div className="bg-card rounded-xl p-4 border border-border dark:bg-slate-800/50 dark:border-slate-700/50">
             <div className="flex items-center gap-2 mb-2">
-              <Users className="h-5 w-5 text-teal-400" />
-              <span className="text-xs text-slate-400 uppercase tracking-wider">Recent</span>
+              <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Recent</span>
             </div>
-            <p className="text-2xl font-bold text-white">{recentPatients.length}</p>
-            <p className="text-xs text-slate-500">patients viewed</p>
+            <p className="text-2xl font-bold text-foreground">{recentPatients.length}</p>
+            <p className="text-xs text-muted-foreground">patients viewed</p>
           </div>
-          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+          <div className="bg-card rounded-xl p-4 border border-border dark:bg-slate-800/50 dark:border-slate-700/50">
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="h-5 w-5 text-violet-400" />
-              <span className="text-xs text-slate-400 uppercase tracking-wider">Today</span>
+              <Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Today</span>
             </div>
-            <p className="text-2xl font-bold text-white">--</p>
-            <p className="text-xs text-slate-500">pending orders</p>
+            <p className="text-2xl font-bold text-foreground">--</p>
+            <p className="text-xs text-muted-foreground">pending orders</p>
           </div>
         </div>
 
@@ -367,7 +367,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
           <Button
             onClick={handleMobileSearch}
             size="lg"
-            className="w-full bg-teal-600 text-white rounded-xl flex items-center justify-center gap-3"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl flex items-center justify-center gap-3"
             data-testid="button-mobile-search-patient"
           >
             <Search className="h-5 w-5" />
@@ -376,7 +376,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
           <Button
             variant="outline"
             size="lg"
-            className="w-full border-slate-600 text-slate-300 rounded-xl flex items-center justify-center gap-3"
+            className="w-full border-border text-muted-foreground rounded-xl flex items-center justify-center gap-3"
             data-testid="button-mobile-add-patient"
           >
             <UserPlus className="h-5 w-5" />
@@ -387,7 +387,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
         {/* Recent Patients Section */}
         {recentPatients.length > 0 && (
           <div className="mt-6 px-4">
-            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
               <Clock className="h-4 w-4" />
               Recent Patients
             </h3>
@@ -396,18 +396,18 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 <button
                   key={patient.patient_uuid}
                   onClick={() => handlePatientSelect(patient)}
-                  className="w-full text-left p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 hover-elevate active-elevate-2"
+                  className="w-full text-left p-3 rounded-xl bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700/50 hover-elevate active-elevate-2"
                   data-testid={`recent-patient-${patient.patient_uuid}`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-slate-700/50 flex items-center justify-center flex-shrink-0">
-                      <User className="h-5 w-5 text-slate-400" />
+                    <div className="h-10 w-10 rounded-full bg-muted dark:bg-slate-700/50 flex items-center justify-center flex-shrink-0">
+                      <User className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-white truncate">
+                      <p className="font-medium text-foreground truncate">
                         {patient.last_name}, {patient.first_name}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         {patient.mrn && <span>MRN: {patient.mrn}</span>}
                         {patient.date_of_birth && (
                           <span>• {calculateAge(patient.date_of_birth)}yo</span>
@@ -423,7 +423,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
 
         {/* Quick Actions - Ancillary Services */}
         <div className="mt-6 px-4 pb-6">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
             <Activity className="h-4 w-4" />
             Ancillary Services
           </h3>
@@ -434,7 +434,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 className={`flex flex-col items-center p-3 rounded-xl bg-gradient-to-br ${service.bgColor} border border-slate-700/30`}
               >
                 <div className={service.color}>{service.icon}</div>
-                <span className="text-xs text-white mt-1 text-center font-medium">{service.name}</span>
+                <span className="text-xs text-foreground mt-1 text-center font-medium">{service.name}</span>
               </div>
             ))}
           </div>
@@ -445,31 +445,31 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
       <div className={`
         ${mobileView === "search" ? 'flex md:hidden' : 'hidden'} 
         w-full flex-col
-        bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+        bg-background dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900
         overflow-hidden
       `}>
         {/* Search Header with back button */}
-        <div className="p-3 border-b border-slate-700/50">
+        <div className="p-3 border-b border-border dark:border-slate-700/50">
           <div className="flex items-center gap-3 mb-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMobileBack}
-              className="text-white p-1"
+              className="text-foreground p-1"
               data-testid="button-search-back"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h2 className="text-white font-semibold text-lg">Search Patients</h2>
+            <h2 className="text-foreground font-semibold text-lg">Search Patients</h2>
           </div>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               data-testid="input-patient-database-search"
               placeholder="Search by name, MRN..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-10 h-12 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-teal-500/50"
+              className="pl-10 h-12 bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-teal-500/50 dark:bg-slate-800/50 dark:border-slate-600/50"
               autoFocus
             />
           </div>
@@ -490,7 +490,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
             )}
 
             {!isLoading && !isError && patients.length === 0 && debouncedQuery && (
-              <div className="p-4 text-sm text-slate-400 text-center">
+              <div className="p-4 text-sm text-muted-foreground text-center">
                 No patients found
               </div>
             )}
@@ -498,7 +498,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
             {!isLoading && !isError && patients.length === 0 && !debouncedQuery && (
               <div className="p-6 text-center">
                 <Search className="h-12 w-12 mx-auto text-slate-500 mb-3" />
-                <p className="text-sm text-slate-400">Type to search patients</p>
+                <p className="text-sm text-muted-foreground">Type to search patients</p>
               </div>
             )}
 
@@ -511,13 +511,13 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               >
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-slate-700/50 flex items-center justify-center flex-shrink-0">
-                    <User className="h-5 w-5 text-slate-400" />
+                    <User className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-white truncate">
+                    <p className="font-medium text-foreground truncate">
                       {patient.last_name}, {patient.first_name}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       {patient.mrn && <span>MRN: {patient.mrn}</span>}
                       {patient.date_of_birth && (
                         <span>• {calculateAge(patient.date_of_birth)}yo</span>
@@ -536,22 +536,23 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
         hidden md:flex
         w-[280px] flex-shrink-0 
         rounded-2xl overflow-hidden flex-col
-        bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
-        backdrop-blur-xl border border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)]
+        bg-card border border-border shadow-xl
+        dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900
+        dark:backdrop-blur-xl dark:border-slate-700/50 dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]
       `}>
         {/* Search Header */}
-        <div className="p-4 border-b border-slate-700/50">
+        <div className="p-4 border-b border-border dark:border-slate-700/50">
           <div className="flex items-center gap-2 mb-3">
-            <User className="h-5 w-5 text-teal-400" />
-            <h2 className="text-white font-semibold text-lg">Patient Search</h2>
+            <User className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+            <h2 className="text-foreground font-semibold text-lg">Patient Search</h2>
           </div>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name, MRN..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-10 h-9 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-teal-500/50"
+              className="pl-10 h-9"
             />
           </div>
         </div>
@@ -571,15 +572,15 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
             )}
 
             {!isLoading && !isError && patients.length === 0 && debouncedQuery && (
-              <div className="p-4 text-sm text-slate-400 text-center">
+              <div className="p-4 text-sm text-muted-foreground text-center">
                 No patients found
               </div>
             )}
 
             {!isLoading && !isError && patients.length === 0 && !debouncedQuery && (
               <div className="p-6 text-center">
-                <User className="h-12 w-12 mx-auto text-slate-500 mb-3" />
-                <p className="text-sm text-slate-400">Type to search patients</p>
+                <User className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm text-muted-foreground">Type to search patients</p>
               </div>
             )}
 
@@ -598,19 +599,19 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                   <div className={`h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                     selectedPatient?.patient_uuid === patient.patient_uuid
                       ? "bg-teal-500/30"
-                      : "bg-slate-700/50"
+                      : "bg-muted dark:bg-slate-700/50"
                   }`}>
                     <User className={`h-5 w-5 ${
                       selectedPatient?.patient_uuid === patient.patient_uuid
-                        ? "text-teal-400"
-                        : "text-slate-400"
+                        ? "text-teal-600 dark:text-teal-400"
+                        : "text-muted-foreground"
                     }`} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-white truncate" data-testid={`patient-name-${patient.patient_uuid}`}>
+                    <p className="font-medium text-foreground truncate" data-testid={`patient-name-${patient.patient_uuid}`}>
                       {patient.last_name}, {patient.first_name}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       {patient.mrn && <span>MRN: {patient.mrn}</span>}
                       {patient.date_of_birth && (
                         <span>• {calculateAge(patient.date_of_birth)}yo</span>
@@ -635,13 +636,12 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
           <ScrollArea className="h-full">
             <div className="space-y-3 md:space-y-4 md:pr-2">
               {/* Mobile Back Button - sticky header on mobile */}
-              <div className="md:hidden sticky top-0 z-10 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-3 py-2 border-b border-slate-700/50">
+              <div className="md:hidden sticky top-0 z-10 bg-card dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-3 py-2 border-b border-border dark:border-slate-700/50">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleMobileBack}
                   data-testid="button-mobile-back"
-                  className="text-white"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Search
@@ -657,30 +657,30 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h1 className="text-2xl font-bold text-white" data-testid="text-patient-fullname">
+                        <h1 className="text-2xl font-bold text-foreground" data-testid="text-patient-fullname">
                           {selectedPatient.last_name}, {selectedPatient.first_name}
                           {selectedPatient.middle_name && ` ${selectedPatient.middle_name.charAt(0)}.`}
                         </h1>
                         {selectedPatient.record_status && (
                           <Badge className={`${
                             selectedPatient.record_status.toLowerCase() === "active"
-                              ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                              : "bg-slate-700/50 text-slate-400 border-slate-600"
+                              ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/30"
+                              : "bg-muted text-muted-foreground border-border"
                           }`}>
                             {selectedPatient.record_status}
                           </Badge>
                         )}
                       </div>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                         {selectedPatient.mrn && (
                           <span className="flex items-center gap-1.5">
-                            <Shield className="h-3.5 w-3.5 text-slate-400" />
+                            <Shield className="h-3.5 w-3.5 text-muted-foreground" />
                             MRN: {selectedPatient.mrn}
                           </span>
                         )}
                         {selectedPatient.date_of_birth && (
                           <span className="flex items-center gap-1.5">
-                            <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
                             {selectedPatient.date_of_birth} ({calculateAge(selectedPatient.date_of_birth)}yo)
                           </span>
                         )}
@@ -695,17 +695,17 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 {/* Contact & Insurance Grid */}
                 <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Contact</h3>
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contact</h3>
                     <div className="space-y-1.5 text-sm">
                       {selectedPatient.primary_phone && (
-                        <p className="flex items-center gap-2 text-slate-300">
-                          <Phone className="h-3.5 w-3.5 text-slate-400" />
+                        <p className="flex items-center gap-2 text-foreground/80">
+                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                           {selectedPatient.primary_phone}
                         </p>
                       )}
                       {selectedPatient.email && (
-                        <p className="flex items-center gap-2 text-slate-300 truncate">
-                          <Mail className="h-3.5 w-3.5 text-slate-400" />
+                        <p className="flex items-center gap-2 text-foreground/80 truncate">
+                          <Mail className="h-3.5 w-3.5 text-muted-foreground" />
                           {selectedPatient.email}
                         </p>
                       )}
@@ -713,8 +713,8 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                   </div>
                   
                   <div className="space-y-2">
-                    <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Address</h3>
-                    <div className="text-sm text-slate-300">
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Address</h3>
+                    <div className="text-sm text-foreground/80">
                       {selectedPatient.address_line_1 && <p>{selectedPatient.address_line_1}</p>}
                       {(selectedPatient.city || selectedPatient.state) && (
                         <p>{selectedPatient.city}{selectedPatient.city && selectedPatient.state && ", "}{selectedPatient.state} {selectedPatient.zip_code}</p>
@@ -723,12 +723,12 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                   </div>
                   
                   <div className="space-y-2">
-                    <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Insurance</h3>
-                    <div className="text-sm text-slate-300">
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Insurance</h3>
+                    <div className="text-sm text-foreground/80">
                       {selectedPatient.payor_name && <p className="font-medium">{selectedPatient.payor_name}</p>}
-                      {selectedPatient.payor_type && <p className="text-slate-400">{selectedPatient.payor_type}</p>}
+                      {selectedPatient.payor_type && <p className="text-muted-foreground">{selectedPatient.payor_type}</p>}
                       {selectedPatient.policy_id_member_id && (
-                        <p className="text-xs text-slate-500">ID: {selectedPatient.policy_id_member_id}</p>
+                        <p className="text-xs text-muted-foreground/70">ID: {selectedPatient.policy_id_member_id}</p>
                       )}
                     </div>
                   </div>
@@ -739,9 +739,9 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center justify-between text-slate-300">
+                    <CardTitle className="text-sm flex items-center justify-between text-muted-foreground">
                       <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-violet-400" />
+                        <FileText className="h-4 w-4 text-violet-600 dark:text-violet-400" />
                         Past Medical History
                       </div>
                       <Button
@@ -760,13 +760,13 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                         value={medicalHistory}
                         onChange={(e) => setMedicalHistory(e.target.value)}
                         placeholder="Enter medical history (diagnoses, conditions, etc.)..."
-                        className="min-h-[120px] bg-slate-800/50 border-slate-600/50 text-sm text-white placeholder:text-slate-500"
+                        className="min-h-[120px] bg-muted dark:bg-slate-800/50 border-border dark:border-slate-600/50 text-sm text-foreground placeholder:text-muted-foreground"
                         data-testid="textarea-medical-history"
                       />
                     ) : (
-                      <div className="min-h-[100px] p-3 rounded-xl bg-slate-700/50 text-sm text-slate-300 whitespace-pre-wrap">
+                      <div className="min-h-[100px] p-3 rounded-xl bg-muted dark:bg-slate-700/50 text-sm text-foreground/80 whitespace-pre-wrap">
                         {medicalHistory || (
-                          <span className="text-slate-500 italic">Click edit to add medical history</span>
+                          <span className="text-muted-foreground italic">Click edit to add medical history</span>
                         )}
                       </div>
                     )}
@@ -775,9 +775,9 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
 
                 <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center justify-between text-slate-300">
+                    <CardTitle className="text-sm flex items-center justify-between text-muted-foreground">
                       <div className="flex items-center gap-2">
-                        <Pill className="h-4 w-4 text-emerald-400" />
+                        <Pill className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                         Current Medications
                       </div>
                       <Button
@@ -796,13 +796,13 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                         value={medications}
                         onChange={(e) => setMedications(e.target.value)}
                         placeholder="Enter current medications..."
-                        className="min-h-[120px] bg-slate-800/50 border-slate-600/50 text-sm text-white placeholder:text-slate-500"
+                        className="min-h-[120px] bg-muted dark:bg-slate-800/50 border-border dark:border-slate-600/50 text-sm text-foreground placeholder:text-muted-foreground"
                         data-testid="textarea-medications"
                       />
                     ) : (
-                      <div className="min-h-[100px] p-3 rounded-xl bg-slate-700/50 text-sm text-slate-300 whitespace-pre-wrap">
+                      <div className="min-h-[100px] p-3 rounded-xl bg-muted dark:bg-slate-700/50 text-sm text-foreground/80 whitespace-pre-wrap">
                         {medications || (
-                          <span className="text-slate-500 italic">Click edit to add medications</span>
+                          <span className="text-muted-foreground italic">Click edit to add medications</span>
                         )}
                       </div>
                     )}
@@ -841,8 +841,8 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                       <Sparkles className="h-5 w-5 text-violet-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">AI Ancillary Recommendations</h3>
-                      <p className="text-xs text-slate-400">Based on PMH, medications, and eligibility rules</p>
+                      <h3 className="font-semibold text-foreground">AI Ancillary Recommendations</h3>
+                      <p className="text-xs text-muted-foreground">Based on PMH, medications, and eligibility rules</p>
                     </div>
                   </div>
                   <Button
@@ -866,14 +866,14 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 
                 <div className="p-4">
                   {aiSuggestions.length === 0 && !aiAnalyzing ? (
-                    <div className="text-center py-8 text-slate-400">
+                    <div className="text-center py-8 text-muted-foreground">
                       <Brain className="h-12 w-12 mx-auto mb-3 opacity-30" />
                       <p className="text-sm">Click "Analyze Patient" to get AI-powered ancillary recommendations</p>
                     </div>
                   ) : aiAnalyzing ? (
                     <div className="text-center py-8">
                       <Loader2 className="h-8 w-8 mx-auto mb-3 animate-spin text-violet-500" />
-                      <p className="text-sm text-slate-500">Analyzing patient history and eligibility...</p>
+                      <p className="text-sm text-muted-foreground">Analyzing patient history and eligibility...</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -884,29 +884,29 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                           className={`p-4 rounded-xl border ${
                             suggestion.recommended 
                               ? "bg-emerald-500/20 border-emerald-500/30" 
-                              : "bg-slate-700/50 border-slate-600/50"
+                              : "bg-muted dark:bg-slate-700/50 border-border dark:border-slate-600/50"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
                               <div className={`p-2 rounded-lg ${
                                 suggestion.recommended 
-                                  ? "bg-emerald-500/30 text-emerald-400" 
-                                  : "bg-slate-600/50 text-slate-400"
+                                  ? "bg-emerald-500/30 text-emerald-600 dark:text-emerald-400" 
+                                  : "bg-muted dark:bg-slate-600/50 text-muted-foreground"
                               }`}>
                                 {suggestion.icon}
                               </div>
                               <div>
                                 <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-semibold text-white">{suggestion.name}</h4>
+                                  <h4 className="font-semibold text-foreground">{suggestion.name}</h4>
                                   {suggestion.recommended && (
-                                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-xs">
+                                    <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-xs">
                                       <CheckCircle2 className="h-3 w-3 mr-1" />
                                       Recommended
                                     </Badge>
                                   )}
                                 </div>
-                                <p className="text-sm text-slate-300">{suggestion.reasoning}</p>
+                                <p className="text-sm text-muted-foreground">{suggestion.reasoning}</p>
                               </div>
                             </div>
                             <Button
@@ -935,12 +935,12 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
 
               {/* Quick Order Section */}
               <div className={`rounded-none md:rounded-2xl overflow-hidden ${glassStyle}`}>
-                <div className="p-4 border-b border-slate-700/50">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
+                <div className="p-4 border-b border-border dark:border-slate-700/50">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
                     <Plus className="h-5 w-5 text-teal-400" />
                     Quick Order
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">Order any ancillary service directly</p>
+                  <p className="text-xs text-muted-foreground mt-1">Order any ancillary service directly</p>
                 </div>
                 <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                   {ANCILLARY_SERVICES.map((service) => (
@@ -958,7 +958,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                           service.icon
                         )}
                       </div>
-                      <span className="text-xs font-medium text-slate-300 text-center">{service.name}</span>
+                      <span className="text-xs font-medium text-muted-foreground text-center">{service.name}</span>
                     </button>
                   ))}
                 </div>
@@ -968,13 +968,13 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               {selectedPatient.notes && (
                 <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2 text-slate-300">
-                      <FileText className="h-4 w-4 text-amber-400" />
+                    <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
+                      <FileText className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                       Patient Notes
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-slate-300 p-3 rounded-xl bg-slate-700/50">
+                    <p className="text-sm text-foreground/80 p-3 rounded-xl bg-muted dark:bg-slate-700/50">
                       {selectedPatient.notes}
                     </p>
                   </CardContent>
@@ -985,12 +985,12 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
         ) : (
           <div className={`h-full rounded-2xl flex flex-col items-center justify-center ${glassStyle}`}>
             <div className="text-center space-y-4">
-              <div className="h-20 w-20 rounded-2xl bg-slate-700/50 flex items-center justify-center mx-auto">
-                <User className="h-10 w-10 text-slate-400" />
+              <div className="h-20 w-20 rounded-2xl bg-muted dark:bg-slate-700/50 flex items-center justify-center mx-auto">
+                <User className="h-10 w-10 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-slate-300">Select a Patient</h3>
-                <p className="text-sm text-slate-500 mt-1">Search and select a patient from the left panel to view their profile</p>
+                <h3 className="text-lg font-semibold text-foreground/80">Select a Patient</h3>
+                <p className="text-sm text-muted-foreground mt-1">Search and select a patient from the left panel to view their profile</p>
               </div>
             </div>
           </div>

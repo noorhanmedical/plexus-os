@@ -519,7 +519,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -540,7 +540,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Billing Dashboard</h1>
+          <h1 className="text-2xl font-bold text-foreground">Billing Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {records.length} of {normalizedRecords.length} records
           </p>
@@ -612,7 +612,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                           data-testid={`input-item-description-${index}`}
                         />
                         <div className="relative w-28">
-                          <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                          <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="number"
                             placeholder="0.00"
@@ -868,7 +868,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
       </Tabs>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-slate-800/50 border border-slate-700/50">
+        <TabsList className="bg-muted border border-border dark:bg-slate-800/50 dark:border-slate-700/50">
           <TabsTrigger value="overview" className="gap-2" data-testid="tab-overview">
             <PieChartIcon className="h-4 w-4" />
             Overview
@@ -1042,7 +1042,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
           <Card className="p-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative flex-1 min-w-[200px] max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search patients, clinicians..."
@@ -1135,13 +1135,13 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                 <div className="overflow-x-auto border-t">
                   <div className="min-w-[2400px]">
                     <Table>
-                      <TableHeader className="sticky top-0 bg-slate-800/90 z-10 border-b border-slate-700/50">
+                      <TableHeader className="sticky top-0 bg-muted/90 dark:bg-slate-800/90 z-10 border-b border-border dark:border-slate-700/50">
                         <TableRow>
-                          <TableHead className="w-[50px] text-center font-bold text-slate-300">#</TableHead>
+                          <TableHead className="w-[50px] text-center font-bold text-foreground/70 dark:text-slate-300">#</TableHead>
                           {spreadsheetColumns.map((col) => (
                             <TableHead 
                               key={col.key} 
-                              className={`${col.width} font-bold text-slate-300 text-xs whitespace-nowrap`}
+                              className={`${col.width} font-bold text-foreground/70 dark:text-slate-300 text-xs whitespace-nowrap`}
                             >
                               {col.label}
                             </TableHead>
@@ -1153,7 +1153,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                           <TableRow 
                             key={index} 
                             data-testid={`row-billing-${index}`}
-                            className="hover:bg-slate-700/50 border-b border-slate-700/30"
+                            className="hover:bg-muted/50 dark:hover:bg-slate-700/50 border-b border-border dark:border-slate-700/30"
                           >
                             <TableCell className="text-center text-xs text-muted-foreground font-mono">
                               {index + 1}
@@ -1200,10 +1200,10 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                                     <Badge 
                                       variant="outline" 
                                       className={`text-[10px] ${
-                                        value?.includes("BRAINWAVE") ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
-                                        value?.includes("ULTRASOUND") ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
-                                        value?.includes("VITALWAVE") ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                                        "bg-slate-600/30 text-slate-300 border-slate-600/50"
+                                        value?.includes("BRAINWAVE") ? "bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30" :
+                                        value?.includes("ULTRASOUND") ? "bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/30" :
+                                        value?.includes("VITALWAVE") ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30" :
+                                        "bg-muted text-muted-foreground border-border"
                                       }`}
                                     >
                                       {displayValue}

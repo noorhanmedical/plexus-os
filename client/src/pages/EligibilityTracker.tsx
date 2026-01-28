@@ -65,7 +65,7 @@ interface EligibilityTrackerProps {
   onPatientSelect?: (patient: PatientData) => void;
 }
 
-const glassStyle = "backdrop-blur-xl bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 border border-slate-700/50 shadow-xl";
+const glassStyle = "bg-card border border-border shadow-xl dark:backdrop-blur-xl dark:bg-gradient-to-br dark:from-slate-800/90 dark:via-slate-850/85 dark:to-slate-900/90 dark:border-slate-700/50";
 
 const serviceCategories = [
   { id: "all", label: "All Services" },
@@ -95,11 +95,11 @@ function getServiceIcon(serviceType: string) {
 function getEligibilityBadge(status: PatientEligibility["eligibility_status"]) {
   switch (status) {
     case "overdue":
-      return { className: "bg-rose-500/20 text-rose-300 border-rose-500/30", label: "Overdue" };
+      return { className: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30", label: "Overdue" };
     case "due_soon":
-      return { className: "bg-amber-500/20 text-amber-300 border-amber-500/30", label: "Due Soon" };
+      return { className: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30", label: "Due Soon" };
     case "eligible":
-      return { className: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", label: "Eligible" };
+      return { className: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30", label: "Eligible" };
   }
 }
 
@@ -215,9 +215,9 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
   }, [patientEligibilities]);
 
   return (
-    <div className="space-y-4 p-4 min-h-full bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900">
+    <div className="space-y-4 p-4 min-h-full bg-background dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-850 dark:to-slate-900">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Eligibility Tracker</h1>
+        <h1 className="text-2xl font-bold text-foreground">Eligibility Tracker</h1>
         <Button
           variant="outline"
           size="sm"
@@ -236,11 +236,11 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-rose-500/20">
-                <AlertTriangle className="h-5 w-5 text-rose-400" />
+                <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.overdue}</p>
-                <p className="text-sm text-slate-400">Overdue</p>
+                <p className="text-2xl font-bold text-foreground">{stats.overdue}</p>
+                <p className="text-sm text-muted-foreground">Overdue</p>
               </div>
             </div>
           </CardContent>
@@ -250,11 +250,11 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-amber-500/20">
-                <Clock className="h-5 w-5 text-amber-400" />
+                <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.dueSoon}</p>
-                <p className="text-sm text-slate-400">Due Soon</p>
+                <p className="text-2xl font-bold text-foreground">{stats.dueSoon}</p>
+                <p className="text-sm text-muted-foreground">Due Soon</p>
               </div>
             </div>
           </CardContent>
@@ -264,11 +264,11 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-emerald-500/20">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.eligible}</p>
-                <p className="text-sm text-slate-400">Eligible</p>
+                <p className="text-2xl font-bold text-foreground">{stats.eligible}</p>
+                <p className="text-sm text-muted-foreground">Eligible</p>
               </div>
             </div>
           </CardContent>
@@ -278,11 +278,11 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-violet-500/20">
-                <Brain className="h-5 w-5 text-violet-400" />
+                <Brain className="h-5 w-5 text-violet-600 dark:text-violet-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.brainwave}</p>
-                <p className="text-sm text-slate-400">BrainWave</p>
+                <p className="text-2xl font-bold text-foreground">{stats.brainwave}</p>
+                <p className="text-sm text-muted-foreground">BrainWave</p>
               </div>
             </div>
           </CardContent>
@@ -292,11 +292,11 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-cyan-500/20">
-                <UltrasoundProbeIcon className="h-5 w-5 text-cyan-400" />
+                <UltrasoundProbeIcon className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.ultrasound}</p>
-                <p className="text-sm text-slate-400">Ultrasound</p>
+                <p className="text-2xl font-bold text-foreground">{stats.ultrasound}</p>
+                <p className="text-sm text-muted-foreground">Ultrasound</p>
               </div>
             </div>
           </CardContent>
@@ -306,11 +306,11 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-rose-500/20">
-                <Heart className="h-5 w-5 text-rose-400" />
+                <Heart className="h-5 w-5 text-rose-600 dark:text-rose-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.vitalwave}</p>
-                <p className="text-sm text-slate-400">VitalWave</p>
+                <p className="text-2xl font-bold text-foreground">{stats.vitalwave}</p>
+                <p className="text-sm text-muted-foreground">VitalWave</p>
               </div>
             </div>
           </CardContent>
@@ -322,18 +322,18 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           <Card className={`${glassStyle} rounded-2xl`}>
             <CardHeader className="pb-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <CardTitle className="text-lg flex items-center gap-2 text-white">
-                  <Calendar className="h-5 w-5 text-teal-400" />
+                <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+                  <Calendar className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                   Patients Due for Re-Testing
                 </CardTitle>
                 <div className="flex flex-wrap gap-2">
                   <div className="relative flex-1 min-w-[180px]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search patients..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 h-9 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500"
+                      className="pl-10 h-9"
                       data-testid="input-search-eligibility"
                     />
                   </div>
@@ -379,8 +379,8 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
                   <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
                 </div>
               ) : filteredPatients.length === 0 ? (
-                <div className="text-center py-8 text-slate-400">
-                  <Calendar className="h-12 w-12 mx-auto mb-3 text-slate-500" />
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                   <p className="font-medium">No patients due for testing</p>
                   <p className="text-sm">Check back later or adjust filters</p>
                 </div>
@@ -393,26 +393,26 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
                       return (
                         <div
                           key={`${patient.patient_uuid}-${patient.service_type}-${index}`}
-                          className={`p-3 rounded-xl border transition-all cursor-pointer hover:bg-slate-700/50 ${
+                          className={`p-3 rounded-xl border transition-all cursor-pointer hover:bg-muted dark:hover:bg-slate-700/50 ${
                             selectedPatient?.patient_uuid === patient.patient_uuid && 
                             selectedPatient?.service_type === patient.service_type
                               ? 'bg-teal-500/20 border-teal-500/30' 
-                              : 'bg-slate-800/50 border-slate-700/50'
+                              : 'bg-muted/50 dark:bg-slate-800/50 border-border dark:border-slate-700/50'
                           }`}
                           onClick={() => setSelectedPatient(patient)}
                           data-testid={`eligibility-patient-${patient.patient_uuid}`}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-3 flex-1 min-w-0">
-                              <div className="p-2 rounded-xl bg-slate-700/50 shrink-0">
-                                <ServiceIcon className="h-5 w-5 text-slate-300" />
+                              <div className="p-2 rounded-xl bg-muted dark:bg-slate-700/50 shrink-0">
+                                <ServiceIcon className="h-5 w-5 text-muted-foreground" />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="font-semibold text-white truncate">
+                                <p className="font-semibold text-foreground truncate">
                                   {patient.patient_name}
                                 </p>
-                                <p className="text-sm text-slate-400">{patient.service_type}</p>
-                                <p className="text-xs text-slate-500 mt-1">
+                                <p className="text-sm text-muted-foreground">{patient.service_type}</p>
+                                <p className="text-xs text-muted-foreground/70 mt-1">
                                   Last: {patient.last_service_date.toLocaleDateString()} ({patient.days_since_service} days ago)
                                 </p>
                               </div>
@@ -421,7 +421,7 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
                               <Badge className={statusBadge.className}>
                                 {statusBadge.label}
                               </Badge>
-                              <Badge variant="outline" className="text-xs border-slate-600 text-slate-300">
+                              <Badge variant="outline" className="text-xs">
                                 {patient.payor_assumed}
                               </Badge>
                             </div>
@@ -440,15 +440,15 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           {selectedPatient ? (
             <Card className={`${glassStyle} rounded-2xl`}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2 text-white">
-                  <User className="h-5 w-5 text-teal-400" />
+                <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+                  <User className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                   Patient Details
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xl font-bold text-white">
+                    <p className="text-xl font-bold text-foreground">
                       {selectedPatient.patient_name}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -456,31 +456,31 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
                         const badge = getEligibilityBadge(selectedPatient.eligibility_status);
                         return <Badge className={badge.className}>{badge.label}</Badge>;
                       })()}
-                      <Badge variant="outline" className="border-slate-600 text-slate-300">{selectedPatient.payor_assumed}</Badge>
+                      <Badge variant="outline">{selectedPatient.payor_assumed}</Badge>
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-700/50">
-                    <p className="text-xs font-medium text-slate-400 mb-2">Service Due</p>
+                  <div className="p-3 rounded-xl bg-muted dark:bg-slate-700/50">
+                    <p className="text-xs font-medium text-muted-foreground mb-2">Service Due</p>
                     <div className="flex items-center gap-2">
                       {(() => {
                         const ServiceIcon = getServiceIcon(selectedPatient.service_type);
                         return <ServiceIcon className="h-5 w-5 text-teal-400" />;
                       })()}
-                      <span className="font-semibold text-white">{selectedPatient.service_type}</span>
+                      <span className="font-semibold text-foreground">{selectedPatient.service_type}</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-xl bg-slate-700/50">
-                      <p className="text-xs font-medium text-slate-400">Last Service</p>
-                      <p className="font-semibold text-white">
+                    <div className="p-3 rounded-xl bg-muted dark:bg-slate-700/50">
+                      <p className="text-xs font-medium text-muted-foreground">Last Service</p>
+                      <p className="font-semibold text-foreground">
                         {selectedPatient.last_service_date.toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="p-3 rounded-xl bg-slate-700/50">
-                      <p className="text-xs font-medium text-slate-400">Days Since</p>
-                      <p className="font-semibold text-white">
+                    <div className="p-3 rounded-xl bg-muted dark:bg-slate-700/50">
+                      <p className="text-xs font-medium text-muted-foreground">Days Since</p>
+                      <p className="font-semibold text-foreground">
                         {selectedPatient.days_since_service} days
                       </p>
                     </div>
@@ -538,8 +538,8 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
           ) : (
             <Card className={`${glassStyle} rounded-2xl`}>
               <CardContent className="pt-6">
-                <div className="text-center text-slate-400 py-8">
-                  <ChevronRight className="h-12 w-12 mx-auto mb-3 text-slate-500" />
+                <div className="text-center text-muted-foreground py-8">
+                  <ChevronRight className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
                   <p className="font-medium">Select a patient</p>
                   <p className="text-sm">Click on a patient to view eligibility details</p>
                 </div>
@@ -549,28 +549,28 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
 
           <Card className={`${glassStyle} rounded-2xl`}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2 text-slate-300">
-                <Clock className="h-4 w-4 text-teal-400" />
+              <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
+                <Clock className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                 Cooldown Reference
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">PPO Insurance</span>
-                  <Badge variant="outline" className="border-slate-600 text-slate-300">6 months</Badge>
+                  <span className="text-muted-foreground">PPO Insurance</span>
+                  <Badge variant="outline" className="border-border text-foreground/70">6 months</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Medicare</span>
-                  <Badge variant="outline" className="border-slate-600 text-slate-300">12 months</Badge>
+                  <span className="text-muted-foreground">Medicare</span>
+                  <Badge variant="outline" className="border-border text-foreground/70">12 months</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">PGX Testing</span>
-                  <Badge variant="outline" className="bg-violet-500/20 border-violet-500/30 text-violet-300">Once Only</Badge>
+                  <span className="text-muted-foreground">PGX Testing</span>
+                  <Badge variant="outline" className="bg-violet-500/20 border-violet-500/30 text-violet-700 dark:text-violet-300">Once Only</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Steroid Injection</span>
-                  <Badge variant="outline" className="bg-emerald-500/20 border-emerald-500/30 text-emerald-300">No Limit</Badge>
+                  <span className="text-muted-foreground">Steroid Injection</span>
+                  <Badge variant="outline" className="bg-emerald-500/20 border-emerald-500/30 text-emerald-700 dark:text-emerald-300">No Limit</Badge>
                 </div>
               </div>
             </CardContent>
