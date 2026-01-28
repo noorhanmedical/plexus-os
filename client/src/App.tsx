@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { HomeDashboard } from "@/pages/HomeDashboard";
 import { PrescreensView } from "@/pages/PrescreensView";
 import { AncillaryDashboard } from "@/pages/AncillaryDashboard";
+import { AncillaryPortal } from "@/pages/AncillaryPortal";
 import { BillingView } from "@/pages/BillingView";
 import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
@@ -517,7 +518,7 @@ function MainContent() {
       case "prescreens":
         return <PrescreensView />;
       case "ancillary":
-        return <AncillaryDashboard />;
+        return <AncillaryPortal onBack={() => setMainTab("home")} />;
       case "finance":
         return <FinanceView />;
       case "billing":
