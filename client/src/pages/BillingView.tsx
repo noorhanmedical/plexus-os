@@ -1200,10 +1200,10 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                                     <Badge 
                                       variant="outline" 
                                       className={`text-[10px] ${
-                                        value?.includes("BRAINWAVE") ? "bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30" :
-                                        value?.includes("ULTRASOUND") ? "bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/30" :
-                                        value?.includes("VITALWAVE") ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30" :
-                                        "bg-muted text-muted-foreground border-border"
+                                        value?.includes("BRAINWAVE") ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
+                                        value?.includes("ULTRASOUND") ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
+                                        value?.includes("VITALWAVE") ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                                        "bg-slate-600/30 text-slate-300 border-slate-500/30"
                                       }`}
                                     >
                                       {displayValue}

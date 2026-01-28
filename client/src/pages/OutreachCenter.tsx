@@ -64,18 +64,18 @@ interface OutreachCenterProps {
 const glassStyle = "bg-card border border-border shadow-xl dark:backdrop-blur-xl dark:bg-gradient-to-br dark:from-slate-800/90 dark:via-slate-850/85 dark:to-slate-900/90 dark:border-slate-700/50";
 
 const priorityColors = {
-  high: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30",
-  medium: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30",
-  low: "bg-muted text-muted-foreground border-border",
+  high: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+  medium: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  low: "bg-slate-600/30 text-slate-300 border-slate-500/30",
 };
 
 const statusConfig = {
-  pending: { label: "Pending", color: "bg-muted text-muted-foreground border-border", icon: Clock },
-  in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30", icon: PhoneCall },
-  scheduled: { label: "Scheduled", color: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
-  declined: { label: "Declined", color: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30", icon: PhoneOff },
-  no_answer: { label: "No Answer", color: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30", icon: PhoneMissed },
-  callback: { label: "Callback Requested", color: "bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/30", icon: Phone },
+  pending: { label: "Pending", color: "bg-slate-600/30 text-slate-300 border-slate-500/30", icon: Clock },
+  in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-300 border-blue-500/30", icon: PhoneCall },
+  scheduled: { label: "Scheduled", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
+  declined: { label: "Declined", color: "bg-rose-500/20 text-rose-300 border-rose-500/30", icon: PhoneOff },
+  no_answer: { label: "No Answer", color: "bg-amber-500/20 text-amber-300 border-amber-500/30", icon: PhoneMissed },
+  callback: { label: "Callback Requested", color: "bg-violet-500/20 text-violet-300 border-violet-500/30", icon: Phone },
 };
 
 export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterProps) {

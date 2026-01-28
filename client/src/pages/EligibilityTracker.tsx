@@ -95,11 +95,11 @@ function getServiceIcon(serviceType: string) {
 function getEligibilityBadge(status: PatientEligibility["eligibility_status"]) {
   switch (status) {
     case "overdue":
-      return { className: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30", label: "Overdue" };
+      return { className: "bg-rose-500/20 text-rose-300 border-rose-500/30", label: "Overdue" };
     case "due_soon":
-      return { className: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30", label: "Due Soon" };
+      return { className: "bg-amber-500/20 text-amber-300 border-amber-500/30", label: "Due Soon" };
     case "eligible":
-      return { className: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30", label: "Eligible" };
+      return { className: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", label: "Eligible" };
   }
 }
 
