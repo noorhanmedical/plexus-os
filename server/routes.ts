@@ -254,6 +254,12 @@ export async function registerRoutes(
         patient_uuid,
         requested_ancillary_code,
       });
+      
+      // Trigger workflow: add to outreach queue and notify team
+      if (data.ok) {
+        localData.triggerPrescreenCreated(patient_uuid, requested_ancillary_code);
+      }
+      
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to create prescreen" });
@@ -651,6 +657,78 @@ export async function registerRoutes(
       res.json({ ok: true, data: updated });
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to update outreach record" });
+    }
+  });
+
+  // ==================== NOTIFICATION ROUTES ====================
+
+  // Get notifications for a team
+  app.get("/api/local/notifications", async (req, res) => {
+    try {
+      const { team } = req.query;
+      const notifications = team 
+        ? localData.getNotifications(String(team))
+        : localData.getNotifications();
+      res.json({ ok: true, data: notifications });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to get notifications" });
+    }
+  });
+
+  // Get unread notifications
+  app.get("/api/local/notifications/unread", async (req, res) => {
+    try {
+      const { team } = req.query;
+      const notifications = team 
+        ? localData.getUnreadNotifications(String(team))
+        : localData.getUnreadNotifications();
+      res.json({ ok: true, data: notifications, count: notifications.length });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to get unread notifications" });
+    }
+  });
+
+  // Mark notification as read
+  app.patch("/api/local/notifications/:id/read", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = localData.markNotificationRead(id);
+      res.json({ ok: success });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to mark notification read" });
+    }
+  });
+
+  // Mark all notifications as read
+  app.post("/api/local/notifications/mark-all-read", async (req, res) => {
+    try {
+      const { team } = req.body;
+      const count = localData.markAllNotificationsRead(team);
+      res.json({ ok: true, count });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to mark all notifications read" });
+    }
+  });
+
+  // Trigger report uploaded notification (called when report is uploaded)
+  app.post("/api/local/trigger/report-uploaded", async (req, res) => {
+    try {
+      const { patient_uuid, ancillary_code, patient_name } = req.body;
+      localData.triggerReportUploaded(patient_uuid, ancillary_code, patient_name);
+      res.json({ ok: true });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to trigger report uploaded" });
+    }
+  });
+
+  // Trigger service completed notification
+  app.post("/api/local/trigger/service-completed", async (req, res) => {
+    try {
+      const { patient_uuid, ancillary_code, patient_name } = req.body;
+      localData.triggerServiceCompleted(patient_uuid, ancillary_code, patient_name);
+      res.json({ ok: true });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to trigger service completed" });
     }
   });
 

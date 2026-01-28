@@ -1,8 +1,22 @@
 import type { PatientProfile, OutreachRecord, ScheduleEntry } from "../shared/patientProfile";
 
+// Notification types for workflow triggers
+export interface Notification {
+  id: string;
+  type: "prescreen_created" | "report_uploaded" | "service_completed" | "billing_ready";
+  patient_uuid: string;
+  patient_name?: string;
+  ancillary_code?: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+  target_team: "outreach" | "billing" | "clinical";
+}
+
 const patientProfiles = new Map<string, PatientProfile>();
 const outreachRecords = new Map<string, OutreachRecord>();
 const scheduleEntries = new Map<string, ScheduleEntry>();
+const notifications = new Map<string, Notification>();
 
 export function getPatientProfile(patient_uuid: string): PatientProfile | null {
   return patientProfiles.get(patient_uuid) || null;
@@ -128,6 +142,114 @@ export function createScheduleEntry(
 
 export function deleteScheduleEntry(id: string): boolean {
   return scheduleEntries.delete(id);
+}
+
+// Notification functions
+export function createNotification(
+  type: Notification["type"],
+  patient_uuid: string,
+  message: string,
+  target_team: Notification["target_team"],
+  options?: { patient_name?: string; ancillary_code?: string }
+): Notification {
+  const id = `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const notification: Notification = {
+    id,
+    type,
+    patient_uuid,
+    patient_name: options?.patient_name,
+    ancillary_code: options?.ancillary_code,
+    message,
+    read: false,
+    created_at: new Date().toISOString(),
+    target_team,
+  };
+  notifications.set(id, notification);
+  return notification;
+}
+
+export function getNotifications(target_team?: string): Notification[] {
+  const all = Array.from(notifications.values());
+  if (target_team) {
+    return all.filter(n => n.target_team === target_team).sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }
+  return all.sort((a, b) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
+
+export function getUnreadNotifications(target_team?: string): Notification[] {
+  return getNotifications(target_team).filter(n => !n.read);
+}
+
+export function markNotificationRead(id: string): boolean {
+  const notification = notifications.get(id);
+  if (notification) {
+    notification.read = true;
+    notifications.set(id, notification);
+    return true;
+  }
+  return false;
+}
+
+export function markAllNotificationsRead(target_team?: string): number {
+  let count = 0;
+  notifications.forEach((n, id) => {
+    if (!target_team || n.target_team === target_team) {
+      if (!n.read) {
+        n.read = true;
+        notifications.set(id, n);
+        count++;
+      }
+    }
+  });
+  return count;
+}
+
+// Workflow triggers
+export function triggerPrescreenCreated(patient_uuid: string, ancillary_code: string, patient_name?: string): void {
+  // Add to outreach queue automatically
+  const existingOutreach = getOutreachByPatient(patient_uuid);
+  const hasExisting = existingOutreach.some(o => 
+    o.status === "pending" && o.recommended_ancillaries?.includes(ancillary_code)
+  );
+  
+  if (!hasExisting) {
+    createOutreachRecord(patient_uuid, undefined, [ancillary_code]);
+  }
+  
+  // Create notification for outreach team
+  createNotification(
+    "prescreen_created",
+    patient_uuid,
+    `New ${ancillary_code} prescreen created for ${patient_name || "patient"}`,
+    "outreach",
+    { patient_name, ancillary_code }
+  );
+}
+
+export function triggerReportUploaded(patient_uuid: string, ancillary_code: string, patient_name?: string): void {
+  // Notify billing team
+  createNotification(
+    "report_uploaded",
+    patient_uuid,
+    `Report uploaded for ${patient_name || "patient"} - ${ancillary_code} ready for billing`,
+    "billing",
+    { patient_name, ancillary_code }
+  );
+}
+
+export function triggerServiceCompleted(patient_uuid: string, ancillary_code: string, patient_name?: string): void {
+  // Move to billing queue (create billing-ready notification)
+  createNotification(
+    "billing_ready",
+    patient_uuid,
+    `${ancillary_code} service completed for ${patient_name || "patient"} - ready to bill`,
+    "billing",
+    { patient_name, ancillary_code }
+  );
 }
 
 export function seedDemoData() {
