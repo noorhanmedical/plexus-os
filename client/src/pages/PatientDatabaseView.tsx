@@ -191,20 +191,25 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
   };
 
   return (
-    <div className="flex h-full gap-4">
+    <div className="flex h-full md:gap-4">
       {/* Left Panel - Patient Search List */}
-      {/* On mobile: hide when patient selected, show full width. On desktop: always show at 280px */}
+      {/* On mobile: edge-to-edge, full screen. On desktop: 280px floating panel */}
       <div className={`
         ${selectedPatient ? 'hidden md:flex' : 'flex'} 
-        w-full md:w-[280px] flex-shrink-0 rounded-2xl overflow-hidden flex-col
-        ${darkGlassStyle}
+        w-full md:w-[280px] flex-shrink-0 
+        md:rounded-2xl overflow-hidden flex-col
+        bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+        md:backdrop-blur-xl md:border md:border-slate-700/50 md:shadow-[0_8px_32px_rgba(0,0,0,0.3)]
         transition-all duration-300
       `}>
-        <div className="p-4 border-b border-slate-700/50">
-          <h2 className="text-white font-semibold text-lg mb-3 flex items-center gap-2">
-            <User className="h-5 w-5 text-teal-400" />
-            Patient Search
-          </h2>
+        {/* Search Header - compact on mobile */}
+        <div className="p-3 md:p-4 border-b border-slate-700/50">
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <User className="h-4 w-4 md:h-5 md:w-5 text-teal-400" />
+            <h2 className="text-white font-semibold text-base md:text-lg">
+              Patient Search
+            </h2>
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
@@ -212,13 +217,13 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               placeholder="Search by name, MRN..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-10 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-teal-500/50"
+              className="pl-10 h-11 md:h-9 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-teal-500/50"
             />
           </div>
         </div>
         
-        <ScrollArea className="h-[calc(100%-88px)]">
-          <div className="p-2 space-y-1">
+        <ScrollArea className="flex-1">
+          <div className="p-2 md:p-2 space-y-0.5 md:space-y-1">
             {isLoading && (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-teal-400" />
@@ -249,7 +254,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 key={patient.patient_uuid}
                 data-testid={`patient-db-item-${patient.patient_uuid}`}
                 onClick={() => handlePatientSelect(patient)}
-                className={`w-full text-left p-3 rounded-xl ${
+                className={`w-full text-left p-3 md:p-3 rounded-lg md:rounded-xl ${
                   selectedPatient?.patient_uuid === patient.patient_uuid
                     ? "bg-teal-500/20 border border-teal-500/40"
                     : "hover-elevate active-elevate-2 border border-transparent"
@@ -286,7 +291,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
       </div>
 
       {/* Right Panel - Patient Profile */}
-      {/* On mobile: hide when no patient, show full width. On desktop: always show */}
+      {/* On mobile: edge-to-edge, full screen. On desktop: floating panel */}
       <div className={`
         ${selectedPatient ? 'flex' : 'hidden md:flex'} 
         flex-1 overflow-hidden flex-col
@@ -294,14 +299,15 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
       `}>
         {selectedPatient ? (
           <ScrollArea className="h-full">
-            <div className="space-y-4 pr-2">
-              {/* Mobile Back Button */}
-              <div className="md:hidden mb-2">
+            <div className="space-y-3 md:space-y-4 md:pr-2">
+              {/* Mobile Back Button - sticky header on mobile */}
+              <div className="md:hidden sticky top-0 z-10 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-3 py-2 border-b border-slate-700/50">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleMobileBack}
                   data-testid="button-mobile-back"
+                  className="text-white"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Search
@@ -309,7 +315,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               </div>
 
               {/* Demographics Header */}
-              <div className={`rounded-2xl overflow-hidden ${glassStyle}`}>
+              <div className={`md:rounded-2xl overflow-hidden ${glassStyle}`}>
                 <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-4 md:p-6">
                   <div className="flex items-start gap-3 md:gap-4">
                     <div className="h-14 w-14 md:h-20 md:w-20 rounded-2xl bg-gradient-to-br from-teal-500/30 to-teal-600/20 flex items-center justify-center border border-teal-500/30 flex-shrink-0">
@@ -397,7 +403,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
 
               {/* Medical History Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className={`${glassStyle} rounded-2xl`}>
+                <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2 text-slate-700">
                       <FileText className="h-4 w-4 text-violet-500" />
@@ -415,7 +421,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                   </CardContent>
                 </Card>
 
-                <Card className={`${glassStyle} rounded-2xl`}>
+                <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2 text-slate-700">
                       <Pill className="h-4 w-4 text-emerald-500" />
@@ -435,7 +441,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               </div>
 
               {/* AI Suggestions Section */}
-              <div className={`rounded-2xl overflow-hidden ${glassStyle}`}>
+              <div className={`rounded-none md:rounded-2xl overflow-hidden ${glassStyle}`}>
                 <div className="p-4 border-b border-slate-200/80 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-600/20 flex items-center justify-center">
@@ -535,7 +541,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               </div>
 
               {/* Quick Order Section */}
-              <div className={`rounded-2xl overflow-hidden ${glassStyle}`}>
+              <div className={`rounded-none md:rounded-2xl overflow-hidden ${glassStyle}`}>
                 <div className="p-4 border-b border-slate-200/80">
                   <h3 className="font-semibold text-slate-800 flex items-center gap-2">
                     <Plus className="h-5 w-5 text-teal-600" />
@@ -567,7 +573,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
 
               {/* Patient Notes */}
               {selectedPatient.notes && (
-                <Card className={`${glassStyle} rounded-2xl`}>
+                <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2 text-slate-700">
                       <FileText className="h-4 w-4 text-amber-500" />
