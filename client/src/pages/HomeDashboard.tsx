@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp, RefreshCw, Users, Stethoscope } from "lucide-react";
+import { Sparkles, DollarSign, Loader2, AlertTriangle, Calendar, Brain, Heart, ClipboardList, Receipt, TrendingUp, RefreshCw, Users, Stethoscope, Phone, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { UltrasoundProbeIcon } from "@/components/service-icons";
 
@@ -297,42 +297,60 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </Button>
       </div>
       
-      {/* Row 1: Schedule, Prescreens, Ancillary Portal, Patient Database - BOLD TILES */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Row 1: Schedule, Prescreens, Ancillary Portal, Patient Database, Outreach, Eligibility - BOLD TILES */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <Calendar className="h-16 w-16 text-indigo-700 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-lg">Schedule</p>
+          <Calendar className="h-12 w-12 text-indigo-700 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-[#1a0a28] font-bold text-sm">Schedule</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <Sparkles className="h-16 w-16 text-violet-700 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-lg">Prescreens</p>
+          <Sparkles className="h-12 w-12 text-violet-700 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-[#1a0a28] font-bold text-sm">Prescreens</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("ancillary")}
           data-testid="button-ancillary-portal"
         >
-          <Stethoscope className="h-16 w-16 text-purple-700 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-lg">Ancillary Portal</p>
+          <Stethoscope className="h-12 w-12 text-purple-700 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-[#1a0a28] font-bold text-sm">Ancillary</p>
         </button>
 
         <button
-          className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
+          onClick={() => onNavigate?.("outreach")}
+          data-testid="button-outreach-center"
+        >
+          <Phone className="h-12 w-12 text-teal-600 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-[#1a0a28] font-bold text-sm">Outreach</p>
+        </button>
+
+        <button
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
+          onClick={() => onNavigate?.("eligibility")}
+          data-testid="button-eligibility-tracker"
+        >
+          <Clock className="h-12 w-12 text-amber-600 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-[#1a0a28] font-bold text-sm">Eligibility</p>
+        </button>
+
+        <button
+          className={`${glassTileStyle} flex flex-col items-center justify-center py-6 px-4 cursor-pointer group`}
           onClick={() => onNavigate?.("patients")}
           data-testid="button-patient-database"
         >
-          <Users className="h-16 w-16 text-indigo-600 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-lg">Patient Database</p>
+          <Users className="h-12 w-12 text-indigo-600 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-[#1a0a28] font-bold text-sm">Patients</p>
         </button>
       </div>
 
