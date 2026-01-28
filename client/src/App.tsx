@@ -11,9 +11,11 @@ import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
 import { PatientDatabaseView } from "@/pages/PatientDatabaseView";
+import { OutreachCenter } from "@/pages/OutreachCenter";
+import { EligibilityTracker } from "@/pages/EligibilityTracker";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, ChevronDown, ChevronRight, PanelRightClose, PanelRightOpen, Mic, MicOff, FileText, UserSearch } from "lucide-react";
+import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, ChevronDown, ChevronRight, PanelRightClose, PanelRightOpen, Mic, MicOff, FileText, UserSearch, Phone, Clock } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,7 +36,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 
-type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients";
+type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients" | "outreach" | "eligibility";
 
 interface Patient {
   patient_uuid: string;
@@ -54,6 +56,8 @@ const mainTabs = [
   { id: "schedule" as MainTab, label: "Schedule", icon: Calendar },
   { id: "prescreens" as MainTab, label: "Prescreens", icon: ClipboardList },
   { id: "ancillary" as MainTab, label: "Ancillary", icon: Activity },
+  { id: "outreach" as MainTab, label: "Outreach Center", icon: Phone },
+  { id: "eligibility" as MainTab, label: "Eligibility Tracker", icon: Clock },
   { id: "finance" as MainTab, label: "Finance", icon: DollarSign },
   { id: "billing" as MainTab, label: "Billing", icon: Receipt },
   { id: "patients" as MainTab, label: "Patient Database", icon: UserSearch },
@@ -505,6 +509,10 @@ function MainContent() {
         return <BillingView defaultServiceFilter={billingServiceFilter} onServiceFilterChange={setBillingServiceFilter} />;
       case "patients":
         return <PatientDatabaseView onNavigate={handleMainTabChange} />;
+      case "outreach":
+        return <OutreachCenter onNavigate={handleMainTabChange} />;
+      case "eligibility":
+        return <EligibilityTracker onNavigate={handleMainTabChange} />;
       default:
         return <HomeDashboard onNavigate={handleMainTabChange} />;
     }
