@@ -93,10 +93,18 @@ function getEligibilityBadge(status: PatientEligibility["eligibility_status"]) {
   }
 }
 
+const dateRangeOptions = [
+  { id: "all", label: "All Time" },
+  { id: "30", label: "Last 30 Days" },
+  { id: "180", label: "Last 6 Months" },
+  { id: "365", label: "Last Year" },
+];
+
 export function EligibilityTracker({ onNavigate }: EligibilityTrackerProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [serviceFilter, setServiceFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateRangeFilter, setDateRangeFilter] = useState<string>("all");
   const [selectedPatient, setSelectedPatient] = useState<PatientEligibility | null>(null);
 
   const { data: billingData, isLoading, refetch } = useQuery<BillingResponse>({
@@ -166,6 +174,7 @@ export function EligibilityTracker({ onNavigate }: EligibilityTrackerProps) {
   }, [billingData]);
 
   const filteredPatients = useMemo(() => {
+    const now = new Date();
     return patientEligibilities.filter(p => {
       const matchesSearch = searchTerm === "" || 
         p.patient_name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -173,9 +182,17 @@ export function EligibilityTracker({ onNavigate }: EligibilityTrackerProps) {
         p.service_type.toLowerCase() === serviceFilter.toLowerCase();
       const matchesStatus = statusFilter === "all" || 
         p.eligibility_status === statusFilter;
-      return matchesSearch && matchesService && matchesStatus;
+      
+      let matchesDateRange = true;
+      if (dateRangeFilter !== "all") {
+        const days = parseInt(dateRangeFilter);
+        const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        matchesDateRange = p.last_service_date >= cutoffDate;
+      }
+      
+      return matchesSearch && matchesService && matchesStatus && matchesDateRange;
     });
-  }, [patientEligibilities, searchTerm, serviceFilter, statusFilter]);
+  }, [patientEligibilities, searchTerm, serviceFilter, statusFilter, dateRangeFilter]);
 
   const stats = useMemo(() => {
     const overdue = patientEligibilities.filter(p => p.eligibility_status === "overdue").length;
@@ -330,6 +347,17 @@ export function EligibilityTracker({ onNavigate }: EligibilityTrackerProps) {
                       <SelectItem value="overdue">Overdue</SelectItem>
                       <SelectItem value="due_soon">Due Soon</SelectItem>
                       <SelectItem value="eligible">Eligible</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
+                    <SelectTrigger className="w-[140px] h-9" data-testid="select-date-range">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Date Range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {dateRangeOptions.map(opt => (
+                        <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

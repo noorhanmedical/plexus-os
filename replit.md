@@ -2,11 +2,29 @@
 
 ## Overview
 
-A clinical prescreen management dashboard for patient eligibility and scheduling. The application provides a three-panel interface for searching patients, viewing their prescreens, and editing prescreen details. It connects to an external Google Apps Script API (Plexus) for all data operations.
+A comprehensive Clinical Prescreen Management Dashboard (EMR-like interface) for a company that orders ancillaries at clinics. The application provides multi-view dashboards including patient search, eligibility tracking, outreach management, and billing. Features a consistent dark/teal aesthetic (liquid glass dark theme with slate-900 backgrounds and teal accents). Connects to an external Google Apps Script API (Plexus) for all data operations.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+## Design System
+
+### Visual Theme
+- **Color Palette**: Dark EMR theme
+  - Backgrounds: slate-900, slate-800, slate-850
+  - Accents: teal-400/500 (primary), violet-400/500 (AI/analysis), cyan-400 (ultrasound), rose-400 (vitalwave), amber-400 (warnings)
+  - Text: white (primary), slate-300 (secondary), slate-400/500 (tertiary)
+  - Cards: Dark glass effect with backdrop-blur-xl, semi-transparent gradients
+  - Borders: slate-700/50
+- **Typography**: Inter font family
+- **Border Radius**: rounded-2xl for cards, rounded-xl for inputs/buttons
+- **Shadows**: Subtle shadows with shadow-xl for glass cards
+
+### Component Patterns
+- Glass cards: `bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 backdrop-blur-xl border border-slate-700/50`
+- Status badges: `bg-{color}-500/20 text-{color}-300 border-{color}-500/30`
+- Inputs: `bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500`
 
 ## System Architecture
 
@@ -15,46 +33,90 @@ Preferred communication style: Simple, everyday language.
 - **Routing**: Wouter (lightweight React router)
 - **State Management**: TanStack React Query for server state
 - **UI Components**: Shadcn/UI component library built on Radix UI primitives
-- **Styling**: Tailwind CSS with custom design tokens, supporting light/dark themes
+- **Styling**: Tailwind CSS with custom dark theme design tokens
 - **Build Tool**: Vite with React plugin
+- **Charts**: Recharts for data visualization
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express
 - **Language**: TypeScript (ESM modules)
 - **API Pattern**: Express acts as a proxy/gateway to the external Plexus API
 - **Validation**: Zod schemas for request validation
+- **AI Integration**: OpenAI via Replit AI Integrations (gpt-4o-mini)
 
 ### Data Flow
 1. Frontend makes requests to Express backend (`/api/*` routes)
 2. Backend validates requests using Zod schemas
 3. Backend forwards requests to external Plexus Google Apps Script API
 4. Responses flow back through the same path
+5. Local in-memory storage for patient profiles, outreach queue
 
-### Key Design Decisions
+## Multi-View Dashboard Architecture
 
-**External API Gateway Pattern**
-- All data lives in the external Plexus API (Google Apps Script)
-- Express server acts as a secure proxy, hiding API keys from client
-- Local storage (in-memory) for patient profiles, outreach queue
+### Views & Navigation
+| View | Route | Purpose |
+|------|-------|---------|
+| Home | `home` | Dashboard overview with quick navigation tiles and recent activity |
+| Schedule | `schedule` | Clinic schedule with patient appointment list |
+| Prescreens | `prescreens` | Three-panel prescreen management interface |
+| Patient Database | `patients` | EMR hub with search, demographics, medical history, AI recommendations |
+| Outreach Center | `outreach` | Remote team call queue with timer tracking and outcome logging |
+| Eligibility Tracker | `eligibility` | Patients due for re-testing based on cooldown rules |
+| Billing | `billing` | Billing records, charts, invoice management |
+| Ancillary Tracker | `ancillary` | Per-service patient tracking |
+| Finance | `finance` | Financial overview with revenue charts |
 
-**AI-Powered Ancillary Recommendations**
-- OpenAI integration via Replit AI Integrations (gpt-4o-mini)
-- Aggressive qualification logic for all 17 ancillary services
-- Deterministic fallback when AI unavailable
-- Cooldown logic: PPO 6mo, Medicare 12mo, PGX once-only, Steroid Injection no limit
+### Key Features per View
 
-**Multi-View Dashboard Layout**
-- Home: Overview with quick navigation tiles
-- Schedule: Clinic schedule with patient list
-- Prescreens: Three-panel prescreen management
-- Patient Database: AI-powered patient analysis with editable medical history
-- Outreach Center: Remote team call management queue
-- Eligibility Tracker: Patients due for re-testing based on cooldowns
+**Patient Database (EMR Hub)**
+- Left panel: Patient search with debounced query, recent patients list
+- Right panel: Demographics banner (name, MRN, DOB, age, status)
+- Contact/Address/Insurance grid
+- Editable Medical History & Medications sections
+- AI-powered ancillary recommendations with qualification reasoning
+- Quick Order buttons for common ancillary services
+- Mobile-responsive with adaptive layouts
 
-**Design System**
-- Follows Linear/Vercel-inspired modern aesthetic (see `design_guidelines.md`)
-- Inter font family for clean readability
-- Sophisticated minimalism with precise spacing and subtle shadows
+**Outreach Center**
+- Call queue with priority sorting
+- Active call timer (TimeDock-optimized)
+- Patient details panel with contact info
+- Quick call scripts
+- Outcome logging (connected, voicemail, callback, no answer)
+- Recent calls history
+
+**Eligibility Tracker**
+- Patients approaching or past eligibility windows
+- Service type filtering (BrainWave, VitalWave, Ultrasound)
+- Status filtering (Overdue, Due Soon, Eligible)
+- Date range filtering (Last 30 Days, Last 6 Months, Last Year, All Time)
+- Cooldown-based calculations per payor type
+
+**Billing Dashboard**
+- Records table with dynamic columns from API
+- Service type tabs for filtering
+- Date range and clinician filters
+- Revenue analytics with charts
+- Invoice creation dialog
+- External links to documents
+
+## AI-Powered Features
+
+### Ancillary Recommendations (Patient Database)
+- Uses OpenAI gpt-4o-mini via Replit AI Integrations
+- Aggressive qualification logic to maximize patient eligibility
+- Analyzes patient demographics, insurance, and medical history
+- Returns recommendations with qualification scores and reasoning
+- Fallback to deterministic logic when AI unavailable
+
+### Cooldown Logic
+- **PPO Insurance**: 6 months (180 days)
+- **Medicare**: 12 months (365 days)
+- **PGX Testing**: Once-only (lifetime)
+- **Steroid Injection**: No cooldown limit
+
+### 17 Ancillary Services Supported
+BRAINWAVE, VITALWAVE, ULTRASOUND, PGX, CGX, PULSEWAVE, TM_FLOW, FUNCTIONAL_MEDICINE, CARDIAC_CT, DEXA_BODY_COMP, VASCULAR_ULTRASOUND, ECHO, EKG, STRESS_TEST, SLEEP_STUDY, ALLERGY_TESTING, HORMONE_PANEL
 
 ## External Dependencies
 
@@ -62,12 +124,12 @@ Preferred communication style: Simple, everyday language.
 - **Plexus API**: Google Apps Script Web App for patient and prescreen data
   - Base URL configured in `server/routes.ts`
   - API key stored in `PLEXUS_API_KEY` environment variable
-  - Supports patient search, prescreen CRUD operations
+  - Supports patient search, prescreen CRUD, billing data
 
 ### Database
 - **PostgreSQL**: Configured via Drizzle ORM (schema in `shared/schema.ts`)
   - Requires `DATABASE_URL` environment variable
-  - Currently used for potential session storage (connect-pg-simple)
+  - Currently used for potential session storage
   - Core app data comes from external Plexus API
 
 ### Key NPM Packages
@@ -77,6 +139,8 @@ Preferred communication style: Simple, everyday language.
 - `zod`: Runtime type validation
 - `@radix-ui/*`: Accessible UI primitives
 - `tailwindcss`: Utility-first CSS framework
+- `recharts`: Data visualization
+- `openai`: AI integration
 
 ## Performance & Safety Architecture
 
@@ -102,3 +166,51 @@ Preferred communication style: Simple, everyday language.
 
 ### Why These Limits
 Google Apps Script has strict quotas and the responses contain large payloads (many URL fields). Aggressive rate limiting prevents platform blocks.
+
+## Mobile Optimization
+
+### Responsive Design
+- Single column layouts on mobile devices
+- Touch-friendly targets (min 44px)
+- Mobile-specific navigation with back buttons
+- Adaptive card layouts
+- Condensed views for smaller screens
+
+### Future Enhancements
+- Bottom navigation bar for primary actions
+- Swipe gestures for navigation
+- Quick call button always accessible
+- Optimized for 40+ concurrent users
+
+## File Structure
+
+```
+client/src/
+├── pages/
+│   ├── HomeDashboard.tsx      # Main dashboard with navigation tiles
+│   ├── PatientDatabaseView.tsx # EMR hub with AI recommendations
+│   ├── OutreachCenter.tsx     # Call queue and management
+│   ├── EligibilityTracker.tsx # Eligibility tracking with filters
+│   ├── BillingView.tsx        # Billing management
+│   └── ...
+├── components/
+│   ├── ui/                    # Shadcn components
+│   └── service-icons.tsx      # Custom service icons
+├── lib/
+│   ├── queryClient.ts         # React Query configuration
+│   └── safeFetch.ts           # Rate-limited fetch wrapper
+server/
+├── routes.ts                  # API routes and Plexus proxy
+├── aiAnalysis.ts             # AI analysis logic
+└── storage.ts                # In-memory storage
+shared/
+├── schema.ts                 # Database schema and types
+└── ancillaryCatalog.ts       # Service definitions
+```
+
+## Recent Changes
+
+- 2026-01-28: Applied consistent dark EMR theme across all views
+- 2026-01-28: Added date range filtering to Eligibility Tracker
+- 2026-01-28: Fixed dark theme colors in BillingView table and badges
+- 2026-01-28: Updated PatientDatabaseView with dark glass card styling

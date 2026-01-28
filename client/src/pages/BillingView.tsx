@@ -868,7 +868,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
       </Tabs>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-slate-100">
+        <TabsList className="bg-slate-800/50 border border-slate-700/50">
           <TabsTrigger value="overview" className="gap-2" data-testid="tab-overview">
             <PieChartIcon className="h-4 w-4" />
             Overview
@@ -1135,13 +1135,13 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                 <div className="overflow-x-auto border-t">
                   <div className="min-w-[2400px]">
                     <Table>
-                      <TableHeader className="sticky top-0 bg-slate-100 z-10">
+                      <TableHeader className="sticky top-0 bg-slate-800/90 z-10 border-b border-slate-700/50">
                         <TableRow>
-                          <TableHead className="w-[50px] text-center font-bold text-slate-700">#</TableHead>
+                          <TableHead className="w-[50px] text-center font-bold text-slate-300">#</TableHead>
                           {spreadsheetColumns.map((col) => (
                             <TableHead 
                               key={col.key} 
-                              className={`${col.width} font-bold text-slate-700 text-xs whitespace-nowrap`}
+                              className={`${col.width} font-bold text-slate-300 text-xs whitespace-nowrap`}
                             >
                               {col.label}
                             </TableHead>
@@ -1153,7 +1153,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                           <TableRow 
                             key={index} 
                             data-testid={`row-billing-${index}`}
-                            className="hover:bg-slate-50"
+                            className="hover:bg-slate-700/50 border-b border-slate-700/30"
                           >
                             <TableCell className="text-center text-xs text-muted-foreground font-mono">
                               {index + 1}
@@ -1170,7 +1170,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                                       href={value}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-2 py-1 rounded"
+                                      className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 hover:underline bg-blue-500/20 px-2 py-1 rounded border border-blue-500/30"
                                     >
                                       <ExternalLink className="h-3 w-3" />
                                       Link
@@ -1200,10 +1200,10 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                                     <Badge 
                                       variant="outline" 
                                       className={`text-[10px] ${
-                                        value?.includes("BRAINWAVE") ? "bg-blue-50 text-blue-700 border-blue-200" :
-                                        value?.includes("ULTRASOUND") ? "bg-purple-50 text-purple-700 border-purple-200" :
-                                        value?.includes("VITALWAVE") ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                                        "bg-slate-100 text-slate-700 border-slate-200"
+                                        value?.includes("BRAINWAVE") ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
+                                        value?.includes("ULTRASOUND") ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
+                                        value?.includes("VITALWAVE") ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                                        "bg-slate-600/30 text-slate-300 border-slate-600/50"
                                       }`}
                                     >
                                       {displayValue}
