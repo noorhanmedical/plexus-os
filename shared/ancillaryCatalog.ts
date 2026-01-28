@@ -1,0 +1,255 @@
+export interface AncillaryService {
+  ancillary_code: string;
+  ancillary_name: string;
+  category: string;
+  default_amount: number;
+  cooldown_months_ppo: number | null;
+  cooldown_months_medicare: number | null;
+  active: boolean;
+  requires_prescreen: boolean;
+  notes: string;
+  repeat_policy: "COOLDOWN" | "ONCE_ONLY" | "NO_LIMIT";
+  cpt_code?: string;
+}
+
+export const ANCILLARY_CATALOG: AncillaryService[] = [
+  {
+    ancillary_code: "BRAINWAVE",
+    ancillary_name: "BrainWave",
+    category: "Neuro",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "BrainWave cognitive/neuro testing",
+    repeat_policy: "COOLDOWN",
+  },
+  {
+    ancillary_code: "VITALWAVE",
+    ancillary_name: "VitalWave",
+    category: "Cardio/Autonomic",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "VitalWave cardiovascular/autonomic testing",
+    repeat_policy: "COOLDOWN",
+  },
+  {
+    ancillary_code: "PGX",
+    ancillary_name: "Pharmacogenomics (PGX)",
+    category: "Lab",
+    default_amount: 0,
+    cooldown_months_ppo: null,
+    cooldown_months_medicare: null,
+    active: true,
+    requires_prescreen: true,
+    notes: "Once only per patient",
+    repeat_policy: "ONCE_ONLY",
+  },
+  {
+    ancillary_code: "STEROID_INJ",
+    ancillary_name: "Steroid Injection",
+    category: "Procedure",
+    default_amount: 0,
+    cooldown_months_ppo: 0,
+    cooldown_months_medicare: 0,
+    active: true,
+    requires_prescreen: false,
+    notes: "No timeline restriction",
+    repeat_policy: "NO_LIMIT",
+  },
+  {
+    ancillary_code: "US_CAROTID_93880",
+    ancillary_name: "Carotid Ultrasound",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93880",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93880",
+  },
+  {
+    ancillary_code: "US_ECHO_93306",
+    ancillary_name: "Transthoracic Echocardiogram",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93306",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93306",
+  },
+  {
+    ancillary_code: "US_RENAL_ART_VEIN_93975",
+    ancillary_name: "Renal Artery/Vein",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93975",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93975",
+  },
+  {
+    ancillary_code: "US_ABD_ART_CELIAC_SMA_IMA_93975",
+    ancillary_name: "Abdominal Arteries Celiac/SMA/IMA",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93975",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93975",
+  },
+  {
+    ancillary_code: "US_IVC_93975",
+    ancillary_name: "IVC Ultrasound",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93975",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93975",
+  },
+  {
+    ancillary_code: "US_LIVER_PORTAL_HEPATIC_93975",
+    ancillary_name: "Liver Artery/Vein Portal/Hepatic",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93975",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93975",
+  },
+  {
+    ancillary_code: "US_LE_ARTERIAL_93925",
+    ancillary_name: "Lower Extremity Arterial Duplex",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93925",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93925",
+  },
+  {
+    ancillary_code: "US_UE_ARTERIAL_93930",
+    ancillary_name: "Upper Extremity Arterial Duplex",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93930",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93930",
+  },
+  {
+    ancillary_code: "US_LE_VENOUS_93971",
+    ancillary_name: "Lower Extremity Venous Duplex",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93971",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93971",
+  },
+  {
+    ancillary_code: "US_UE_VENOUS_93970",
+    ancillary_name: "Upper Extremity Venous Duplex",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93970",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93970",
+  },
+  {
+    ancillary_code: "US_STRESS_ECHO_93350",
+    ancillary_name: "Stress Echocardiogram",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93350",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93350",
+  },
+  {
+    ancillary_code: "US_AORTA_ILIAC_93978",
+    ancillary_name: "Aorta and Iliac Artery Duplex",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "CPT 93978",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "93978",
+  },
+  {
+    ancillary_code: "US_AAA_SCREEN_G0389",
+    ancillary_name: "Screening AAA Ultrasound",
+    category: "Ultrasound",
+    default_amount: 0,
+    cooldown_months_ppo: 6,
+    cooldown_months_medicare: 12,
+    active: true,
+    requires_prescreen: true,
+    notes: "HCPCS G0389",
+    repeat_policy: "COOLDOWN",
+    cpt_code: "G0389",
+  },
+];
+
+export const getAncillaryByCode = (code: string): AncillaryService | undefined => {
+  return ANCILLARY_CATALOG.find((a) => a.ancillary_code === code);
+};
+
+export const getActiveAncillaries = (): AncillaryService[] => {
+  return ANCILLARY_CATALOG.filter((a) => a.active);
+};
+
+export const getAncillariesByCategory = (category: string): AncillaryService[] => {
+  return ANCILLARY_CATALOG.filter((a) => a.category === category && a.active);
+};
+
+export const ANCILLARY_CATEGORIES = [
+  "Neuro",
+  "Cardio/Autonomic",
+  "Lab",
+  "Procedure",
+  "Ultrasound",
+] as const;
+
+export type AncillaryCategory = typeof ANCILLARY_CATEGORIES[number];

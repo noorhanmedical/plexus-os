@@ -1,0 +1,18 @@
+ancillary_code	ancillary_name	category	default_amount	cooldown_months_ppo	cooldown_months_medicare	active	requires_prescreen	notes	created_at	updated_at	repeat_policy	
+BRAINWAVE	BrainWave	Neuro	0	6	12	Yes	Yes	BrainWave cognitive/neuro testing	COOLDOWN		COOLDOWN	
+VITALWAVE	VitalWave	Cardio/Autonomic	0	6	12	Yes	Yes	VitalWave cardiovascular/autonomic testing	COOLDOWN		COOLDOWN	
+PGX	Pharmacogenomics (PGX)	Lab	0			Yes	Yes	Once only per patient	ONCE_ONLY		ONCE_ONLY	
+STEROID_INJ	Steroid Injection	Procedure	0	0	0	Yes	No	No timeline restriction	NO_LIMIT		NO_LIMIT	
+US_CAROTID_93880	Carotid Ultrasound (93880)	Ultrasound	0	6	12	Yes	Yes	CPT 93880	COOLDOWN		COOLDOWN	
+US_ECHO_93306	Transthoracic Echocardiogram (93306)	Ultrasound	0	6	12	Yes	Yes	CPT 93306	COOLDOWN		COOLDOWN	
+US_RENAL_ART_VEIN_93975	Renal Artery/Vein (93975)	Ultrasound	0	6	12	Yes	Yes	CPT 93975	COOLDOWN		COOLDOWN	
+US_ABD_ART_CELIAC_SMA_IMA_93975	Abdominal Arteries Celiac/SMA/IMA (93975)	Ultrasound	0	6	12	Yes	Yes	CPT 93975	COOLDOWN		COOLDOWN	
+US_IVC_93975	IVC Ultrasound (93975)	Ultrasound	0	6	12	Yes	Yes	CPT 93975	COOLDOWN		COOLDOWN	
+US_LIVER_PORTAL_HEPATIC_93975	Liver Artery/Vein Portal/Hepatic (93975)	Ultrasound	0	6	12	Yes	Yes	CPT 93975	COOLDOWN		COOLDOWN	
+US_LE_ARTERIAL_93925	Lower Extremity Arterial Duplex (93925)	Ultrasound	0	6	12	Yes	Yes	CPT 93925	COOLDOWN		COOLDOWN	
+US_UE_ARTERIAL_93930	Upper Extremity Arterial Duplex (93930)	Ultrasound	0	6	12	Yes	Yes	CPT 93930	COOLDOWN		COOLDOWN	
+US_LE_VENOUS_93971	Lower Extremity Venous Duplex (93971)	Ultrasound	0	6	12	Yes	Yes	CPT 93971	COOLDOWN		COOLDOWN	
+US_UE_VENOUS_93970	Upper Extremity Venous Duplex (93970)	Ultrasound	0	6	12	Yes	Yes	CPT 93970	COOLDOWN		COOLDOWN	
+US_STRESS_ECHO_93350	Stress Echocardiogram (93350)	Ultrasound	0	6	12	Yes	Yes	CPT 93350	COOLDOWN		COOLDOWN	
+US_AORTA_ILIAC_93978	Aorta and Iliac Artery Duplex (93978)	Ultrasound	0	6	12	Yes	Yes	CPT 93978	COOLDOWN		COOLDOWN	
+US_AAA_SCREEN_G0389	Screening AAA Ultrasound (G0389)	Ultrasound	0	6	12	Yes	Yes	HCPCS G0389	COOLDOWN		COOLDOWN	
