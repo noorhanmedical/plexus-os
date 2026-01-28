@@ -11,10 +11,10 @@ import {
   Search, User, Loader2, Phone, Mail, Calendar, 
   Heart, Brain, Sparkles, Pill, FileText,
   Plus, Activity, Stethoscope, CheckCircle2,
-  Shield, ArrowLeft
+  Shield, ArrowLeft, UserPlus, Clock, Users, ClipboardList
 } from "lucide-react";
 import type { Patient } from "@shared/schema";
-import { UltrasoundProbeIcon } from "@/components/service-icons";
+import { UltrasoundProbeIcon, PgxSwabIcon, serviceConfig } from "@/components/service-icons";
 
 type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients";
 
@@ -37,13 +37,39 @@ interface PatientSearchResponse {
   error?: string;
 }
 
+// Ancillary services matching the dashboard - using serviceConfig colors
 const ANCILLARY_SERVICES = [
-  { code: "AWV", name: "Annual Wellness Visit", icon: <Heart className="h-6 w-6" />, color: "text-rose-500" },
-  { code: "BRAINWAVE", name: "BrainWave EEG", icon: <Brain className="h-6 w-6" />, color: "text-violet-500" },
-  { code: "ABI", name: "ABI Vascular", icon: <Activity className="h-6 w-6" />, color: "text-blue-500" },
-  { code: "CCM", name: "Chronic Care Mgmt", icon: <Stethoscope className="h-6 w-6" />, color: "text-emerald-500" },
-  { code: "ECHO", name: "Echocardiogram", icon: <UltrasoundProbeIcon className="h-6 w-6" />, color: "text-cyan-500" },
+  { 
+    code: "BRAINWAVE", 
+    name: serviceConfig.brainwave.name, 
+    icon: <Brain className="h-8 w-8" strokeWidth={2.5} />, 
+    color: serviceConfig.brainwave.textColor,
+    bgColor: serviceConfig.brainwave.gradient 
+  },
+  { 
+    code: "VITALWAVE", 
+    name: serviceConfig.vitalwave.name, 
+    icon: <Heart className="h-8 w-8" strokeWidth={2.5} />, 
+    color: serviceConfig.vitalwave.textColor,
+    bgColor: serviceConfig.vitalwave.gradient 
+  },
+  { 
+    code: "ULTRASOUND", 
+    name: serviceConfig.ultrasound.name, 
+    icon: <UltrasoundProbeIcon className="h-8 w-8" />, 
+    color: serviceConfig.ultrasound.textColor,
+    bgColor: serviceConfig.ultrasound.gradient 
+  },
+  { 
+    code: "PGX", 
+    name: serviceConfig.pgx.name, 
+    icon: <PgxSwabIcon className="h-8 w-8" />, 
+    color: serviceConfig.pgx.textColor,
+    bgColor: serviceConfig.pgx.gradient 
+  },
 ];
+
+type MobileView = "dashboard" | "search" | "profile";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -63,6 +89,8 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<AncillarySuggestion[]>([]);
+  const [mobileView, setMobileView] = useState<MobileView>("dashboard");
+  const [recentPatients, setRecentPatients] = useState<Patient[]>([]);
 
   const { data: searchResults, isLoading, isError } = useQuery<PatientSearchResponse>({
     queryKey: [`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=30`],
@@ -107,6 +135,12 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
     setAiSuggestions([]);
+    setMobileView("profile");
+    // Add to recent patients (keep max 5, avoid duplicates)
+    setRecentPatients(prev => {
+      const filtered = prev.filter(p => p.patient_uuid !== patient.patient_uuid);
+      return [patient, ...filtered].slice(0, 5);
+    });
   };
 
   const handleAnalyzeWithAI = async () => {
@@ -184,31 +218,158 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
 
   const isOrderingCode = createPrescreenMutation.isPending ? createPrescreenMutation.variables?.ancillaryCode : null;
 
-  // Mobile: clear patient selection to go back to list
+  // Mobile: navigation handlers
   const handleMobileBack = () => {
-    setSelectedPatient(null);
-    setAiSuggestions([]);
+    if (mobileView === "profile") {
+      setSelectedPatient(null);
+      setAiSuggestions([]);
+      setMobileView("dashboard");
+    } else if (mobileView === "search") {
+      setMobileView("dashboard");
+    }
+  };
+
+  const handleMobileSearch = () => {
+    setMobileView("search");
   };
 
   return (
     <div className="flex h-full md:gap-4">
-      {/* Left Panel - Patient Search List */}
-      {/* On mobile: edge-to-edge, full screen. On desktop: 280px floating panel */}
+      {/* Mobile Dashboard View - shows on mobile when not searching or viewing profile */}
       <div className={`
-        ${selectedPatient ? 'hidden md:flex' : 'flex'} 
-        w-full md:w-[280px] flex-shrink-0 
-        md:rounded-2xl overflow-hidden flex-col
+        ${mobileView === "dashboard" ? 'flex md:hidden' : 'hidden'} 
+        w-full flex-col
         bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
-        md:backdrop-blur-xl md:border md:border-slate-700/50 md:shadow-[0_8px_32px_rgba(0,0,0,0.3)]
-        transition-all duration-300
+        overflow-auto
       `}>
-        {/* Search Header - compact on mobile */}
-        <div className="p-3 md:p-4 border-b border-slate-700/50">
-          <div className="flex items-center gap-2 mb-2 md:mb-3">
-            <User className="h-4 w-4 md:h-5 md:w-5 text-teal-400" />
-            <h2 className="text-white font-semibold text-base md:text-lg">
-              Patient Search
-            </h2>
+        {/* Dashboard Header */}
+        <div className="p-4 border-b border-slate-700/50">
+          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+            <ClipboardList className="h-6 w-6 text-teal-400" />
+            Patient Records
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">Clinical EMR Dashboard</p>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="p-4 grid grid-cols-2 gap-3">
+          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="h-5 w-5 text-teal-400" />
+              <span className="text-xs text-slate-400 uppercase tracking-wider">Recent</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{recentPatients.length}</p>
+            <p className="text-xs text-slate-500">patients viewed</p>
+          </div>
+          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="h-5 w-5 text-violet-400" />
+              <span className="text-xs text-slate-400 uppercase tracking-wider">Today</span>
+            </div>
+            <p className="text-2xl font-bold text-white">--</p>
+            <p className="text-xs text-slate-500">pending orders</p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="px-4 space-y-3">
+          <Button
+            onClick={handleMobileSearch}
+            size="lg"
+            className="w-full bg-teal-600 text-white rounded-xl flex items-center justify-center gap-3"
+            data-testid="button-mobile-search-patient"
+          >
+            <Search className="h-5 w-5" />
+            <span className="font-semibold">Search Patients</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full border-slate-600 text-slate-300 rounded-xl flex items-center justify-center gap-3"
+            data-testid="button-mobile-add-patient"
+          >
+            <UserPlus className="h-5 w-5" />
+            <span>Add New Patient</span>
+          </Button>
+        </div>
+
+        {/* Recent Patients Section */}
+        {recentPatients.length > 0 && (
+          <div className="mt-6 px-4">
+            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Recent Patients
+            </h3>
+            <div className="space-y-2">
+              {recentPatients.map((patient) => (
+                <button
+                  key={patient.patient_uuid}
+                  onClick={() => handlePatientSelect(patient)}
+                  className="w-full text-left p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 hover-elevate active-elevate-2"
+                  data-testid={`recent-patient-${patient.patient_uuid}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-slate-700/50 flex items-center justify-center flex-shrink-0">
+                      <User className="h-5 w-5 text-slate-400" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-white truncate">
+                        {patient.last_name}, {patient.first_name}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                        {patient.mrn && <span>MRN: {patient.mrn}</span>}
+                        {patient.date_of_birth && (
+                          <span>• {calculateAge(patient.date_of_birth)}yo</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions - Ancillary Services */}
+        <div className="mt-6 px-4 pb-6">
+          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Ancillary Services
+          </h3>
+          <div className="grid grid-cols-4 gap-2">
+            {ANCILLARY_SERVICES.map((service) => (
+              <div
+                key={service.code}
+                className={`flex flex-col items-center p-3 rounded-xl bg-gradient-to-br ${service.bgColor} border border-slate-700/30`}
+              >
+                <div className={service.color}>{service.icon}</div>
+                <span className="text-xs text-white mt-1 text-center font-medium">{service.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Search View - shows on mobile when in search mode */}
+      <div className={`
+        ${mobileView === "search" ? 'flex md:hidden' : 'hidden'} 
+        w-full flex-col
+        bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+        overflow-hidden
+      `}>
+        {/* Search Header with back button */}
+        <div className="p-3 border-b border-slate-700/50">
+          <div className="flex items-center gap-3 mb-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMobileBack}
+              className="text-white p-1"
+              data-testid="button-search-back"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h2 className="text-white font-semibold text-lg">Search Patients</h2>
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -217,13 +378,95 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
               placeholder="Search by name, MRN..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-10 h-11 md:h-9 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-teal-500/50"
+              className="pl-10 h-12 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-teal-500/50"
+              autoFocus
             />
           </div>
         </div>
         
         <ScrollArea className="flex-1">
-          <div className="p-2 md:p-2 space-y-0.5 md:space-y-1">
+          <div className="p-2 space-y-0.5">
+            {isLoading && (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-teal-400" />
+              </div>
+            )}
+
+            {isError && (
+              <div className="p-4 text-sm text-rose-400 text-center">
+                Failed to search patients
+              </div>
+            )}
+
+            {!isLoading && !isError && patients.length === 0 && debouncedQuery && (
+              <div className="p-4 text-sm text-slate-400 text-center">
+                No patients found
+              </div>
+            )}
+
+            {!isLoading && !isError && patients.length === 0 && !debouncedQuery && (
+              <div className="p-6 text-center">
+                <Search className="h-12 w-12 mx-auto text-slate-600 mb-3" />
+                <p className="text-sm text-slate-400">Type to search patients</p>
+              </div>
+            )}
+
+            {patients.map((patient) => (
+              <button
+                key={patient.patient_uuid}
+                data-testid={`patient-search-item-${patient.patient_uuid}`}
+                onClick={() => handlePatientSelect(patient)}
+                className="w-full text-left p-3 rounded-lg hover-elevate active-elevate-2 border border-transparent"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-slate-700/50 flex items-center justify-center flex-shrink-0">
+                    <User className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-white truncate">
+                      {patient.last_name}, {patient.first_name}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                      {patient.mrn && <span>MRN: {patient.mrn}</span>}
+                      {patient.date_of_birth && (
+                        <span>• {calculateAge(patient.date_of_birth)}yo</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Desktop Left Panel - Patient Search List (always visible on desktop) */}
+      <div className={`
+        hidden md:flex
+        w-[280px] flex-shrink-0 
+        rounded-2xl overflow-hidden flex-col
+        bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+        backdrop-blur-xl border border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)]
+      `}>
+        {/* Search Header */}
+        <div className="p-4 border-b border-slate-700/50">
+          <div className="flex items-center gap-2 mb-3">
+            <User className="h-5 w-5 text-teal-400" />
+            <h2 className="text-white font-semibold text-lg">Patient Search</h2>
+          </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search by name, MRN..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-10 h-9 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500 focus:border-teal-500/50"
+            />
+          </div>
+        </div>
+        
+        <ScrollArea className="flex-1">
+          <div className="p-2 space-y-1">
             {isLoading && (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-teal-400" />
@@ -254,7 +497,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 key={patient.patient_uuid}
                 data-testid={`patient-db-item-${patient.patient_uuid}`}
                 onClick={() => handlePatientSelect(patient)}
-                className={`w-full text-left p-3 md:p-3 rounded-lg md:rounded-xl ${
+                className={`w-full text-left p-3 rounded-xl ${
                   selectedPatient?.patient_uuid === patient.patient_uuid
                     ? "bg-teal-500/20 border border-teal-500/40"
                     : "hover-elevate active-elevate-2 border border-transparent"
@@ -291,9 +534,9 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
       </div>
 
       {/* Right Panel - Patient Profile */}
-      {/* On mobile: edge-to-edge, full screen. On desktop: floating panel */}
+      {/* On mobile: shows when mobileView is "profile". On desktop: always visible */}
       <div className={`
-        ${selectedPatient ? 'flex' : 'hidden md:flex'} 
+        ${mobileView === "profile" ? 'flex' : 'hidden'} md:flex
         flex-1 overflow-hidden flex-col
         transition-all duration-300
       `}>
