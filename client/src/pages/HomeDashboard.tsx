@@ -62,7 +62,7 @@ interface AncillaryPatientsResponse {
 }
 
 interface HomeDashboardProps {
-  onNavigate?: (tab: "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing", serviceFilter?: string) => void;
+  onNavigate?: (tab: "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients", serviceFilter?: string) => void;
 }
 
 function formatDate(dateStr: string | undefined): string {
@@ -328,7 +328,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
         <button
           className={`${glassTileStyle} flex flex-col items-center justify-center py-8 px-4 cursor-pointer group`}
-          onClick={() => onNavigate?.("prescreens")}
+          onClick={() => onNavigate?.("patients")}
           data-testid="button-patient-database"
         >
           <Users className="h-16 w-16 text-indigo-600 group-hover:scale-110 transition-transform duration-300 mb-3" strokeWidth={2} />

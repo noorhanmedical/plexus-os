@@ -10,6 +10,7 @@ import { BillingView } from "@/pages/BillingView";
 import { FinanceView } from "@/pages/FinanceView";
 import { ScheduleView } from "@/pages/ScheduleView";
 import { PatientChart } from "@/pages/PatientChart";
+import { PatientDatabaseView } from "@/pages/PatientDatabaseView";
 import { NightSkyBackdrop } from "@/components/NightSkyBackdrop";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Home, Search, ClipboardList, Activity, DollarSign, Calendar, User, X, Loader2, Receipt, Settings, Video, Building2, MapPin, ChevronDown, ChevronRight, PanelRightClose, PanelRightOpen, Mic, MicOff, FileText, UserSearch } from "lucide-react";
@@ -33,7 +34,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 
-type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing";
+type MainTab = "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients";
 
 interface Patient {
   patient_uuid: string;
@@ -55,6 +56,7 @@ const mainTabs = [
   { id: "ancillary" as MainTab, label: "Ancillary", icon: Activity },
   { id: "finance" as MainTab, label: "Finance", icon: DollarSign },
   { id: "billing" as MainTab, label: "Billing", icon: Receipt },
+  { id: "patients" as MainTab, label: "Patient Database", icon: UserSearch },
 ];
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -501,6 +503,8 @@ function MainContent() {
         return <FinanceView />;
       case "billing":
         return <BillingView defaultServiceFilter={billingServiceFilter} onServiceFilterChange={setBillingServiceFilter} />;
+      case "patients":
+        return <PatientDatabaseView onNavigate={handleMainTabChange} />;
       default:
         return <HomeDashboard onNavigate={handleMainTabChange} />;
     }
