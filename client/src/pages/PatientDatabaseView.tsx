@@ -900,7 +900,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                                 <div className="flex items-center gap-2 mb-1">
                                   <h4 className="font-semibold text-foreground">{suggestion.name}</h4>
                                   {suggestion.recommended && (
-                                    <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-xs">
+                                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-xs">
                                       <CheckCircle2 className="h-3 w-3 mr-1" />
                                       Recommended
                                     </Badge>

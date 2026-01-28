@@ -519,7 +519,7 @@ export function OutreachCenter({ onNavigate, onPatientSelect }: OutreachCenterPr
                           <Badge 
                             key={code} 
                             variant="outline"
-                            className="bg-violet-500/20 border-violet-500/30 text-violet-700 dark:text-violet-300"
+                            className="bg-violet-500/20 border-violet-500/30 text-violet-300"
                           >
                             {code}
                           </Badge>

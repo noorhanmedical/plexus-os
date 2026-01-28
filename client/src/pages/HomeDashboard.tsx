@@ -84,12 +84,12 @@ function normalizeBillingRecord(record: BillingRecord): BillingRecord {
 }
 
 function getStatusColor(status: string | undefined): string {
-  if (!status) return "bg-muted text-muted-foreground border-border";
+  if (!status) return "bg-slate-600/30 text-slate-300 border-slate-500/30";
   const s = status.toLowerCase();
-  if (s.includes("complete") || s.includes("done")) return "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30";
-  if (s.includes("schedule") || s.includes("pending")) return "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30";
-  if (s.includes("eligible") || s.includes("ready")) return "bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30";
-  return "bg-muted text-muted-foreground border-border";
+  if (s.includes("complete") || s.includes("done")) return "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+  if (s.includes("schedule") || s.includes("pending")) return "bg-amber-500/20 text-amber-300 border-amber-500/30";
+  if (s.includes("eligible") || s.includes("ready")) return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+  return "bg-slate-600/30 text-slate-300 border-slate-500/30";
 }
 
 export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
@@ -384,7 +384,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-foreground/80 dark:text-slate-300 truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/30 text-xs">
+                      <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
@@ -408,7 +408,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-foreground/80 dark:text-slate-300 truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/30 text-xs">
+                      <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
@@ -432,7 +432,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-foreground/80 dark:text-slate-300 truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30 text-xs">
+                      <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>

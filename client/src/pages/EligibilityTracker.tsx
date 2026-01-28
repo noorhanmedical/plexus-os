@@ -566,11 +566,11 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">PGX Testing</span>
-                  <Badge variant="outline" className="bg-violet-500/20 border-violet-500/30 text-violet-700 dark:text-violet-300">Once Only</Badge>
+                  <Badge variant="outline" className="bg-violet-500/20 border-violet-500/30 text-violet-300">Once Only</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Steroid Injection</span>
-                  <Badge variant="outline" className="bg-emerald-500/20 border-emerald-500/30 text-emerald-700 dark:text-emerald-300">No Limit</Badge>
+                  <Badge variant="outline" className="bg-emerald-500/20 border-emerald-500/30 text-emerald-300">No Limit</Badge>
                 </div>
               </div>
             </CardContent>
