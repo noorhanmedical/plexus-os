@@ -62,7 +62,7 @@ interface AncillaryPatientsResponse {
 }
 
 interface HomeDashboardProps {
-  onNavigate?: (tab: "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients", serviceFilter?: string) => void;
+  onNavigate?: (tab: "home" | "prescreens" | "ancillary" | "finance" | "schedule" | "billing" | "patients" | "outreach" | "eligibility", serviceFilter?: string) => void;
 }
 
 function formatDate(dateStr: string | undefined): string {
@@ -236,9 +236,9 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     }
   };
 
-  const glassCardStyle = "backdrop-blur-xl bg-white border border-slate-200 shadow-xl rounded-3xl overflow-hidden";
-  const glassButtonStyle = "backdrop-blur-md bg-white/60 border border-slate-200/50 transition-all duration-300 rounded-2xl smoke-fill glass-tile-hover";
-  const glassTileStyle = "backdrop-blur-xl bg-white/80 border border-white/40 shadow-xl rounded-3xl smoke-fill glass-tile-hover";
+  const glassCardStyle = "backdrop-blur-xl bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 border border-slate-700/50 shadow-xl rounded-2xl overflow-hidden";
+  const glassButtonStyle = "backdrop-blur-md bg-slate-800/60 border border-slate-700/50 transition-all duration-300 rounded-xl";
+  const glassTileStyle = "backdrop-blur-xl bg-gradient-to-br from-slate-800/80 via-slate-850/75 to-slate-900/80 border border-slate-700/40 shadow-xl rounded-2xl hover:border-teal-500/30 transition-all duration-300";
 
   // Calculate patients due for ancillary services based on billing dates
   const ancillaryDuePatients = useMemo(() => {
@@ -282,7 +282,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
   };
 
   return (
-    <div className="space-y-5 p-4 min-h-full relative">
+    <div className="space-y-5 p-4 min-h-full relative bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900">
       <div className="flex items-center justify-end">
         <Button
           variant="outline"
@@ -304,8 +304,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("schedule")}
           data-testid="button-schedule"
         >
-          <Calendar className="h-12 w-12 text-indigo-700 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-sm">Schedule</p>
+          <Calendar className="h-12 w-12 text-teal-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-white font-bold text-sm">Schedule</p>
         </button>
 
         <button
@@ -313,8 +313,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("prescreens")}
           data-testid="button-prescreens"
         >
-          <Sparkles className="h-12 w-12 text-violet-700 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-sm">Prescreens</p>
+          <Sparkles className="h-12 w-12 text-violet-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-white font-bold text-sm">Prescreens</p>
         </button>
 
         <button
@@ -322,8 +322,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("ancillary")}
           data-testid="button-ancillary-portal"
         >
-          <Stethoscope className="h-12 w-12 text-purple-700 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-sm">Ancillary</p>
+          <Stethoscope className="h-12 w-12 text-purple-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-white font-bold text-sm">Ancillary</p>
         </button>
 
         <button
@@ -331,8 +331,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("outreach")}
           data-testid="button-outreach-center"
         >
-          <Phone className="h-12 w-12 text-teal-600 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-sm">Outreach</p>
+          <Phone className="h-12 w-12 text-emerald-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-white font-bold text-sm">Outreach</p>
         </button>
 
         <button
@@ -340,8 +340,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("eligibility")}
           data-testid="button-eligibility-tracker"
         >
-          <Clock className="h-12 w-12 text-amber-600 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-sm">Eligibility</p>
+          <Clock className="h-12 w-12 text-amber-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-white font-bold text-sm">Eligibility</p>
         </button>
 
         <button
@@ -349,8 +349,8 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           onClick={() => onNavigate?.("patients")}
           data-testid="button-patient-database"
         >
-          <Users className="h-12 w-12 text-indigo-600 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
-          <p className="text-[#1a0a28] font-bold text-sm">Patients</p>
+          <Users className="h-12 w-12 text-cyan-400 group-hover:scale-110 transition-transform duration-300 mb-2" strokeWidth={2} />
+          <p className="text-white font-bold text-sm">Patients</p>
         </button>
       </div>
 
@@ -370,75 +370,75 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-700/50">
               {/* BrainWave Patient Tracking */}
-              <div className="p-4 service-tile-violet cursor-pointer transition-all duration-300 group min-h-[160px]">
+              <div className="p-4 bg-slate-800/50 cursor-pointer transition-all duration-300 group min-h-[160px] hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-3">
-                  <Brain className="h-12 w-12 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Brain className="h-12 w-12 text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
-                    <p className="font-semibold text-black text-lg">BrainWave</p>
-                    <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} patients due</p>
+                    <p className="font-semibold text-white text-lg">BrainWave</p>
+                    <p className="text-xs text-slate-400">{ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length} patients due</p>
                   </div>
                 </div>
                 <div className="space-y-2 min-h-[72px]">
                   {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
-                      <span className="text-black truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-slate-200 text-black border-slate-300 text-xs">
+                      <span className="text-slate-300 truncate max-w-[140px]">{patient.name}</span>
+                      <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
                   ))}
                   {ancillaryDuePatients.filter(p => p.serviceType === "BrainWave").length === 0 && (
-                    <p className="text-sm text-black">No patients due</p>
+                    <p className="text-sm text-slate-500">No patients due</p>
                   )}
                 </div>
               </div>
 
               {/* Ultrasound Patient Tracking */}
-              <div className="p-4 service-tile-blue cursor-pointer transition-all duration-300 group min-h-[160px]">
+              <div className="p-4 bg-slate-800/50 cursor-pointer transition-all duration-300 group min-h-[160px] hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-3">
-                  <UltrasoundProbeIcon className="h-12 w-12 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                  <UltrasoundProbeIcon className="h-12 w-12 text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
-                    <p className="font-semibold text-black text-lg">Ultrasound</p>
-                    <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
+                    <p className="font-semibold text-white text-lg">Ultrasound</p>
+                    <p className="text-xs text-slate-400">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
                   </div>
                 </div>
                 <div className="space-y-2 min-h-[72px]">
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
-                      <span className="text-black truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-slate-200 text-black border-slate-300 text-xs">
+                      <span className="text-slate-300 truncate max-w-[140px]">{patient.name}</span>
+                      <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
                   ))}
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length === 0 && (
-                    <p className="text-sm text-black">No patients due</p>
+                    <p className="text-sm text-slate-500">No patients due</p>
                   )}
                 </div>
               </div>
 
               {/* VitalWave Patient Tracking */}
-              <div className="p-4 service-tile-red cursor-pointer transition-all duration-300 group min-h-[160px]">
+              <div className="p-4 bg-slate-800/50 cursor-pointer transition-all duration-300 group min-h-[160px] hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-3">
-                  <Heart className="h-12 w-12 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Heart className="h-12 w-12 text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
-                    <p className="font-semibold text-black text-lg">VitalWave</p>
-                    <p className="text-xs text-black">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
+                    <p className="font-semibold text-white text-lg">VitalWave</p>
+                    <p className="text-xs text-slate-400">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
                   </div>
                 </div>
                 <div className="space-y-2 min-h-[72px]">
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
-                      <span className="text-black truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-slate-200 text-black border-slate-300 text-xs">
+                      <span className="text-slate-300 truncate max-w-[140px]">{patient.name}</span>
+                      <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
                   ))}
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length === 0 && (
-                    <p className="text-sm text-black">No patients due</p>
+                    <p className="text-sm text-slate-500">No patients due</p>
                   )}
                 </div>
               </div>
@@ -464,94 +464,94 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
           ) : billingError ? (
             <div className="text-center py-6">
-              <AlertTriangle className="h-8 w-8 mx-auto text-amber-500 mb-2" />
-              <p className="text-slate-600 text-sm">Failed to load billing data</p>
+              <AlertTriangle className="h-8 w-8 mx-auto text-amber-400 mb-2" />
+              <p className="text-slate-400 text-sm">Failed to load billing data</p>
             </div>
           ) : records.length === 0 ? (
-            <p className="text-slate-600 text-center py-6">No billing records</p>
+            <p className="text-slate-400 text-center py-6">No billing records</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-700/50">
               {/* BrainWave */}
-              <div className="p-5 service-tile-violet cursor-pointer transition-all duration-300 group">
+              <div className="p-5 bg-slate-800/50 cursor-pointer transition-all duration-300 group hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <Brain className="h-12 w-12 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Brain className="h-12 w-12 text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
-                    <p className="font-semibold text-black text-lg">BrainWave</p>
-                    <p className="text-xs text-black">{currentYear} YTD</p>
+                    <p className="font-semibold text-white text-lg">BrainWave</p>
+                    <p className="text-xs text-slate-400">{currentYear} YTD</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div className="text-center">
-                    <p className="text-2xl text-black">{brainwavePending}</p>
-                    <p className="text-[10px] text-black">To Submit</p>
+                    <p className="text-2xl text-white">{brainwavePending}</p>
+                    <p className="text-[10px] text-slate-400">To Submit</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl text-black">{brainwaveSubmitted}</p>
-                    <p className="text-[10px] text-black">Submitted</p>
+                    <p className="text-2xl text-white">{brainwaveSubmitted}</p>
+                    <p className="text-[10px] text-slate-400">Submitted</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl text-black">{brainwavePaidCount}</p>
-                    <p className="text-[10px] text-black">Paid</p>
+                    <p className="text-2xl text-white">{brainwavePaidCount}</p>
+                    <p className="text-[10px] text-slate-400">Paid</p>
                   </div>
                 </div>
-                <div className="pt-3 border-t border-slate-200">
-                  <p className="text-sm text-black text-center">{formatCurrency(brainwaveRevenue)} collected</p>
+                <div className="pt-3 border-t border-slate-700/50">
+                  <p className="text-sm text-violet-300 text-center">{formatCurrency(brainwaveRevenue)} collected</p>
                 </div>
               </div>
 
               {/* Ultrasound */}
-              <div className="p-5 service-tile-blue cursor-pointer transition-all duration-300 group">
+              <div className="p-5 bg-slate-800/50 cursor-pointer transition-all duration-300 group hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <UltrasoundProbeIcon className="h-12 w-12 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                  <UltrasoundProbeIcon className="h-12 w-12 text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
-                    <p className="font-semibold text-black text-lg">Ultrasound</p>
-                    <p className="text-xs text-black">{currentYear} YTD</p>
+                    <p className="font-semibold text-white text-lg">Ultrasound</p>
+                    <p className="text-xs text-slate-400">{currentYear} YTD</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div className="text-center">
-                    <p className="text-2xl text-black">{ultrasoundPending}</p>
-                    <p className="text-[10px] text-black">To Submit</p>
+                    <p className="text-2xl text-white">{ultrasoundPending}</p>
+                    <p className="text-[10px] text-slate-400">To Submit</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl text-black">{ultrasoundSubmitted}</p>
-                    <p className="text-[10px] text-black">Submitted</p>
+                    <p className="text-2xl text-white">{ultrasoundSubmitted}</p>
+                    <p className="text-[10px] text-slate-400">Submitted</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl text-black">{ultrasoundPaidCount}</p>
-                    <p className="text-[10px] text-black">Paid</p>
+                    <p className="text-2xl text-white">{ultrasoundPaidCount}</p>
+                    <p className="text-[10px] text-slate-400">Paid</p>
                   </div>
                 </div>
-                <div className="pt-3 border-t border-slate-200">
-                  <p className="text-sm text-black text-center">{formatCurrency(ultrasoundRevenue)} collected</p>
+                <div className="pt-3 border-t border-slate-700/50">
+                  <p className="text-sm text-cyan-300 text-center">{formatCurrency(ultrasoundRevenue)} collected</p>
                 </div>
               </div>
 
               {/* VitalWave */}
-              <div className="p-5 service-tile-red cursor-pointer transition-all duration-300 group">
+              <div className="p-5 bg-slate-800/50 cursor-pointer transition-all duration-300 group hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <Heart className="h-12 w-12 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Heart className="h-12 w-12 text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
-                    <p className="font-semibold text-black text-lg">VitalWave</p>
-                    <p className="text-xs text-black">{currentYear} YTD</p>
+                    <p className="font-semibold text-white text-lg">VitalWave</p>
+                    <p className="text-xs text-slate-400">{currentYear} YTD</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div className="text-center">
-                    <p className="text-2xl text-black">{vitalwavePending}</p>
-                    <p className="text-[10px] text-black">To Submit</p>
+                    <p className="text-2xl text-white">{vitalwavePending}</p>
+                    <p className="text-[10px] text-slate-400">To Submit</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl text-black">{vitalwaveSubmitted}</p>
-                    <p className="text-[10px] text-black">Submitted</p>
+                    <p className="text-2xl text-white">{vitalwaveSubmitted}</p>
+                    <p className="text-[10px] text-slate-400">Submitted</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl text-black">{vitalwavePaidCount}</p>
-                    <p className="text-[10px] text-black">Paid</p>
+                    <p className="text-2xl text-white">{vitalwavePaidCount}</p>
+                    <p className="text-[10px] text-slate-400">Paid</p>
                   </div>
                 </div>
-                <div className="pt-3 border-t border-slate-200">
-                  <p className="text-sm text-black text-center">{formatCurrency(vitalwaveRevenue)} collected</p>
+                <div className="pt-3 border-t border-slate-700/50">
+                  <p className="text-sm text-rose-300 text-center">{formatCurrency(vitalwaveRevenue)} collected</p>
                 </div>
               </div>
             </div>
@@ -579,75 +579,75 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* Left: Service Tiles */}
               <div className="flex flex-col">
                 {/* Total Revenue Header */}
-                <div className="p-5 border-b border-slate-200">
+                <div className="p-5 border-b border-slate-700/50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <DollarSign className="h-10 w-10 text-green-600" strokeWidth={2.5} />
+                      <DollarSign className="h-10 w-10 text-emerald-400" strokeWidth={2.5} />
                       <div>
-                        <p className="text-3xl font-bold text-black">{formatCurrency(totalRevenue)}</p>
-                        <p className="text-sm text-black">Total Revenue Collected</p>
+                        <p className="text-3xl font-bold text-white">{formatCurrency(totalRevenue)}</p>
+                        <p className="text-sm text-slate-400">Total Revenue Collected</p>
                       </div>
                     </div>
-                    <p className="text-sm text-black">{currentYear} YTD</p>
+                    <p className="text-sm text-slate-400">{currentYear} YTD</p>
                   </div>
                 </div>
 
                 {/* Revenue by Service */}
-                <div className="grid grid-cols-3 gap-0 divide-x divide-slate-200 flex-1">
-                  <div className="p-4 service-tile-violet cursor-pointer group flex flex-col">
+                <div className="grid grid-cols-3 gap-0 divide-x divide-slate-700/50 flex-1">
+                  <div className="p-4 bg-slate-800/50 cursor-pointer group flex flex-col hover:bg-slate-700/50 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
-                      <Brain className="h-12 w-12 text-violet-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
-                      <p className="text-base font-semibold text-black">BrainWave</p>
+                      <Brain className="h-12 w-12 text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                      <p className="text-base font-semibold text-white">BrainWave</p>
                     </div>
-                    <p className="text-2xl font-bold text-black">{formatCurrency(brainwaveRevenue)}</p>
+                    <p className="text-2xl font-bold text-violet-300">{formatCurrency(brainwaveRevenue)}</p>
                   </div>
-                  <div className="p-4 service-tile-blue cursor-pointer group flex flex-col">
+                  <div className="p-4 bg-slate-800/50 cursor-pointer group flex flex-col hover:bg-slate-700/50 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
-                      <UltrasoundProbeIcon className="h-12 w-12 text-blue-600 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
-                      <p className="text-base font-semibold text-black">Ultrasound</p>
+                      <UltrasoundProbeIcon className="h-12 w-12 text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                      <p className="text-base font-semibold text-white">Ultrasound</p>
                     </div>
-                    <p className="text-2xl font-bold text-black">{formatCurrency(ultrasoundRevenue)}</p>
+                    <p className="text-2xl font-bold text-cyan-300">{formatCurrency(ultrasoundRevenue)}</p>
                   </div>
-                  <div className="p-4 service-tile-red cursor-pointer group flex flex-col">
+                  <div className="p-4 bg-slate-800/50 cursor-pointer group flex flex-col hover:bg-slate-700/50 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
-                      <Heart className="h-12 w-12 text-red-600 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
-                      <p className="text-base font-semibold text-black">VitalWave</p>
+                      <Heart className="h-12 w-12 text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                      <p className="text-base font-semibold text-white">VitalWave</p>
                     </div>
-                    <p className="text-2xl font-bold text-black">{formatCurrency(vitalwaveRevenue)}</p>
+                    <p className="text-2xl font-bold text-rose-300">{formatCurrency(vitalwaveRevenue)}</p>
                   </div>
                 </div>
               </div>
 
               {/* Right: Revenue Chart */}
-              <div className="p-5 border-l border-slate-200 flex flex-col">
+              <div className="p-5 border-l border-slate-700/50 flex flex-col">
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm font-medium text-black">Monthly Revenue</p>
-                  <p className="text-xs text-black">Last 6 Months</p>
+                  <p className="text-sm font-medium text-white">Monthly Revenue</p>
+                  <p className="text-xs text-slate-400">Last 6 Months</p>
                 </div>
                 <div className="flex items-end justify-between gap-3 h-36 flex-1">
                   {monthlyRevenue.map((m, idx) => (
                     <div key={idx} className="flex flex-col items-center flex-1 h-full justify-end">
                       <div 
-                        className="w-full bg-gradient-to-t from-[#3730a3] to-[#5b21b6] rounded-t-md transition-all duration-300 hover:from-[#4338ca] hover:to-[#6d28d9]"
+                        className="w-full bg-gradient-to-t from-teal-600 to-teal-400 rounded-t-md transition-all duration-300 hover:from-teal-500 hover:to-teal-300"
                         style={{ 
                           height: `${Math.max((m.revenue / maxMonthlyRevenue) * 100, 8)}%`,
                           minHeight: '12px'
                         }}
                         title={`${m.month}: ${formatCurrency(m.revenue)}`}
                       />
-                      <p className="text-xs text-black mt-2">{m.month}</p>
+                      <p className="text-xs text-slate-400 mt-2">{m.month}</p>
                     </div>
                   ))}
                 </div>
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200">
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/50">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-[#3730a3] to-[#5b21b6]" />
-                    <p className="text-xs text-black">Revenue</p>
+                    <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-teal-600 to-teal-400" />
+                    <p className="text-xs text-slate-400">Revenue</p>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-black rounded-lg text-xs h-7"
+                    className="text-teal-400 hover:text-teal-300 rounded-lg text-xs h-7"
                     onClick={handleViewAllBilling}
                     data-testid="button-view-finance"
                   >

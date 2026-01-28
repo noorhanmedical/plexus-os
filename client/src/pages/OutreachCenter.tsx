@@ -51,21 +51,21 @@ interface OutreachCenterProps {
   onNavigate?: (tab: string, data?: any) => void;
 }
 
-const glassStyle = "backdrop-blur-xl bg-white/90 border border-slate-200 shadow-xl";
+const glassStyle = "backdrop-blur-xl bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 border border-slate-700/50 shadow-xl";
 
 const priorityColors = {
-  high: "bg-rose-100 text-rose-700 border-rose-200",
-  medium: "bg-amber-100 text-amber-700 border-amber-200",
-  low: "bg-slate-100 text-slate-700 border-slate-200",
+  high: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+  medium: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  low: "bg-slate-600/30 text-slate-300 border-slate-500/30",
 };
 
 const statusConfig = {
-  pending: { label: "Pending", color: "bg-slate-100 text-slate-700 border-slate-200", icon: Clock },
-  in_progress: { label: "In Progress", color: "bg-blue-100 text-blue-700 border-blue-200", icon: PhoneCall },
-  scheduled: { label: "Scheduled", color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: CheckCircle2 },
-  declined: { label: "Declined", color: "bg-rose-100 text-rose-700 border-rose-200", icon: PhoneOff },
-  no_answer: { label: "No Answer", color: "bg-amber-100 text-amber-700 border-amber-200", icon: PhoneMissed },
-  callback: { label: "Callback Requested", color: "bg-violet-100 text-violet-700 border-violet-200", icon: Phone },
+  pending: { label: "Pending", color: "bg-slate-600/30 text-slate-300 border-slate-500/30", icon: Clock },
+  in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-300 border-blue-500/30", icon: PhoneCall },
+  scheduled: { label: "Scheduled", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30", icon: CheckCircle2 },
+  declined: { label: "Declined", color: "bg-rose-500/20 text-rose-300 border-rose-500/30", icon: PhoneOff },
+  no_answer: { label: "No Answer", color: "bg-amber-500/20 text-amber-300 border-amber-500/30", icon: PhoneMissed },
+  callback: { label: "Callback Requested", color: "bg-violet-500/20 text-violet-300 border-violet-500/30", icon: Phone },
 };
 
 export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
@@ -158,9 +158,9 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4 min-h-full bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-800">Outreach Center</h1>
+        <h1 className="text-2xl font-bold text-white">Outreach Center</h1>
         <Button
           variant="outline"
           size="sm"
@@ -178,12 +178,12 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
         <Card className={`${glassStyle} rounded-2xl`}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-slate-100">
-                <Clock className="h-5 w-5 text-slate-600" />
+              <div className="p-2 rounded-xl bg-slate-600/30">
+                <Clock className="h-5 w-5 text-slate-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800">{stats.pending}</p>
-                <p className="text-sm text-slate-500">Pending</p>
+                <p className="text-2xl font-bold text-white">{stats.pending}</p>
+                <p className="text-sm text-slate-400">Pending</p>
               </div>
             </div>
           </CardContent>
@@ -192,12 +192,12 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
         <Card className={`${glassStyle} rounded-2xl`}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-blue-100">
-                <PhoneCall className="h-5 w-5 text-blue-600" />
+              <div className="p-2 rounded-xl bg-blue-500/20">
+                <PhoneCall className="h-5 w-5 text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800">{stats.inProgress}</p>
-                <p className="text-sm text-slate-500">In Progress</p>
+                <p className="text-2xl font-bold text-white">{stats.inProgress}</p>
+                <p className="text-sm text-slate-400">In Progress</p>
               </div>
             </div>
           </CardContent>
@@ -206,12 +206,12 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
         <Card className={`${glassStyle} rounded-2xl`}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-emerald-100">
-                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              <div className="p-2 rounded-xl bg-emerald-500/20">
+                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800">{stats.scheduled}</p>
-                <p className="text-sm text-slate-500">Scheduled</p>
+                <p className="text-2xl font-bold text-white">{stats.scheduled}</p>
+                <p className="text-sm text-slate-400">Scheduled</p>
               </div>
             </div>
           </CardContent>
@@ -220,12 +220,12 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
         <Card className={`${glassStyle} rounded-2xl`}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-amber-100">
-                <PhoneMissed className="h-5 w-5 text-amber-600" />
+              <div className="p-2 rounded-xl bg-amber-500/20">
+                <PhoneMissed className="h-5 w-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800">{stats.noAnswer}</p>
-                <p className="text-sm text-slate-500">No Answer</p>
+                <p className="text-2xl font-bold text-white">{stats.noAnswer}</p>
+                <p className="text-sm text-slate-400">No Answer</p>
               </div>
             </div>
           </CardContent>
@@ -237,8 +237,8 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
           <Card className={`${glassStyle} rounded-2xl`}>
             <CardHeader className="pb-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Phone className="h-5 w-5 text-violet-600" />
+                <CardTitle className="text-lg flex items-center gap-2 text-white">
+                  <Phone className="h-5 w-5 text-teal-400" />
                   Call Queue
                 </CardTitle>
                 <div className="flex flex-wrap gap-2">
@@ -248,7 +248,7 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                       placeholder="Search patients..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 h-9"
+                      className="pl-10 h-9 bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500"
                       data-testid="input-search-outreach"
                     />
                   </div>
@@ -287,8 +287,8 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                   <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
                 </div>
               ) : filteredQueue.length === 0 ? (
-                <div className="text-center py-8 text-slate-500">
-                  <Phone className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                <div className="text-center py-8 text-slate-400">
+                  <Phone className="h-12 w-12 mx-auto mb-3 text-slate-500" />
                   <p className="font-medium">No patients in queue</p>
                   <p className="text-sm">Check back later or adjust filters</p>
                 </div>
@@ -300,25 +300,25 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                       return (
                         <div
                           key={patient.patient_uuid}
-                          className={`p-3 rounded-xl border transition-all cursor-pointer hover:bg-slate-50 ${
+                          className={`p-3 rounded-xl border transition-all cursor-pointer hover:bg-slate-700/50 ${
                             selectedPatient?.patient_uuid === patient.patient_uuid 
-                              ? 'bg-violet-50 border-violet-200' 
-                              : 'bg-white border-slate-200'
+                              ? 'bg-teal-500/20 border-teal-500/30' 
+                              : 'bg-slate-800/50 border-slate-700/50'
                           }`}
                           onClick={() => setSelectedPatient(patient)}
                           data-testid={`outreach-patient-${patient.patient_uuid}`}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-3 flex-1 min-w-0">
-                              <div className="p-2 rounded-xl bg-slate-100 shrink-0">
-                                <User className="h-5 w-5 text-slate-600" />
+                              <div className="p-2 rounded-xl bg-slate-700/50 shrink-0">
+                                <User className="h-5 w-5 text-slate-300" />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="font-semibold text-slate-800 truncate">
+                                <p className="font-semibold text-white truncate">
                                   {patient.first_name} {patient.last_name}
                                 </p>
-                                <p className="text-sm text-slate-500">{patient.phone || "No phone"}</p>
-                                <p className="text-xs text-slate-400 mt-1 truncate">{patient.reason}</p>
+                                <p className="text-sm text-slate-400">{patient.phone || "No phone"}</p>
+                                <p className="text-xs text-slate-500 mt-1 truncate">{patient.reason}</p>
                               </div>
                             </div>
                             <div className="flex flex-col items-end gap-2 shrink-0">
@@ -330,7 +330,7 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                                 {statusConfig[patient.status].label}
                               </Badge>
                               {patient.contact_attempts > 0 && (
-                                <span className="text-xs text-slate-400">
+                                <span className="text-xs text-slate-500">
                                   {patient.contact_attempts} attempt{patient.contact_attempts > 1 ? 's' : ''}
                                 </span>
                               )}
@@ -342,13 +342,13 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                                 <Badge 
                                   key={code} 
                                   variant="outline" 
-                                  className="text-xs bg-violet-50 border-violet-200 text-violet-700"
+                                  className="text-xs bg-violet-500/20 border-violet-500/30 text-violet-300"
                                 >
                                   {code}
                                 </Badge>
                               ))}
                               {patient.service_codes.length > 4 && (
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
                                   +{patient.service_codes.length - 4}
                                 </Badge>
                               )}
@@ -366,29 +366,29 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
 
         <div className="space-y-4">
           {isOnCall && selectedPatient ? (
-            <Card className={`${glassStyle} rounded-2xl border-2 border-emerald-200`}>
-              <CardHeader className="pb-2 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-t-2xl">
-                <CardTitle className="text-lg flex items-center gap-2 text-emerald-700">
+            <Card className={`${glassStyle} rounded-2xl border-2 border-emerald-500/30`}>
+              <CardHeader className="pb-2 bg-gradient-to-r from-emerald-900/50 to-teal-900/50 rounded-t-2xl">
+                <CardTitle className="text-lg flex items-center gap-2 text-emerald-300">
                   <PhoneCall className="h-5 w-5 animate-pulse" />
                   Active Call
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="text-center mb-4">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-full">
-                    <Timer className="h-4 w-4 text-emerald-600" />
-                    <span className="font-mono text-lg font-bold text-emerald-700">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 rounded-full">
+                    <Timer className="h-4 w-4 text-emerald-400" />
+                    <span className="font-mono text-lg font-bold text-emerald-300">
                       {getCallDuration()}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 mb-4">
-                  <p className="font-semibold text-slate-800">
+                <div className="p-3 rounded-xl bg-slate-700/50 mb-4">
+                  <p className="font-semibold text-white">
                     {selectedPatient.first_name} {selectedPatient.last_name}
                   </p>
-                  <p className="text-sm text-slate-600">{selectedPatient.phone}</p>
-                  <p className="text-xs text-slate-500 mt-1">{selectedPatient.reason}</p>
+                  <p className="text-sm text-slate-300">{selectedPatient.phone}</p>
+                  <p className="text-xs text-slate-400 mt-1">{selectedPatient.reason}</p>
                 </div>
 
                 <div className="flex justify-center gap-3 mb-4">
@@ -407,7 +407,7 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                   placeholder="Call notes..."
                   value={callNotes}
                   onChange={(e) => setCallNotes(e.target.value)}
-                  className="mb-4 min-h-[80px]"
+                  className="mb-4 min-h-[80px] bg-slate-800/50 border-slate-600/50 text-white placeholder:text-slate-500"
                   data-testid="textarea-call-notes"
                 />
 
@@ -439,7 +439,7 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                   </Button>
                   <Button
                     variant="outline"
-                    className="border-rose-200 text-rose-600 hover:bg-rose-50"
+                    className="border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
                     onClick={() => handleEndCall("declined")}
                     data-testid="button-declined"
                   >
@@ -452,15 +452,15 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
           ) : selectedPatient ? (
             <Card className={`${glassStyle} rounded-2xl`}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <User className="h-5 w-5 text-violet-600" />
+                <CardTitle className="text-lg flex items-center gap-2 text-white">
+                  <User className="h-5 w-5 text-teal-400" />
                   Patient Details
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-xl font-bold text-slate-800">
+                    <p className="text-xl font-bold text-white">
                       {selectedPatient.first_name} {selectedPatient.last_name}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -473,7 +473,7 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                     </div>
                   </div>
 
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2 text-sm text-slate-300">
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-slate-400" />
                       <span>{selectedPatient.phone || "No phone number"}</span>
@@ -496,20 +496,20 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                     )}
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <p className="text-xs font-medium text-slate-500 mb-1">Outreach Reason</p>
-                    <p className="text-sm text-slate-700">{selectedPatient.reason}</p>
+                  <div className="p-3 rounded-xl bg-slate-700/50">
+                    <p className="text-xs font-medium text-slate-400 mb-1">Outreach Reason</p>
+                    <p className="text-sm text-slate-300">{selectedPatient.reason}</p>
                   </div>
 
                   {selectedPatient.service_codes.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-slate-500 mb-2">Recommended Services</p>
+                      <p className="text-xs font-medium text-slate-400 mb-2">Recommended Services</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedPatient.service_codes.map((code) => (
                           <Badge 
                             key={code} 
                             variant="outline"
-                            className="bg-violet-50 border-violet-200 text-violet-700"
+                            className="bg-violet-500/20 border-violet-500/30 text-violet-300"
                           >
                             {code}
                           </Badge>
@@ -519,14 +519,14 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
                   )}
 
                   {selectedPatient.notes && (
-                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-                      <p className="text-xs font-medium text-amber-700 mb-1">Notes</p>
-                      <p className="text-sm text-amber-800">{selectedPatient.notes}</p>
+                    <div className="p-3 rounded-xl bg-amber-500/20 border border-amber-500/30">
+                      <p className="text-xs font-medium text-amber-300 mb-1">Notes</p>
+                      <p className="text-sm text-amber-200">{selectedPatient.notes}</p>
                     </div>
                   )}
 
                   <Button
-                    className="w-full bg-violet-600 hover:bg-violet-700"
+                    className="w-full bg-teal-600 hover:bg-teal-700"
                     onClick={() => handleStartCall(selectedPatient)}
                     disabled={!selectedPatient.phone}
                     data-testid="button-start-call"
@@ -540,8 +540,8 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
           ) : (
             <Card className={`${glassStyle} rounded-2xl`}>
               <CardContent className="pt-6">
-                <div className="text-center text-slate-500 py-8">
-                  <ChevronRight className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                <div className="text-center text-slate-400 py-8">
+                  <ChevronRight className="h-12 w-12 mx-auto mb-3 text-slate-500" />
                   <p className="font-medium">Select a patient</p>
                   <p className="text-sm">Click on a patient from the queue to view details</p>
                 </div>
@@ -551,24 +551,24 @@ export function OutreachCenter({ onNavigate }: OutreachCenterProps) {
 
           <Card className={`${glassStyle} rounded-2xl`}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2 text-slate-700">
-                <MessageSquare className="h-4 w-4 text-violet-500" />
+              <CardTitle className="text-sm flex items-center gap-2 text-slate-300">
+                <MessageSquare className="h-4 w-4 text-teal-400" />
                 Quick Scripts
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                <div className="p-2 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
-                  <p className="font-medium text-slate-700">Appointment Reminder</p>
-                  <p className="text-xs text-slate-500">"Hello, this is calling from..."</p>
+                <div className="p-2 rounded-lg bg-slate-700/50 cursor-pointer hover:bg-slate-600/50 transition-colors">
+                  <p className="font-medium text-slate-200">Appointment Reminder</p>
+                  <p className="text-xs text-slate-400">"Hello, this is calling from..."</p>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
-                  <p className="font-medium text-slate-700">Service Scheduling</p>
-                  <p className="text-xs text-slate-500">"We're reaching out about..."</p>
+                <div className="p-2 rounded-lg bg-slate-700/50 cursor-pointer hover:bg-slate-600/50 transition-colors">
+                  <p className="font-medium text-slate-200">Service Scheduling</p>
+                  <p className="text-xs text-slate-400">"We're reaching out about..."</p>
                 </div>
-                <div className="p-2 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
-                  <p className="font-medium text-slate-700">Follow-up Care</p>
-                  <p className="text-xs text-slate-500">"This is a courtesy call..."</p>
+                <div className="p-2 rounded-lg bg-slate-700/50 cursor-pointer hover:bg-slate-600/50 transition-colors">
+                  <p className="font-medium text-slate-200">Follow-up Care</p>
+                  <p className="text-xs text-slate-400">"This is a courtesy call..."</p>
                 </div>
               </div>
             </CardContent>

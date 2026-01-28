@@ -304,7 +304,7 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
     }
   };
 
-  const glassStyle = "bg-gradient-to-br from-white/95 via-white/90 to-slate-50/95 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)]";
+  const glassStyle = "bg-gradient-to-br from-slate-800/90 via-slate-850/85 to-slate-900/90 backdrop-blur-xl border border-slate-700/50 shadow-xl";
   const darkGlassStyle = "bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-xl border border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)]";
 
   const isOrderingCode = createPrescreenMutation.isPending ? createPrescreenMutation.variables?.ancillaryCode : null;
