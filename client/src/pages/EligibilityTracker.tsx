@@ -118,43 +118,41 @@ export function EligibilityTracker({ onNavigate }: EligibilityTrackerProps) {
       else if (r.source_tab?.includes("ULTRASOUND")) serviceType = "Ultrasound";
       else if (r.source_tab?.includes("VITALWAVE")) serviceType = "VitalWave";
       
+      const insuranceInfo = ((r as any).insurance_info || "").toLowerCase();
+      let payorType: "Medicare" | "PPO" = "PPO";
+      if (insuranceInfo.includes("medicare")) {
+        payorType = "Medicare";
+      }
+      
       if (serviceDate && patientName !== "Unknown" && serviceType !== "Other") {
         const key = `${patientUuid}-${serviceType}`;
         const existing = patientMap.get(key);
         
         if (!existing || serviceDate > existing.last_service_date) {
           const daysSince = Math.floor((now.getTime() - serviceDate.getTime()) / (1000 * 60 * 60 * 24));
-          const ppoCooldown = cooldownDays.ppo;
-          const medicareCooldown = cooldownDays.medicare;
-          
-          const payorAssumed: "Medicare" | "PPO" = daysSince > medicareCooldown ? "Medicare" : "PPO";
-          const cooldown = payorAssumed === "Medicare" ? medicareCooldown : ppoCooldown;
+          const cooldown = payorType === "Medicare" ? cooldownDays.medicare : cooldownDays.ppo;
           
           let eligibilityStatus: PatientEligibility["eligibility_status"];
-          if (daysSince >= cooldown) {
+          if (daysSince > cooldown + 60) {
+            eligibilityStatus = "overdue";
+          } else if (daysSince >= cooldown) {
             eligibilityStatus = "eligible";
           } else if (daysSince >= cooldown - 30) {
             eligibilityStatus = "due_soon";
           } else {
-            eligibilityStatus = "due_soon";
+            return;
           }
 
-          if (daysSince > cooldown + 90) {
-            eligibilityStatus = "overdue";
-          }
-
-          if (daysSince >= ppoCooldown - 30) {
-            patientMap.set(key, {
-              patient_uuid: patientUuid,
-              patient_name: patientName,
-              service_type: serviceType,
-              last_service_date: serviceDate,
-              days_since_service: daysSince,
-              cooldown_days: cooldown,
-              eligibility_status: eligibilityStatus,
-              payor_assumed: payorAssumed,
-            });
-          }
+          patientMap.set(key, {
+            patient_uuid: patientUuid,
+            patient_name: patientName,
+            service_type: serviceType,
+            last_service_date: serviceDate,
+            days_since_service: daysSince,
+            cooldown_days: cooldown,
+            eligibility_status: eligibilityStatus,
+            payor_assumed: payorType,
+          });
         }
       }
     });

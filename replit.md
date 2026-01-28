@@ -35,12 +35,21 @@ Preferred communication style: Simple, everyday language.
 **External API Gateway Pattern**
 - All data lives in the external Plexus API (Google Apps Script)
 - Express server acts as a secure proxy, hiding API keys from client
-- No local database required for core functionality
+- Local storage (in-memory) for patient profiles, outreach queue
 
-**Three-Panel Dashboard Layout**
-- Left panel: Patient search with debounced input
-- Middle panel: Prescreen list for selected patient
-- Right panel: Prescreen detail editor
+**AI-Powered Ancillary Recommendations**
+- OpenAI integration via Replit AI Integrations (gpt-4o-mini)
+- Aggressive qualification logic for all 17 ancillary services
+- Deterministic fallback when AI unavailable
+- Cooldown logic: PPO 6mo, Medicare 12mo, PGX once-only, Steroid Injection no limit
+
+**Multi-View Dashboard Layout**
+- Home: Overview with quick navigation tiles
+- Schedule: Clinic schedule with patient list
+- Prescreens: Three-panel prescreen management
+- Patient Database: AI-powered patient analysis with editable medical history
+- Outreach Center: Remote team call management queue
+- Eligibility Tracker: Patients due for re-testing based on cooldowns
 
 **Design System**
 - Follows Linear/Vercel-inspired modern aesthetic (see `design_guidelines.md`)
