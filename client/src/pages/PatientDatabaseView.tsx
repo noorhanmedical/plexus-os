@@ -11,8 +11,10 @@ import {
   Search, User, Loader2, Phone, Mail, Calendar, 
   Heart, Brain, Sparkles, Pill, FileText,
   Plus, Activity, Stethoscope, CheckCircle2,
-  Shield, ArrowLeft, UserPlus, Clock, Users, ClipboardList
+  Shield, ArrowLeft, UserPlus, Clock, Users, ClipboardList,
+  Save, Edit2
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import type { Patient } from "@shared/schema";
 import { UltrasoundProbeIcon, PgxSwabIcon, serviceConfig } from "@/components/service-icons";
 
@@ -91,6 +93,12 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
   const [aiSuggestions, setAiSuggestions] = useState<AncillarySuggestion[]>([]);
   const [mobileView, setMobileView] = useState<MobileView>("dashboard");
   const [recentPatients, setRecentPatients] = useState<Patient[]>([]);
+  const [medicalHistory, setMedicalHistory] = useState("");
+  const [medications, setMedications] = useState("");
+  const [patientNotes, setPatientNotes] = useState("");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isEditingMedHistory, setIsEditingMedHistory] = useState(false);
+  const [isEditingMeds, setIsEditingMeds] = useState(false);
 
   const { data: searchResults, isLoading, isError } = useQuery<PatientSearchResponse>({
     queryKey: [`/api/patients/search?query=${encodeURIComponent(debouncedQuery)}&limit=30`],
@@ -132,15 +140,74 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
     },
   });
 
-  const handlePatientSelect = (patient: Patient) => {
+  const handlePatientSelect = async (patient: Patient) => {
     setSelectedPatient(patient);
     setAiSuggestions([]);
     setMobileView("profile");
-    // Add to recent patients (keep max 5, avoid duplicates)
+    setIsEditingMedHistory(false);
+    setIsEditingMeds(false);
+    
     setRecentPatients(prev => {
       const filtered = prev.filter(p => p.patient_uuid !== patient.patient_uuid);
       return [patient, ...filtered].slice(0, 5);
     });
+    
+    try {
+      const response = await fetch(`/api/local/patient-profile/${patient.patient_uuid}`);
+      const data = await response.json();
+      if (data.ok && data.data) {
+        setMedicalHistory(data.data.medical_history || "");
+        setMedications(data.data.medications || "");
+        setPatientNotes(data.data.patient_notes || "");
+      } else {
+        setMedicalHistory("");
+        setMedications("");
+        setPatientNotes("");
+      }
+    } catch (error) {
+      setMedicalHistory("");
+      setMedications("");
+      setPatientNotes("");
+    }
+  };
+  
+  const handleSaveProfile = async () => {
+    if (!selectedPatient) return;
+    
+    setIsSavingProfile(true);
+    try {
+      const response = await fetch("/api/local/patient-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patient_uuid: selectedPatient.patient_uuid,
+          medical_history: medicalHistory,
+          medications: medications,
+          patient_notes: patientNotes,
+          payor_type: selectedPatient.payor_type as "Medicare" | "PPO" | undefined,
+        }),
+      });
+      
+      const data = await response.json();
+      if (data.ok) {
+        toast({
+          title: "Profile Saved",
+          description: "Patient profile updated successfully",
+        });
+        setIsEditingMedHistory(false);
+        setIsEditingMeds(false);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      toast({
+        title: "Save Failed",
+        description: "Could not save patient profile",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingProfile(false);
+    }
   };
 
   const handleAnalyzeWithAI = async () => {
@@ -148,45 +215,69 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
     
     setAiAnalyzing(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const mockSuggestions: AncillarySuggestion[] = [
-      {
-        code: "AWV",
-        name: "Annual Wellness Visit",
-        icon: <Heart className="h-5 w-5" />,
-        recommended: true,
-        reasoning: "Patient is due for annual wellness screening. Last AWV was over 12 months ago.",
-        eligibilityStatus: "eligible"
-      },
-      {
-        code: "BRAINWAVE",
-        name: "BrainWave EEG",
-        icon: <Brain className="h-5 w-5" />,
-        recommended: true,
-        reasoning: "Patient has documented cognitive concerns and is on medications that may benefit from EEG monitoring.",
-        eligibilityStatus: "eligible"
-      },
-      {
-        code: "ABI",
-        name: "ABI Vascular Screen",
-        icon: <Activity className="h-5 w-5" />,
-        recommended: true,
-        reasoning: "Hypertension and diabetes present - recommend peripheral vascular screening.",
-        eligibilityStatus: "eligible"
-      },
-      {
-        code: "CCM",
-        name: "Chronic Care Management",
-        icon: <Stethoscope className="h-5 w-5" />,
-        recommended: false,
-        reasoning: "Patient has 2+ chronic conditions but may not meet time requirements.",
-        eligibilityStatus: "pending"
-      },
-    ];
-    
-    setAiSuggestions(mockSuggestions);
-    setAiAnalyzing(false);
+    try {
+      const response = await fetch("/api/ai/analyze-patient", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patient_uuid: selectedPatient.patient_uuid,
+          patientData: {
+            first_name: selectedPatient.first_name,
+            last_name: selectedPatient.last_name,
+            date_of_birth: selectedPatient.date_of_birth,
+            payor_type: selectedPatient.payor_type,
+            payor_name: selectedPatient.payor_name,
+          },
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.ok && data.data?.recommendations) {
+        const suggestions: AncillarySuggestion[] = data.data.recommendations.map((rec: any) => {
+          const iconMap: Record<string, React.ReactNode> = {
+            "Neuro": <Brain className="h-5 w-5" />,
+            "Cardio/Autonomic": <Heart className="h-5 w-5" />,
+            "Lab": <Pill className="h-5 w-5" />,
+            "Procedure": <Activity className="h-5 w-5" />,
+            "Ultrasound": <Activity className="h-5 w-5" />,
+          };
+          
+          return {
+            code: rec.ancillary_code,
+            name: rec.ancillary_name,
+            icon: iconMap[rec.category] || <Activity className="h-5 w-5" />,
+            recommended: rec.qualification_score >= 70,
+            reasoning: rec.qualification_reasoning || rec.clinical_indications?.join("; ") || "Clinically indicated",
+            eligibilityStatus: rec.cooldown_status === "eligible" ? "eligible" as const :
+                             rec.cooldown_status === "in_cooldown" ? "pending" as const : "ineligible" as const,
+          };
+        });
+        
+        setAiSuggestions(suggestions);
+        
+        if (data.data.overall_summary) {
+          toast({
+            title: "AI Analysis Complete",
+            description: `Found ${suggestions.filter(s => s.recommended).length} recommended services`,
+          });
+        }
+      } else {
+        toast({
+          title: "Analysis Issue",
+          description: data.error || "Could not complete AI analysis",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Network Error",
+        description: "Could not connect to AI service",
+        variant: "destructive",
+      });
+    } finally {
+      setAiAnalyzing(false);
+    }
   };
 
   const handleOrderAncillary = (code: string) => {
@@ -644,44 +735,103 @@ export function PatientDatabaseView({ onNavigate }: PatientDatabaseViewProps) {
                 </div>
               </div>
 
-              {/* Medical History Section */}
+              {/* Medical History Section - Editable */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2 text-slate-700">
-                      <FileText className="h-4 w-4 text-violet-500" />
-                      Past Medical History
+                    <CardTitle className="text-sm flex items-center justify-between text-slate-700">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-violet-500" />
+                        Past Medical History
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditingMedHistory(!isEditingMedHistory)}
+                        data-testid="button-edit-medical-history"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="min-h-[100px] p-3 rounded-xl bg-slate-100/80 text-sm text-slate-600 space-y-1">
-                      <p>• Hypertension (I10)</p>
-                      <p>• Type 2 Diabetes Mellitus (E11.9)</p>
-                      <p>• Hyperlipidemia (E78.5)</p>
-                      <p>• Obesity (E66.9)</p>
-                      <p className="text-slate-400 italic text-xs mt-2">Data from pulled_pmh_snapshot</p>
-                    </div>
+                    {isEditingMedHistory ? (
+                      <Textarea
+                        value={medicalHistory}
+                        onChange={(e) => setMedicalHistory(e.target.value)}
+                        placeholder="Enter medical history (diagnoses, conditions, etc.)..."
+                        className="min-h-[120px] bg-slate-50 border-slate-200 text-sm"
+                        data-testid="textarea-medical-history"
+                      />
+                    ) : (
+                      <div className="min-h-[100px] p-3 rounded-xl bg-slate-100/80 text-sm text-slate-600 whitespace-pre-wrap">
+                        {medicalHistory || (
+                          <span className="text-slate-400 italic">Click edit to add medical history</span>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
                 <Card className={`${glassStyle} rounded-none md:rounded-2xl`}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2 text-slate-700">
-                      <Pill className="h-4 w-4 text-emerald-500" />
-                      Current Medications
+                    <CardTitle className="text-sm flex items-center justify-between text-slate-700">
+                      <div className="flex items-center gap-2">
+                        <Pill className="h-4 w-4 text-emerald-500" />
+                        Current Medications
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditingMeds(!isEditingMeds)}
+                        data-testid="button-edit-medications"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="min-h-[100px] p-3 rounded-xl bg-slate-100/80 text-sm text-slate-600 space-y-1">
-                      <p>• Lisinopril 10mg QD</p>
-                      <p>• Metformin 500mg BID</p>
-                      <p>• Atorvastatin 20mg QHS</p>
-                      <p>• Aspirin 81mg QD</p>
-                      <p className="text-slate-400 italic text-xs mt-2">Data from pulled_meds_snapshot</p>
-                    </div>
+                    {isEditingMeds ? (
+                      <Textarea
+                        value={medications}
+                        onChange={(e) => setMedications(e.target.value)}
+                        placeholder="Enter current medications..."
+                        className="min-h-[120px] bg-slate-50 border-slate-200 text-sm"
+                        data-testid="textarea-medications"
+                      />
+                    ) : (
+                      <div className="min-h-[100px] p-3 rounded-xl bg-slate-100/80 text-sm text-slate-600 whitespace-pre-wrap">
+                        {medications || (
+                          <span className="text-slate-400 italic">Click edit to add medications</span>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
+              
+              {/* Save Button - Shows when editing */}
+              {(isEditingMedHistory || isEditingMeds) && (
+                <div className="flex justify-end px-4 md:px-0">
+                  <Button
+                    onClick={handleSaveProfile}
+                    disabled={isSavingProfile}
+                    data-testid="button-save-profile"
+                  >
+                    {isSavingProfile ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
 
               {/* AI Suggestions Section */}
               <div className={`rounded-none md:rounded-2xl overflow-hidden ${glassStyle}`}>

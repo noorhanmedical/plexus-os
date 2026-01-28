@@ -1,6 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
+import * as localData from "./localData";
+import { analyzePatientForAncillaries, generateEvidenceSummary } from "./aiAnalysis";
+import { ANCILLARY_CATALOG, getAncillaryByCode } from "../shared/ancillaryCatalog";
 
 const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxUnc6u-UqiYLUraXAwU9nJDk7CzVr_xwZC3rU6_VMj5gU5LVWw7a6S0CVYn5Qx_vFy/exec";
 const PLEXUS_API_KEY = process.env.PLEXUS_API_KEY || "";
@@ -518,6 +521,173 @@ export async function registerRoutes(
     } catch (error) {
       console.error("[billing] Update status failed:", error);
       res.status(500).json({ ok: false, error: "Failed to update billing status" });
+    }
+  });
+
+  // ==================== LOCAL DATA ROUTES ====================
+
+  // Patient profile schemas - matches shared/patientProfile.ts
+  const patientProfileSchema = z.object({
+    patient_uuid: z.string().min(1),
+    medical_history: z.string().optional(),
+    medications: z.string().optional(),
+    patient_notes: z.string().optional(),
+    payor_type: z.enum(["Medicare", "PPO", "Medicaid", "HMO", "Other", "Unknown"]).optional(),
+  });
+
+  // Get patient profile (local storage)
+  app.get("/api/local/patient-profile/:patient_uuid", async (req, res) => {
+    try {
+      const { patient_uuid } = req.params;
+      const profile = localData.getPatientProfile(patient_uuid);
+      res.json({ ok: true, data: profile });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to get patient profile" });
+    }
+  });
+
+  // Save patient profile (local storage)
+  app.post("/api/local/patient-profile", async (req, res) => {
+    try {
+      const validation = patientProfileSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ ok: false, error: validation.error.message });
+      }
+      const saved = localData.savePatientProfile(validation.data);
+      res.json({ ok: true, data: saved });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to save patient profile" });
+    }
+  });
+
+  // ==================== SCHEDULE ROUTES ====================
+
+  // Get schedule for date range
+  app.get("/api/local/schedule", async (req, res) => {
+    try {
+      const date = req.query.date?.toString();
+      const daysAhead = parseInt(req.query.daysAhead?.toString() || "7", 10);
+      
+      let entries;
+      if (date) {
+        entries = localData.getScheduleByDate(date);
+      } else {
+        entries = localData.getUpcomingSchedule(daysAhead);
+      }
+      res.json({ ok: true, data: entries });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to get schedule" });
+    }
+  });
+
+  // Create schedule entry
+  app.post("/api/local/schedule", async (req, res) => {
+    try {
+      const { patient_uuid, patient_name, appointment_datetime, ...options } = req.body;
+      const entry = localData.createScheduleEntry(patient_uuid, patient_name, appointment_datetime, options);
+      res.json({ ok: true, data: entry });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to create schedule entry" });
+    }
+  });
+
+  // Update schedule entry
+  app.patch("/api/local/schedule/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const existing = localData.getScheduleEntry(id);
+      if (!existing) {
+        return res.status(404).json({ ok: false, error: "Schedule entry not found" });
+      }
+      const updated = localData.saveScheduleEntry({ ...existing, ...req.body });
+      res.json({ ok: true, data: updated });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to update schedule entry" });
+    }
+  });
+
+  // ==================== OUTREACH ROUTES ====================
+
+  // Get outreach queue
+  app.get("/api/local/outreach", async (req, res) => {
+    try {
+      const status = req.query.status?.toString();
+      const assigned_to = req.query.assigned_to?.toString();
+      
+      let records;
+      if (status) {
+        records = localData.getOutreachByStatus(status as any);
+      } else if (assigned_to) {
+        records = localData.getOutreachByAssignee(assigned_to);
+      } else {
+        records = localData.getAllOutreach();
+      }
+      res.json({ ok: true, data: records });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to get outreach records" });
+    }
+  });
+
+  // Create outreach record
+  app.post("/api/local/outreach", async (req, res) => {
+    try {
+      const { patient_uuid, assigned_to, recommended_ancillaries } = req.body;
+      const record = localData.createOutreachRecord(patient_uuid, assigned_to, recommended_ancillaries);
+      res.json({ ok: true, data: record });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to create outreach record" });
+    }
+  });
+
+  // Update outreach record
+  app.patch("/api/local/outreach/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const existing = localData.getOutreachRecord(id);
+      if (!existing) {
+        return res.status(404).json({ ok: false, error: "Outreach record not found" });
+      }
+      const updated = localData.saveOutreachRecord({ ...existing, ...req.body });
+      res.json({ ok: true, data: updated });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: "Failed to update outreach record" });
+    }
+  });
+
+  // ==================== AI ANALYSIS ROUTES ====================
+
+  // Get ancillary catalog (local)
+  app.get("/api/local/ancillary-catalog", async (_req, res) => {
+    res.json({ ok: true, data: ANCILLARY_CATALOG });
+  });
+
+  // AI-powered patient analysis
+  app.post("/api/ai/analyze-patient", async (req, res) => {
+    try {
+      const { patient_uuid, patientData } = req.body;
+      
+      let profile = localData.getPatientProfile(patient_uuid);
+      if (!profile) {
+        profile = { patient_uuid, medical_history: "", medications: "", patient_notes: "" };
+      }
+      
+      const result = await analyzePatientForAncillaries(patient_uuid, profile, patientData || {});
+      res.json({ ok: true, data: result });
+    } catch (error) {
+      console.error("[ai] Analysis failed:", error);
+      res.status(500).json({ ok: false, error: "AI analysis failed" });
+    }
+  });
+
+  // Generate evidence summary for a specific ancillary
+  app.post("/api/ai/evidence-summary", async (req, res) => {
+    try {
+      const { ancillary_code, clinical_context } = req.body;
+      const summary = await generateEvidenceSummary(ancillary_code, clinical_context);
+      res.json({ ok: true, data: summary });
+    } catch (error) {
+      console.error("[ai] Evidence summary failed:", error);
+      res.status(500).json({ ok: false, error: "Evidence summary failed" });
     }
   });
 
