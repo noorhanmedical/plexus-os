@@ -118,7 +118,7 @@ export function EligibilityTracker({ onNavigate, onPatientSelect }: EligibilityT
   const [selectedPatient, setSelectedPatient] = useState<PatientEligibility | null>(null);
 
   const { data: billingData, isLoading, refetch } = useQuery<BillingResponse>({
-    queryKey: ["/api/billing/list?limit=100&cursor=0"],
+    queryKey: ["/api/billing/list?limit=5000&cursor=0"],
   });
 
   const patientEligibilities = useMemo(() => {
