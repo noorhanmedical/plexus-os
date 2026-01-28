@@ -360,7 +360,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         onClick={() => onNavigate?.("ancillary")}
         data-testid="button-ancillary-card"
       >
-        <div className="w-full h-12 bg-gradient-to-r from-violet-600/90 via-purple-600/85 to-violet-600/90 dark:from-[#1a0a28]/90 dark:via-[#2d1b4e]/85 dark:to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
+        <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
           <ClipboardList className="h-5 w-5 text-white" />
           <p className="text-white font-bold text-lg drop-shadow-sm">Ancillary Service Patient Tracker</p>
         </div>
@@ -398,7 +398,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* Ultrasound Patient Tracking */}
               <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group min-h-[160px] hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-3">
-                  <UltrasoundProbeIcon className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                  <UltrasoundProbeIcon className="h-12 w-12 text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
                     <p className="font-semibold text-foreground text-lg">Ultrasound</p>
                     <p className="text-xs text-muted-foreground">{ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").length} patients due</p>
@@ -408,7 +408,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {ancillaryDuePatients.filter(p => p.serviceType === "Ultrasound").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-foreground/80 dark:text-slate-300 truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
+                      <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
@@ -422,7 +422,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* VitalWave Patient Tracking */}
               <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group min-h-[160px] hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-3">
-                  <Heart className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Heart className="h-12 w-12 text-rose-600 dark:text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-foreground text-lg">VitalWave</p>
                     <p className="text-xs text-muted-foreground">{ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").length} patients due</p>
@@ -432,7 +432,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   {ancillaryDuePatients.filter(p => p.serviceType === "VitalWave").slice(0, 3).map((patient, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
                       <span className="text-foreground/80 dark:text-slate-300 truncate max-w-[140px]">{patient.name}</span>
-                      <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
+                      <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30 text-xs">
                         {patient.dueIn.includes("Overdue") ? "12+ mo" : "6+ mo"}
                       </Badge>
                     </div>
@@ -502,7 +502,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               {/* Ultrasound */}
               <div className="p-5 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <UltrasoundProbeIcon className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                  <UltrasoundProbeIcon className="h-12 w-12 text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                   <div>
                     <p className="font-semibold text-foreground text-lg">Ultrasound</p>
                     <p className="text-xs text-muted-foreground">{currentYear} YTD</p>
@@ -523,14 +523,14 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                 </div>
                 <div className="pt-3 border-t border-border dark:border-slate-700/50">
-                  <p className="text-sm text-violet-600 dark:text-violet-300 text-center">{formatCurrency(ultrasoundRevenue)} collected</p>
+                  <p className="text-sm text-cyan-600 dark:text-cyan-300 text-center">{formatCurrency(ultrasoundRevenue)} collected</p>
                 </div>
               </div>
 
               {/* VitalWave */}
               <div className="p-5 bg-muted/50 dark:bg-slate-800/50 cursor-pointer transition-all duration-300 group hover:bg-muted dark:hover:bg-slate-700/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <Heart className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                  <Heart className="h-12 w-12 text-rose-600 dark:text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                   <div>
                     <p className="font-semibold text-foreground text-lg">VitalWave</p>
                     <p className="text-xs text-muted-foreground">{currentYear} YTD</p>
@@ -551,7 +551,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                 </div>
                 <div className="pt-3 border-t border-border dark:border-slate-700/50">
-                  <p className="text-sm text-violet-600 dark:text-violet-300 text-center">{formatCurrency(vitalwaveRevenue)} collected</p>
+                  <p className="text-sm text-rose-600 dark:text-rose-300 text-center">{formatCurrency(vitalwaveRevenue)} collected</p>
                 </div>
               </div>
             </div>
@@ -565,7 +565,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         onClick={handleViewAllBilling}
         data-testid="button-finance-dashboard"
       >
-        <div className="w-full h-12 bg-gradient-to-r from-violet-600/90 via-purple-600/85 to-violet-600/90 dark:from-[#1a0a28]/90 dark:via-[#2d1b4e]/85 dark:to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
+        <div className="w-full h-12 bg-gradient-to-r from-[#1a0a28]/90 via-[#2d1b4e]/85 to-[#1a0a28]/90 backdrop-blur-md flex items-center justify-center gap-3 border-b border-white/10">
           <TrendingUp className="h-5 w-5 text-white" />
           <p className="text-white font-bold text-lg drop-shadow-sm">Finance Dashboard</p>
         </div>
@@ -603,17 +603,17 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                   </div>
                   <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer group flex flex-col hover:bg-muted dark:hover:bg-slate-700/50 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
-                      <UltrasoundProbeIcon className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
+                      <UltrasoundProbeIcon className="h-12 w-12 text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:scale-125 -rotate-[20deg]" />
                       <p className="text-base font-semibold text-foreground">Ultrasound</p>
                     </div>
-                    <p className="text-2xl font-bold text-violet-600 dark:text-violet-300">{formatCurrency(ultrasoundRevenue)}</p>
+                    <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-300">{formatCurrency(ultrasoundRevenue)}</p>
                   </div>
                   <div className="p-4 bg-muted/50 dark:bg-slate-800/50 cursor-pointer group flex flex-col hover:bg-muted dark:hover:bg-slate-700/50 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-3">
-                      <Heart className="h-12 w-12 text-violet-600 dark:text-violet-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
+                      <Heart className="h-12 w-12 text-rose-600 dark:text-rose-400 transition-transform duration-300 group-hover:scale-125" strokeWidth={2.5} />
                       <p className="text-base font-semibold text-foreground">VitalWave</p>
                     </div>
-                    <p className="text-2xl font-bold text-violet-600 dark:text-violet-300">{formatCurrency(vitalwaveRevenue)}</p>
+                    <p className="text-2xl font-bold text-rose-600 dark:text-rose-300">{formatCurrency(vitalwaveRevenue)}</p>
                   </div>
                 </div>
               </div>
@@ -641,7 +641,7 @@ export function HomeDashboard({ onNavigate }: HomeDashboardProps) {
                 </div>
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-border dark:border-slate-700/50">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-violet-600 to-violet-400" />
+                    <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-[#1a0a28] to-[#2d1b4e]" />
                     <p className="text-xs text-muted-foreground">Revenue</p>
                   </div>
                   <Button 
