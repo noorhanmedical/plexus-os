@@ -460,7 +460,7 @@ function MainContent() {
     return saved ? JSON.parse(saved) : null;
   });
   const [billingServiceFilter, setBillingServiceFilter] = useState<string>("all");
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
   
   // Telemedicine state
   const [telemedFacility, setTelemedFacility] = useState<string>("");
