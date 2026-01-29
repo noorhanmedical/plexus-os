@@ -131,15 +131,62 @@ function isValidUrl(str: string | undefined): boolean {
   return str.startsWith("http://") || str.startsWith("https://");
 }
 
-function normalizeBillingRecord(record: BillingRecord): BillingRecord {
+function normalizeBillingRecord(record: any): BillingRecord {
+  // Map API field names (with spaces) to snake_case field names
+  const r = record as any;
+  
   return {
     ...record,
-    patient_name: record.patient_name || record.patient,
-    status: record.status || (isValidUrl(record.billing_status) ? undefined : record.billing_status),
-    amount: record.amount ?? (typeof record.paid_amount === 'number' ? record.paid_amount : parseFloat(record.paid_amount || '0') || 0),
-    date: record.date || record.date_of_service,
-    notes: record.notes || record.comments,
-    service: record.service || formatServiceType(record.source_tab),
+    // Core identifiers
+    source_tab: r.source_tab || r["source_tab"],
+    row_number: r.row_number || r["row_number"],
+    
+    // Patient info
+    patient: r.patient || r["Patient"],
+    patient_name: r.patient_name || r.patient || r["Patient"],
+    
+    // Dates
+    date_of_service: r.date_of_service || r["Date of Service"],
+    date: r.date || r.date_of_service || r["Date of Service"],
+    
+    // Clinician
+    clinician: r.clinician || r["Clinician"],
+    
+    // Screening & diagnosis
+    screening_form: r.screening_form || r["Screening Form"],
+    missing_diagnoses: r.missing_diagnoses || r["Missing Diagnoses for CPT Justification"],
+    historical_problem_list: r.historical_problem_list || r["Historical Problem List"],
+    
+    // Insurance
+    insurance_info: r.insurance_info || r["Insurance Info"],
+    
+    // Documents/links
+    link_order_note: r.link_order_note || r["Preprocedure Order Note"] || r["Order Note"],
+    link_report: r.link_report || r["BrainWave Report"] || r["VitalWave\nReport"] || r["Ultrasound Report"],
+    link_procedure_note: r.link_procedure_note || r["Procedure Note"],
+    link_billing_document: r.link_billing_document || r["Billing Document"],
+    
+    // Claim status fields
+    claim_submitted: r.claim_submitted || r["Claim Submitted"],
+    claim_submitted_date: r.claim_submitted_date || r["Claim Submitted date"],
+    claim_adjudicated: r.claim_adjudicated || r["Claim adjudicated"],
+    claim_adjudicated_date: r.claim_adjudicated_date || r["Claim adjudicated date"],
+    
+    // Payment fields - CRITICAL for filters
+    claim_paid_amount: r.claim_paid_amount || r["Claim Paid Amount"] || 0,
+    claim_paid_date: r.claim_paid_date || r["Claim paid date"],
+    secondary_payment: r.secondary_payment || r["Secondary Payment"],
+    patient_responsibility: r.patient_responsibility || r["Patient responsibility"],
+    
+    // Comments
+    comments: r.comments || r["Comments"],
+    biller_comments: r.biller_comments || r["Biller Comments"],
+    notes: r.notes || r.comments || r["Comments"],
+    
+    // Computed fields
+    service: r.service || formatServiceType(r.source_tab || r["source_tab"]),
+    amount: r.amount ?? (parseFloat(String(r.claim_paid_amount || r["Claim Paid Amount"] || 0)) || 0),
+    status: r.status || (isValidUrl(r.billing_status) ? undefined : r.billing_status),
   };
 }
 
