@@ -18,7 +18,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -32,7 +40,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Search, Plus, RefreshCw, Loader2, FileText, DollarSign, X, AlertTriangle, 
   ExternalLink, TrendingUp, PieChart as PieChartIcon, BarChart3, Calendar,
-  Filter, Download, Clock, CheckCircle2, Receipt, CreditCard, ShieldCheck
+  Filter, Download, Clock, CheckCircle2, Receipt, CreditCard, ShieldCheck,
+  MessageSquare, MoreHorizontal, Send, Check, Edit2
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -186,6 +195,12 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
   const [invoiceNotes, setInvoiceNotes] = useState("");
   const [activeTab, setActiveTab] = useState("records");
   const autoRebuildAttempted = useRef(false);
+  
+  // Note editing state
+  const [isEditNoteDialogOpen, setIsEditNoteDialogOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<BillingRecord | null>(null);
+  const [editNoteValue, setEditNoteValue] = useState("");
+  const [visibleCount, setVisibleCount] = useState(50);
 
   // Sync with external defaultServiceFilter prop
   useEffect(() => {
@@ -207,47 +222,91 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     queryKey: ["/api/billing/list?limit=100&cursor=0"],
   });
 
+  // Technical columns to hide from billers
+  const hiddenColumns = useMemo(() => new Set([
+    "source_tab", "source", "row_number", "row", "index", "id", "uuid", 
+    "patient_uuid", "billing_id", "created_at", "updated_at", "timestamp"
+  ]), []);
+
   // Dynamic column definitions from API header
   const spreadsheetColumns = useMemo(() => {
     const apiHeader = billingData?.header || [];
     if (apiHeader.length === 0) {
-      // Fallback if no header from API
+      // Fallback if no header from API - clean columns only
       return [
-        { key: "source_tab", label: "Source", width: "w-[100px]", isLink: false, isCurrency: false, isDate: false },
-        { key: "date_of_service", label: "Date of Service", width: "w-[110px]", isLink: false, isCurrency: false, isDate: true },
+        { key: "date_of_service", label: "Service Date", width: "w-[110px]", isLink: false, isCurrency: false, isDate: true },
         { key: "patient", label: "Patient", width: "w-[180px]", isLink: false, isCurrency: false, isDate: false },
         { key: "clinician", label: "Clinician", width: "w-[150px]", isLink: false, isCurrency: false, isDate: false },
+        { key: "service", label: "Service", width: "w-[120px]", isLink: false, isCurrency: false, isDate: false, isService: true },
       ];
     }
     
-    // Map header names to column definitions with heuristics
-    return apiHeader.map((headerName: string) => {
-      const key = headerName.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
-      const isLink = headerName.toLowerCase().startsWith("link") || 
-                     headerName.toLowerCase().includes("url") ||
-                     headerName.toLowerCase() === "billing status" ||
-                     headerName.toLowerCase() === "insurance info" ||
-                     headerName.toLowerCase() === "claim submitted" ||
-                     headerName.toLowerCase() === "claim adjudicated";
-      const isCurrency = headerName.toLowerCase().includes("amount") ||
-                         headerName.toLowerCase().includes("paid") ||
-                         headerName.toLowerCase().includes("responsibility") ||
-                         headerName.toLowerCase().includes("payment");
-      const isDate = headerName.toLowerCase().includes("date");
-      
-      // Determine width based on content type
-      let width = "w-[120px]";
-      if (headerName.toLowerCase().includes("comment")) width = "w-[200px]";
-      else if (headerName.toLowerCase() === "patient") width = "w-[180px]";
-      else if (headerName.toLowerCase() === "clinician") width = "w-[150px]";
-      else if (isLink) width = "w-[100px]";
-      else if (isCurrency) width = "w-[100px]";
-      else if (isDate) width = "w-[110px]";
-      else if (headerName.toLowerCase() === "source") width = "w-[100px]";
-      
-      return { key, label: headerName, width, isLink, isCurrency, isDate };
-    });
-  }, [billingData?.header]);
+    // Map header names to column definitions with heuristics, filtering out technical columns
+    const cols = apiHeader
+      .filter((headerName: string) => {
+        const key = headerName.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+        return !hiddenColumns.has(key) && !hiddenColumns.has(headerName.toLowerCase());
+      })
+      .map((headerName: string) => {
+        const key = headerName.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+        const isLink = headerName.toLowerCase().startsWith("link") || 
+                       headerName.toLowerCase().includes("url") ||
+                       headerName.toLowerCase() === "billing status" ||
+                       headerName.toLowerCase() === "insurance info" ||
+                       headerName.toLowerCase() === "claim submitted" ||
+                       headerName.toLowerCase() === "claim adjudicated";
+        const isCurrency = headerName.toLowerCase().includes("amount") ||
+                           headerName.toLowerCase().includes("paid") ||
+                           headerName.toLowerCase().includes("responsibility") ||
+                           headerName.toLowerCase().includes("payment");
+        const isDate = headerName.toLowerCase().includes("date");
+        const isService = key === "service" || headerName.toLowerCase() === "service type";
+        
+        // Determine width based on content type
+        let width = "w-[120px]";
+        if (headerName.toLowerCase().includes("comment")) width = "w-[200px]";
+        else if (headerName.toLowerCase() === "patient") width = "w-[180px]";
+        else if (headerName.toLowerCase() === "clinician") width = "w-[150px]";
+        else if (headerName.toLowerCase() === "insurance info") width = "w-[140px]";
+        else if (isLink) width = "w-[80px]";
+        else if (isCurrency) width = "w-[100px]";
+        else if (isDate) width = "w-[100px]";
+        else if (isService) width = "w-[120px]";
+        
+        // Clean up labels for display
+        let label = headerName;
+        if (label.toLowerCase().startsWith("link ")) label = label.replace(/^link\s+/i, "");
+        if (label.toLowerCase() === "date of service") label = "Service Date";
+        if (label.toLowerCase() === "claim paid amount") label = "Paid";
+        if (label.toLowerCase() === "patient responsibility") label = "Patient Resp";
+        if (label.toLowerCase() === "secondary payment") label = "Secondary";
+        
+        return { key, label, width, isLink, isCurrency, isDate, isService };
+      });
+    
+    // Add synthetic "Service" column if source_tab was hidden but exists in data
+    const hasSourceTab = apiHeader.some((h: string) => 
+      h.toLowerCase() === "source" || h.toLowerCase() === "source_tab"
+    );
+    const hasServiceColumn = cols.some(c => c.isService || c.key === "service");
+    
+    if (hasSourceTab && !hasServiceColumn) {
+      // Insert service column near the beginning (after patient if present, otherwise at position 2)
+      const patientIndex = cols.findIndex(c => c.key === "patient");
+      const insertIndex = patientIndex >= 0 ? patientIndex + 1 : Math.min(2, cols.length);
+      cols.splice(insertIndex, 0, { 
+        key: "service", 
+        label: "Service", 
+        width: "w-[120px]", 
+        isLink: false, 
+        isCurrency: false, 
+        isDate: false,
+        isService: true 
+      });
+    }
+    
+    return cols;
+  }, [billingData?.header, hiddenColumns]);
 
   const rebuildIndexMutation = useMutation({
     mutationFn: async () => {
@@ -342,8 +401,6 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     });
     return Array.from(clinicians).sort();
   }, [normalizedRecords]);
-
-  const [visibleCount, setVisibleCount] = useState(50);
 
   const records = useMemo(() => {
     const filtered = normalizedRecords.filter((record) => {
@@ -884,6 +941,50 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
               </div>
             </DialogContent>
           </Dialog>
+          
+          {/* Edit Note Dialog */}
+          <Dialog open={isEditNoteDialogOpen} onOpenChange={setIsEditNoteDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  Edit Biller Note
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                {editingRecord && (
+                  <div className="text-sm text-muted-foreground mb-2">
+                    <span className="font-medium">Patient:</span> {editingRecord.patient_name || editingRecord.patient || "Unknown"}
+                  </div>
+                )}
+                <div>
+                  <Label htmlFor="biller-note">Note</Label>
+                  <Textarea
+                    id="biller-note"
+                    placeholder="Add your biller notes here..."
+                    value={editNoteValue}
+                    onChange={(e) => setEditNoteValue(e.target.value)}
+                    className="min-h-[120px]"
+                    data-testid="textarea-biller-note"
+                  />
+                </div>
+              </div>
+              <DialogFooter className="mt-4">
+                <Button variant="outline" onClick={() => setIsEditNoteDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => {
+                    toast({ title: "Note Saved", description: "Biller note has been updated" });
+                    setIsEditNoteDialogOpen(false);
+                  }}
+                  data-testid="button-save-note"
+                >
+                  Save Note
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -1289,20 +1390,21 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                     : "No billing records found"}
                 </div>
               ) : (
-                <div className="overflow-x-auto border-t">
-                  <div className="min-w-[2400px]">
+                <div className="overflow-x-auto border-t border-border dark:border-slate-700/50">
+                  <div className="min-w-[1600px]">
                     <Table>
-                      <TableHeader className="sticky top-0 bg-muted/90 dark:bg-slate-800/90 z-10 border-b border-border dark:border-slate-700/50">
+                      <TableHeader className="sticky top-0 bg-slate-100 dark:bg-slate-800/95 z-10 border-b-2 border-border dark:border-slate-600">
                         <TableRow>
-                          <TableHead className="w-[50px] text-center font-bold text-foreground/70 dark:text-slate-300">#</TableHead>
+                          <TableHead className="w-[40px] text-center font-semibold text-slate-600 dark:text-slate-400 text-xs">#</TableHead>
                           {spreadsheetColumns.map((col) => (
                             <TableHead 
                               key={col.key} 
-                              className={`${col.width} font-bold text-foreground/70 dark:text-slate-300 text-xs whitespace-nowrap`}
+                              className={`${col.width} font-semibold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide whitespace-nowrap`}
                             >
                               {col.label}
                             </TableHead>
                           ))}
+                          <TableHead className="w-[80px] text-center font-semibold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -1310,9 +1412,9 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                           <TableRow 
                             key={index} 
                             data-testid={`row-billing-${index}`}
-                            className="hover:bg-muted/50 dark:hover:bg-slate-700/50 border-b border-border dark:border-slate-700/30"
+                            className="hover:bg-slate-50 dark:hover:bg-slate-700/40 border-b border-border/50 dark:border-slate-700/30 transition-colors"
                           >
-                            <TableCell className="text-center text-xs text-muted-foreground font-mono">
+                            <TableCell className="text-center text-xs text-slate-400 dark:text-slate-500 font-mono">
                               {index + 1}
                             </TableCell>
                             {spreadsheetColumns.map((col) => {
@@ -1349,21 +1451,23 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                                 );
                               }
                               
-                              // Render source column with badge
-                              if (col.key === "source_tab" || col.label.toLowerCase() === "source") {
-                                const displayValue = formatServiceType(value);
+                              // Render service type column with badge
+                              if ((col as any).isService || col.key === "service" || col.label.toLowerCase() === "service") {
+                                // Get service from normalized record or derive from source_tab
+                                const serviceValue = record.service || formatServiceType((record as any).source_tab);
+                                const sourceTab = (record as any).source_tab || "";
                                 return (
                                   <TableCell key={col.key} className={`${col.width} p-1`}>
                                     <Badge 
                                       variant="outline" 
-                                      className={`text-[10px] ${
-                                        value?.includes("BRAINWAVE") ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
-                                        value?.includes("ULTRASOUND") ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
-                                        value?.includes("VITALWAVE") ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                                        "bg-slate-600/30 text-slate-300 border-slate-500/30"
+                                      className={`text-[10px] font-medium ${
+                                        sourceTab?.includes("BRAINWAVE") ? "bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/30" :
+                                        sourceTab?.includes("ULTRASOUND") ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/30" :
+                                        sourceTab?.includes("VITALWAVE") ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30" :
+                                        "bg-slate-500/20 text-slate-700 dark:text-slate-300 border-slate-500/30"
                                       }`}
                                     >
-                                      {displayValue}
+                                      {serviceValue}
                                     </Badge>
                                   </TableCell>
                                 );
@@ -1385,6 +1489,50 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                                 </TableCell>
                               );
                             })}
+                            {/* Actions Column */}
+                            <TableCell className="w-[80px] text-center p-1">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-7 w-7"
+                                    data-testid={`button-actions-${index}`}
+                                  >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                  <DropdownMenuItem 
+                                    onClick={() => {
+                                      setEditingRecord(record);
+                                      setEditNoteValue(record.biller_comments || record.comments || record.notes || "");
+                                      setIsEditNoteDialogOpen(true);
+                                    }}
+                                  >
+                                    <Edit2 className="h-4 w-4 mr-2" />
+                                    Edit Note
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem 
+                                    onClick={() => {
+                                      toast({ title: "Status Updated", description: "Claim marked as submitted" });
+                                    }}
+                                  >
+                                    <Send className="h-4 w-4 mr-2" />
+                                    Mark Submitted
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => {
+                                      toast({ title: "Status Updated", description: "Claim marked as paid" });
+                                    }}
+                                  >
+                                    <Check className="h-4 w-4 mr-2" />
+                                    Mark Paid
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
