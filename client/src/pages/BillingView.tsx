@@ -175,7 +175,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
   const [searchQuery, setSearchQuery] = useState("");
   const [serviceFilter, setServiceFilter] = useState<string>(defaultServiceFilter);
   const [clinicianFilter, setClinicianFilter] = useState<string>("all");
-  const [dateRangeFilter, setDateRangeFilter] = useState<string>("all");
+  const [dateRangeFilter, setDateRangeFilter] = useState<string>("last_year");
   const [claimStatusFilter, setClaimStatusFilter] = useState<string>("all");
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
@@ -369,6 +369,8 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
       if (dateRangeFilter !== "all" && record.date) {
         const recordDate = new Date(record.date);
         const now = new Date();
+        const currentYear = now.getFullYear();
+        
         if (dateRangeFilter === "today") {
           if (recordDate.toDateString() !== now.toDateString()) return false;
         } else if (dateRangeFilter === "week") {
@@ -380,6 +382,18 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
         } else if (dateRangeFilter === "quarter") {
           const quarterAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
           if (recordDate < quarterAgo) return false;
+        } else if (dateRangeFilter === "ytd") {
+          const startOfYear = new Date(currentYear, 0, 1);
+          if (recordDate < startOfYear || recordDate > now) return false;
+        } else if (dateRangeFilter === "last_year") {
+          const startOfLastYear = new Date(currentYear - 1, 0, 1);
+          const endOfLastYear = new Date(currentYear - 1, 11, 31, 23, 59, 59);
+          if (recordDate < startOfLastYear || recordDate > endOfLastYear) return false;
+        } else if (dateRangeFilter.match(/^year_\d{4}$/)) {
+          const year = parseInt(dateRangeFilter.replace("year_", ""));
+          const startOfYear = new Date(year, 0, 1);
+          const endOfYear = new Date(year, 11, 31, 23, 59, 59);
+          if (recordDate < startOfYear || recordDate > endOfYear) return false;
         }
       }
       
@@ -1079,16 +1093,21 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
               </Select>
 
               <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
-                <SelectTrigger className="w-[130px]" data-testid="select-date-filter">
+                <SelectTrigger className="w-[140px]" data-testid="select-date-filter">
                   <Calendar className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Date" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="last_year">Last Year ({new Date().getFullYear() - 1})</SelectItem>
+                  <SelectItem value="ytd">YTD ({new Date().getFullYear()})</SelectItem>
                   <SelectItem value="today">Today</SelectItem>
                   <SelectItem value="week">Last 7 Days</SelectItem>
                   <SelectItem value="month">Last 30 Days</SelectItem>
                   <SelectItem value="quarter">Last 90 Days</SelectItem>
+                  <SelectItem value={`year_${new Date().getFullYear()}`}>{new Date().getFullYear()}</SelectItem>
+                  <SelectItem value={`year_${new Date().getFullYear() - 1}`}>{new Date().getFullYear() - 1}</SelectItem>
+                  <SelectItem value={`year_${new Date().getFullYear() - 2}`}>{new Date().getFullYear() - 2}</SelectItem>
+                  <SelectItem value="all">All Time</SelectItem>
                 </SelectContent>
               </Select>
 
