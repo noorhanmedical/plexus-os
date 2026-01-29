@@ -32,7 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Search, Plus, RefreshCw, Loader2, FileText, DollarSign, X, AlertTriangle, 
   ExternalLink, TrendingUp, PieChart as PieChartIcon, BarChart3, Calendar,
-  Filter, Download
+  Filter, Download, Clock, CheckCircle2, Receipt, CreditCard, ShieldCheck
 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -177,6 +177,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
   const [clinicianFilter, setClinicianFilter] = useState<string>("all");
   const [dateRangeFilter, setDateRangeFilter] = useState<string>("last_year");
   const [claimStatusFilter, setClaimStatusFilter] = useState<string>("all");
+  const [insuranceFilter, setInsuranceFilter] = useState<string>("all");
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
   const [newRecord, setNewRecord] = useState<NewBillingRecord>(EMPTY_BILLING_RECORD);
@@ -408,6 +409,21 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
         if (claimStatusFilter === "pending" && (hasSubmitted || hasAdjudicated || hasPaid)) return false;
       }
       
+      if (insuranceFilter !== "all") {
+        const insuranceInfo = (record.insurance_info || "").toLowerCase();
+        const isMedicare = insuranceInfo.includes("medicare");
+        const isMedicaid = insuranceInfo.includes("medicaid");
+        const isPPO = insuranceInfo.includes("ppo");
+        const isHMO = insuranceInfo.includes("hmo");
+        const isKnownType = isMedicare || isMedicaid || isPPO || isHMO;
+        
+        if (insuranceFilter === "medicare" && !isMedicare) return false;
+        if (insuranceFilter === "medicaid" && !isMedicaid) return false;
+        if (insuranceFilter === "ppo" && !isPPO) return false;
+        if (insuranceFilter === "hmo" && !isHMO) return false;
+        if (insuranceFilter === "other" && isKnownType) return false;
+      }
+      
       return true;
     });
     
@@ -419,7 +435,7 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     });
     
     return filtered;
-  }, [normalizedRecords, searchQuery, serviceFilter, clinicianFilter, dateRangeFilter, claimStatusFilter]);
+  }, [normalizedRecords, searchQuery, serviceFilter, clinicianFilter, dateRangeFilter, claimStatusFilter, insuranceFilter]);
 
   useEffect(() => {
     if (!isLoading && !isError && billingData?.ok && rawRecords.length === 0 && !autoRebuildAttempted.current) {
@@ -439,7 +455,38 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
       return sum + (isNaN(amount) ? 0 : amount);
     }, 0);
     
-    return { brainwaveCount, ultrasoundCount, vitalwaveCount, otherCount, totalPaid };
+    const totalPatientResp = records.reduce((sum, r) => {
+      const amount = parseFloat(String(r.patient_responsibility || 0).replace(/[$,]/g, ""));
+      return sum + (isNaN(amount) ? 0 : amount);
+    }, 0);
+    
+    const totalSecondary = records.reduce((sum, r) => {
+      const amount = parseFloat(String(r.secondary_payment || 0).replace(/[$,]/g, ""));
+      return sum + (isNaN(amount) ? 0 : amount);
+    }, 0);
+    
+    const pendingCount = records.filter(r => {
+      const hasSubmitted = r.claim_submitted && isValidUrl(r.claim_submitted);
+      const hasAdjudicated = r.claim_adjudicated && isValidUrl(r.claim_adjudicated);
+      const hasPaid = r.claim_paid_amount && parseFloat(String(r.claim_paid_amount)) > 0;
+      return !hasSubmitted && !hasAdjudicated && !hasPaid;
+    }).length;
+    
+    const submittedCount = records.filter(r => r.claim_submitted && isValidUrl(r.claim_submitted)).length;
+    const adjudicatedCount = records.filter(r => r.claim_adjudicated && isValidUrl(r.claim_adjudicated)).length;
+    const paidCount = records.filter(r => r.claim_paid_amount && parseFloat(String(r.claim_paid_amount)) > 0).length;
+    
+    const medicareCount = records.filter(r => r.insurance_info?.toLowerCase().includes("medicare")).length;
+    const medicaidCount = records.filter(r => r.insurance_info?.toLowerCase().includes("medicaid")).length;
+    const ppoCount = records.filter(r => r.insurance_info?.toLowerCase().includes("ppo")).length;
+    const hmoCount = records.filter(r => r.insurance_info?.toLowerCase().includes("hmo")).length;
+    
+    return { 
+      brainwaveCount, ultrasoundCount, vitalwaveCount, otherCount, 
+      totalPaid, totalPatientResp, totalSecondary,
+      pendingCount, submittedCount, adjudicatedCount, paidCount,
+      medicareCount, medicaidCount, ppoCount, hmoCount
+    };
   }, [records]);
 
   const serviceChartData = useMemo(() => [
@@ -522,11 +569,12 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
     setSearchQuery("");
     setServiceFilter("all");
     setClinicianFilter("all");
-    setDateRangeFilter("all");
+    setDateRangeFilter("last_year");
     setClaimStatusFilter("all");
+    setInsuranceFilter("all");
   };
 
-  const hasActiveFilters = searchQuery || serviceFilter !== "all" || clinicianFilter !== "all" || dateRangeFilter !== "all" || claimStatusFilter !== "all";
+  const hasActiveFilters = searchQuery || serviceFilter !== "all" || clinicianFilter !== "all" || dateRangeFilter !== "last_year" || claimStatusFilter !== "all" || insuranceFilter !== "all";
 
   const invoiceTotal = invoiceItems.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
@@ -552,14 +600,14 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Billing Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {records.length} of {normalizedRecords.length} records
+            {records.length} of {normalizedRecords.length} records • {dateRangeFilter === "last_year" ? `${new Date().getFullYear() - 1}` : dateRangeFilter === "ytd" ? "Year to Date" : dateRangeFilter.startsWith("year_") ? dateRangeFilter.replace("year_", "") : dateRangeFilter === "all" ? "All Time" : dateRangeFilter}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -837,6 +885,81 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
             </DialogContent>
           </Dialog>
         </div>
+      </div>
+
+      {/* Financial Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <DollarSign className="h-4 w-4 text-emerald-500" />
+              <span className="text-xs text-muted-foreground font-medium">Total Paid</span>
+            </div>
+            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-testid="text-total-paid">
+              ${stats.totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Receipt className="h-4 w-4 text-amber-500" />
+              <span className="text-xs text-muted-foreground font-medium">Patient Resp.</span>
+            </div>
+            <p className="text-xl font-bold text-amber-600 dark:text-amber-400" data-testid="text-patient-resp">
+              ${stats.totalPatientResp.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <CreditCard className="h-4 w-4 text-blue-500" />
+              <span className="text-xs text-muted-foreground font-medium">Secondary</span>
+            </div>
+            <p className="text-xl font-bold text-blue-600 dark:text-blue-400" data-testid="text-secondary">
+              ${stats.totalSecondary.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-slate-500/10 to-slate-600/5 border-slate-500/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="h-4 w-4 text-slate-500" />
+              <span className="text-xs text-muted-foreground font-medium">Pending</span>
+            </div>
+            <p className="text-xl font-bold text-slate-600 dark:text-slate-400" data-testid="text-pending-count">
+              {stats.pendingCount}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-violet-500/10 to-violet-600/5 border-violet-500/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <FileText className="h-4 w-4 text-violet-500" />
+              <span className="text-xs text-muted-foreground font-medium">Submitted</span>
+            </div>
+            <p className="text-xl font-bold text-violet-600 dark:text-violet-400" data-testid="text-submitted-count">
+              {stats.submittedCount}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <span className="text-xs text-muted-foreground font-medium">Paid</span>
+            </div>
+            <p className="text-xl font-bold text-green-600 dark:text-green-400" data-testid="text-paid-count">
+              {stats.paidCount}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs value={serviceFilter} onValueChange={handleServiceTabChange} className="border-b">
@@ -1124,6 +1247,21 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                 </SelectContent>
               </Select>
 
+              <Select value={insuranceFilter} onValueChange={setInsuranceFilter}>
+                <SelectTrigger className="w-[140px]" data-testid="select-insurance-filter">
+                  <ShieldCheck className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Insurance" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Insurance</SelectItem>
+                  <SelectItem value="medicare">Medicare ({stats.medicareCount})</SelectItem>
+                  <SelectItem value="medicaid">Medicaid ({stats.medicaidCount})</SelectItem>
+                  <SelectItem value="ppo">PPO ({stats.ppoCount})</SelectItem>
+                  <SelectItem value="hmo">HMO ({stats.hmoCount})</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+
               {hasActiveFilters && (
                 <Button variant="ghost" size="sm" onClick={clearFilters} className="text-slate-500">
                   <X className="h-4 w-4 mr-1" />
@@ -1251,6 +1389,33 @@ export function BillingView({ defaultServiceFilter = "all", onServiceFilterChang
                         ))}
                       </TableBody>
                     </Table>
+                    {/* Totals Summary Row */}
+                    <div className="sticky bottom-0 bg-muted/95 dark:bg-slate-800/95 border-t-2 border-border dark:border-slate-600 p-3 backdrop-blur-sm">
+                      <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
+                        <div className="flex items-center gap-6">
+                          <span className="font-medium text-foreground">
+                            Total Records: <span className="text-violet-600 dark:text-violet-400">{records.length}</span>
+                          </span>
+                          <span className="font-medium text-foreground">
+                            Paid Claims: <span className="text-green-600 dark:text-green-400">{stats.paidCount}</span>
+                          </span>
+                          <span className="font-medium text-foreground">
+                            Pending: <span className="text-amber-600 dark:text-amber-400">{stats.pendingCount}</span>
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <span className="font-semibold text-foreground">
+                            Total Paid: <span className="text-emerald-600 dark:text-emerald-400">${stats.totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                          </span>
+                          <span className="font-semibold text-foreground">
+                            Patient Resp: <span className="text-amber-600 dark:text-amber-400">${stats.totalPatientResp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                          </span>
+                          <span className="font-semibold text-foreground">
+                            Secondary: <span className="text-blue-600 dark:text-blue-400">${stats.totalSecondary.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   {records.length > visibleCount && (
                     <div className="flex justify-center py-4 border-t">
