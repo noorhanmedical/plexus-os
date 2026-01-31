@@ -5,7 +5,13 @@ import * as localData from "./localData";
 import { analyzePatientForAncillaries, generateEvidenceSummary } from "./aiAnalysis";
 import { ANCILLARY_CATALOG, getAncillaryByCode } from "../shared/ancillaryCatalog";
 
-const PLEXUS_API_URL = "https://script.google.com/macros/s/AKfycbxUnc6u-UqiYLUraXAwU9nJDk7CzVr_xwZC3rU6_VMj5gU5LVWw7a6S0CVYn5Qx_vFy/exec";
+// ✅ ADD THESE IMPORTS
+import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
+import { Client } from "pg";
+import { parse } from "csv-parse/sync";
+
+const PLEXUS_API_URL =
+  "https://script.google.com/macros/s/AKfycbxUnc6u-UqiYLUraXAwU9nJDk7CzVr_xwZC3rU6_VMj5gU5LVWw7a6S0CVYn5Qx_vFy/exec";
 const PLEXUS_API_KEY = process.env.PLEXUS_API_KEY || "";
 
 // Plexus API helper
@@ -16,12 +22,12 @@ async function plexusGet(action: string, params: Record<string, string> = {}): P
     api_key: PLEXUS_API_KEY,
     ...params,
   });
-  
+
   const response = await fetch(`${PLEXUS_API_URL}?${searchParams.toString()}`, {
     method: "GET",
     redirect: "follow",
   });
-  
+
   return response.json();
 }
 
@@ -71,12 +77,12 @@ function setCache(key: string, data: any): void {
 // Cached version of plexusGet
 async function cachedPlexusGet(action: string, params: Record<string, string> = {}): Promise<any> {
   const cacheKey = `GET:${action}:${JSON.stringify(params)}`;
-  
+
   const cached = getCached(cacheKey);
   if (cached) {
     return cached;
   }
-  
+
   const data = await plexusGet(action, params);
   if (data.ok) {
     setCache(cacheKey, data);
@@ -144,15 +150,11 @@ async function plexusPost(action: string, payload: Record<string, any> = {}): Pr
     body: JSON.stringify({ action, ...payload }),
     redirect: "follow",
   });
-  
+
   return response.json();
 }
 
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
-  
+export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   // Health check
   app.get("/api/health", async (_req, res) => {
     try {
@@ -170,13 +172,13 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { query, limit } = validation.data;
       const limitNum = parseInt(limit, 10) || 20;
-      
+
       // Direct API search - Plexus handles the search server-side
       const results = await searchPatientsAPI(query, limitNum);
-      
+
       res.json({ ok: true, data: results });
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to search patients" });
@@ -190,7 +192,7 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { patient_uuid } = validation.data;
       const data = await cachedPlexusGet("patients.get", { patient_uuid });
       res.json(data);
@@ -206,11 +208,11 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { status, limit } = validation.data;
       const params: Record<string, string> = { limit };
       if (status) params.status = status;
-      
+
       const data = await cachedPlexusGet("prescreen.list", params);
       res.json(data);
     } catch (error) {
@@ -225,14 +227,14 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { prescreen_id, patient_uuid, requested_ancillary_code } = validation.data;
-      
+
       const payload: Record<string, string> = {};
       if (prescreen_id) payload.prescreen_id = prescreen_id;
       if (patient_uuid) payload.patient_uuid = patient_uuid;
       if (requested_ancillary_code) payload.requested_ancillary_code = requested_ancillary_code;
-      
+
       const data = await plexusPost("prescreen.get", payload);
       res.json(data);
     } catch (error) {
@@ -247,19 +249,19 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { patient_uuid, requested_ancillary_code } = validation.data;
-      
+
       const data = await plexusPost("prescreen.create", {
         patient_uuid,
         requested_ancillary_code,
       });
-      
+
       // Trigger workflow: add to outreach queue and notify team
       if (data.ok) {
         localData.triggerPrescreenCreated(patient_uuid, requested_ancillary_code);
       }
-      
+
       res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to create prescreen" });
@@ -273,9 +275,9 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { prescreen_id, updates } = validation.data;
-      
+
       const data = await plexusPost("prescreen.update", {
         prescreen_id,
         updates,
@@ -293,9 +295,9 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { prescreen_id, status } = validation.data;
-      
+
       const data = await plexusPost("prescreen.updateStatus", {
         prescreen_id,
         status,
@@ -312,7 +314,7 @@ export async function registerRoutes(
       const ancillary_code = String(req.query.ancillary_code || "");
       const q = String(req.query.q || "");
       const limit = String(req.query.limit || "50");
-      
+
       const data = await cachedPlexusGet("ancillary.patients", { ancillary_code, q, limit });
       res.json(data);
     } catch (error) {
@@ -337,7 +339,7 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const data = await plexusPost("ancillary.update", validation.data);
       res.json(data);
     } catch (error) {
@@ -356,10 +358,14 @@ export async function registerRoutes(
 
   const createInvoiceSchema = z.object({
     patient_uuid: z.string().min(1, "patient_uuid is required"),
-    items: z.array(z.object({
-      description: z.string().min(1, "description is required"),
-      amount: z.number().min(0, "amount must be non-negative"),
-    })).min(1, "at least one item is required"),
+    items: z
+      .array(
+        z.object({
+          description: z.string().min(1, "description is required"),
+          amount: z.number().min(0, "amount must be non-negative"),
+        }),
+      )
+      .min(1, "at least one item is required"),
     notes: z.string().optional().default(""),
   });
 
@@ -370,7 +376,7 @@ export async function registerRoutes(
 
   // Helper to convert header/rows format to array of objects
   function convertRowsToObjects(header: string[], rows: any[][]): Record<string, any>[] {
-    return rows.map(row => {
+    return rows.map((row) => {
       const obj: Record<string, any> = {};
       header.forEach((key, index) => {
         obj[key] = row[index] ?? "";
@@ -386,13 +392,13 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { q, limit, status } = validation.data;
       const params: Record<string, string> = { q, limit };
       if (status) params.status = status;
-      
+
       const data = await cachedPlexusGet("billing.search", params);
-      
+
       // Transform header/rows format to array of objects
       if (data.ok && data.header && data.rows) {
         const rows = convertRowsToObjects(data.header, data.rows);
@@ -411,18 +417,18 @@ export async function registerRoutes(
     try {
       const limit = req.query.limit?.toString() || "200";
       const cursor = req.query.cursor?.toString() || "0";
-      
+
       const data = await cachedPlexusGet("billing.list", { limit, cursor });
-      
+
       // Transform header/rows format to array of objects
       if (data.ok && data.header && data.rows) {
         const rows = convertRowsToObjects(data.header, data.rows);
-        res.json({ 
-          ok: true, 
-          rows, 
+        res.json({
+          ok: true,
+          rows,
           header: data.header,
           nextCursor: data.nextCursor,
-          hasMore: data.hasMore 
+          hasMore: data.hasMore,
         });
       } else {
         res.json(data);
@@ -467,7 +473,7 @@ export async function registerRoutes(
         return res.status(400).json({ ok: false, error: "patient_uuid is required" });
       }
       const data = await cachedPlexusGet("billing.search", { patient_uuid });
-      
+
       // Transform header/rows format to array of objects
       if (data.ok && data.header && data.rows) {
         const rows = convertRowsToObjects(data.header, data.rows);
@@ -488,14 +494,14 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { patient_uuid, items, notes } = validation.data;
       const data = await plexusPost("billing.createInvoice", {
         patient_uuid,
         items,
         notes,
       });
-      
+
       if (!data.ok) {
         return res.status(400).json({ ok: false, error: data.error || "Invoice creation failed" });
       }
@@ -513,13 +519,13 @@ export async function registerRoutes(
       if (!validation.success) {
         return res.status(400).json({ ok: false, error: validation.error.message });
       }
-      
+
       const { billing_id, status } = validation.data;
       const data = await plexusPost("billing.updateStatus", {
         billing_id,
         status,
       });
-      
+
       if (!data.ok) {
         return res.status(400).json({ ok: false, error: data.error || "Status update failed" });
       }
@@ -573,7 +579,7 @@ export async function registerRoutes(
     try {
       const date = req.query.date?.toString();
       const daysAhead = parseInt(req.query.daysAhead?.toString() || "7", 10);
-      
+
       let entries;
       if (date) {
         entries = localData.getScheduleByDate(date);
@@ -619,7 +625,7 @@ export async function registerRoutes(
     try {
       const status = req.query.status?.toString();
       const assigned_to = req.query.assigned_to?.toString();
-      
+
       let records;
       if (status) {
         records = localData.getOutreachByStatus(status as any);
@@ -666,9 +672,7 @@ export async function registerRoutes(
   app.get("/api/local/notifications", async (req, res) => {
     try {
       const { team } = req.query;
-      const notifications = team 
-        ? localData.getNotifications(String(team))
-        : localData.getNotifications();
+      const notifications = team ? localData.getNotifications(String(team)) : localData.getNotifications();
       res.json({ ok: true, data: notifications });
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to get notifications" });
@@ -679,9 +683,7 @@ export async function registerRoutes(
   app.get("/api/local/notifications/unread", async (req, res) => {
     try {
       const { team } = req.query;
-      const notifications = team 
-        ? localData.getUnreadNotifications(String(team))
-        : localData.getUnreadNotifications();
+      const notifications = team ? localData.getUnreadNotifications(String(team)) : localData.getUnreadNotifications();
       res.json({ ok: true, data: notifications, count: notifications.length });
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to get unread notifications" });
@@ -743,12 +745,12 @@ export async function registerRoutes(
   app.post("/api/ai/analyze-patient", async (req, res) => {
     try {
       const { patient_uuid, patientData } = req.body;
-      
+
       let profile = localData.getPatientProfile(patient_uuid);
       if (!profile) {
         profile = { patient_uuid, medical_history: "", medications: "", patient_notes: "" };
       }
-      
+
       const result = await analyzePatientForAncillaries(patient_uuid, profile, patientData || {});
       res.json({ ok: true, data: result });
     } catch (error) {
@@ -769,5 +771,58 @@ export async function registerRoutes(
     }
   });
 
+  // ==================== ONE-TIME S3 → POSTGRES IMPORT ====================
+
+  app.post("/api/admin/import-sheets", async (req, res) => {
+    const token = req.headers["x-admin-token"];
+    if (!process.env.ADMIN_TOKEN || token !== process.env.ADMIN_TOKEN) {
+      return res.status(403).json({ ok: false, error: "forbidden" });
+    }
+
+    const REGION = process.env.AWS_REGION || "us-east-2";
+    const BUCKET = process.env.SHEETS_BUCKET || "plexus-sheets-raw";
+    const PREFIX = process.env.SHEETS_PREFIX || "exports/";
+
+    const s3 = new S3Client({ region: REGION });
+    const pg = new Client({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    });
+
+    await pg.connect();
+    await pg.query(`CREATE SCHEMA IF NOT EXISTS sheets_raw;`);
+
+    const list = await s3.send(new ListObjectsV2Command({ Bucket: BUCKET, Prefix: PREFIX }));
+    const keys = (list.Contents || []).map((x) => x.Key!).filter((k) => k.toLowerCase().endsWith(".csv"));
+
+    for (const key of keys) {
+      const table = (key.split("/").pop() || key)
+        .replace(/\.csv$/i, "")
+        .replace(/[^a-z0-9]+/gi, "_")
+        .toLowerCase();
+
+      const obj = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
+
+      const chunks: Buffer[] = [];
+      for await (const chunk of obj.Body as any) {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      }
+
+      const text = Buffer.concat(chunks).toString("utf8");
+      const rows = parse(text, { columns: true, skip_empty_lines: true });
+
+      await pg.query(`CREATE TABLE IF NOT EXISTS sheets_raw.${table} (id bigserial PRIMARY KEY, row jsonb);`);
+      await pg.query(`TRUNCATE sheets_raw.${table};`);
+
+      for (const r of rows) {
+        await pg.query(`INSERT INTO sheets_raw.${table}(row) VALUES ($1)`, [r]);
+      }
+    }
+
+    await pg.end();
+    return res.json({ ok: true, imported: keys.length });
+  });
+
   return httpServer;
 }
+
