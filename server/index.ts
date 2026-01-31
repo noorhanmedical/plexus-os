@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import importSheetsRouter from "../routes/importSheets";
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,6 +22,9 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+// REGISTER THE IMPORT ROUTE (adds /admin/import-sheets)
+app.use(importSheetsRouter);
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
