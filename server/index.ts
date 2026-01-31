@@ -62,8 +62,9 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  // ✅ REGISTER IMPORT ROUTE AFTER OTHER ROUTES
-  app.use(importSheetsRouter);
+  // 🔥 IMPORTANT: register AFTER registerRoutes so frontend doesn’t swallow it
+  // 🔥 AND mount under /api so it bypasses the SPA catch-all
+  app.use("/api", importSheetsRouter);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -91,4 +92,5 @@ app.use((req, res, next) => {
     },
   );
 })();
+
 
