@@ -1,4 +1,6 @@
 import type { Express } from "express";
+const __healthPool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+
 import { createServer, type Server } from "http";
 import { z } from "zod";
 import * as localData from "./localData";
@@ -157,21 +159,50 @@ async function plexusPost(action: string, payload: Record<string, any> = {}): Pr
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
-  // Health check
-  app.get("/api/health", async (_req, res) => {
+  
+  
+    // --- HEALTH ENDPOINTS (LOCAL ONLY) ---
+  app.get("/api/health", (_req, res) => { res.json({ ok: true }); });
+
+  app.get("/api/db-health", async (_req, res) => {
     try {
-      const data = await cachedPlexusGet("health");
-      res.json(data);
+      const { Pool } = await import("pg");
+      const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+      await pool.query("select 1");
+      await pool.end();
+      res.json({ ok: true, db: "connected" });
+    } catch (err: any) {
+      res.status(500).json({ ok: false, error: err?.message ?? "DB connection failed" });
+    }
+  });
+
+// --- OVERRIDE HEALTH ROUTES (must be first) ---});const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      });
+      await pool.query("select 1");
+      await pool.end();
+      res.json({ ok: true, db: "connected" });
+    } catch (err: any) {
+      res.status(500).json({ ok: false, error: err?.message ?? "DB connection failed" });
+    }
+  });
+
+// --- OVERRIDE HEALTH ROUTES (must be first) ---});res.json({ ok: true, db: "connected" });
+    } catch (err: any) {
+      res.status(500).json({ ok: false, error: err?.message ?? "DB connection failed" });
+    }
+  });
+
+// Health check});
+
+res.json(data);
     } catch (error) {
       res.status(500).json({ ok: false, error: "Failed to connect to Plexus API" });
     }
   });
 
-  // AWS DATABASE HEALTH CHECK
-  app.get("/api/db-health", async (_req, res) => {
-    try {
-      const ok = await dbHealthCheck();
-      res.json({ ok });
+  // AWS DATABASE HEALTH CHECKres.json({ ok });
     } catch (err: any) {
       console.error("DB HEALTH FAILED:", err);
       res.status(500).json({ ok: false, error: err.message });
