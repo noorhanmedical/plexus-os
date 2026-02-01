@@ -4,6 +4,8 @@ import { z } from "zod";
 import * as localData from "./localData";
 import { analyzePatientForAncillaries, generateEvidenceSummary } from "./aiAnalysis";
 import { ANCILLARY_CATALOG, getAncillaryByCode } from "../shared/ancillaryCatalog";
+import { dbHealthCheck } from "./db";
+
 
 // ✅ ADD THESE IMPORTS
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
@@ -164,6 +166,18 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       res.status(500).json({ ok: false, error: "Failed to connect to Plexus API" });
     }
   });
+
+  // AWS DATABASE HEALTH CHECK
+  app.get("/api/db-health", async (_req, res) => {
+    try {
+      const ok = await dbHealthCheck();
+      res.json({ ok });
+    } catch (err: any) {
+      console.error("DB HEALTH FAILED:", err);
+      res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
 
   // Search patients - direct API call, no blocking preload
   app.get("/api/patients/search", async (req, res) => {
