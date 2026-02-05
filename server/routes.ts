@@ -159,55 +159,7 @@ async function plexusPost(action: string, payload: Record<string, any> = {}): Pr
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
-  
-  
-    // --- HEALTH ENDPOINTS (LOCAL ONLY) ---
-  app.get("/api/health", (_req, res) => { res.json({ ok: true }); });
 
-  app.get("/api/db-health", async (_req, res) => {
-    try {
-      const { Pool } = await import("pg");
-      const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-      await pool.query("select 1");
-      await pool.end();
-      res.json({ ok: true, db: "connected" });
-    } catch (err: any) {
-      res.status(500).json({ ok: false, error: err?.message ?? "DB connection failed" });
-    }
-  });
-
-// --- OVERRIDE HEALTH ROUTES (must be first) ---});const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
-      });
-      await pool.query("select 1");
-      await pool.end();
-      res.json({ ok: true, db: "connected" });
-    } catch (err: any) {
-      res.status(500).json({ ok: false, error: err?.message ?? "DB connection failed" });
-    }
-  });
-
-// --- OVERRIDE HEALTH ROUTES (must be first) ---});res.json({ ok: true, db: "connected" });
-    } catch (err: any) {
-      res.status(500).json({ ok: false, error: err?.message ?? "DB connection failed" });
-    }
-  });
-
-// Health check});
-
-res.json(data);
-    } catch (error) {
-      res.status(500).json({ ok: false, error: "Failed to connect to Plexus API" });
-    }
-  });
-
-  // AWS DATABASE HEALTH CHECKres.json({ ok });
-    } catch (err: any) {
-      console.error("DB HEALTH FAILED:", err);
-      res.status(500).json({ ok: false, error: err.message });
-    }
-  });
 
 
   // Search patients - direct API call, no blocking preload

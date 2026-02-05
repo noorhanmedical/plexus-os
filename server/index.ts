@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import { registerHealthRoutes } from "./health";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -57,6 +58,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+registerHealthRoutes(app);
 
 (async () => {
   await registerRoutes(httpServer, app);
