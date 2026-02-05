@@ -53,4 +53,52 @@ app.use((req, res, next) => {
     return originalResJson(bodyJson, ...args);
   };
 
-  res.on("finish
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    if (path.startsWith("/api")) {
+      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+      if (capturedJsonResponse) logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+      log(logLine);
+    }
+  });
+
+  next();
+});
+
+// Error handler (NEVER throw)
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err?.status || err?.statusCode || 500;
+  const message = err?.message || "Internal Server Error";
+  res.status(status).json({ message });
+});
+
+// Static / Vite wiring (safe)
+(async () => {
+  try {
+    if (process.env.NODE_ENV === "production") {
+      serveStatic(app);
+    } else {
+      const { setupVite } = await import("./vite");
+      await setupVite(httpServer, app);
+    }
+  } catch (e) {
+    console.error("Static/Vite setup failed:", e);
+  }
+})();
+
+// ✅ LISTEN FIRST (this is what stops rollbacks)
+const port = parseInt(process.env.PORT || "5000", 10);
+httpServer.listen(
+  { port, host: "0.0.0.0", reusePort: true },
+  () => log(`serving on port ${port}`),
+);
+
+// ✅ LOAD ROUTES AFTER LISTEN (so Plexus/DB failures can’t kill startup)
+(async () => {
+  try {
+    await registerRoutes(httpServer, app);
+    log("registerRoutes loaded", "boot");
+  } catch (e) {
+    console.error("registerRoutes FAILED (non-fatal):", e);
+  }
+})();
