@@ -7,6 +7,11 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
+// HARD API PROOF ROUTES (must be before everything)
+app.get("/api/version", (_req, res) => res.status(200).json({ ok: true, proof: "REV-PROOF-" + Date.now() }));
+app.get("/api/health", (_req, res) => res.status(200).json({ ok: true, service: "plexus-os-api" }));
+
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
