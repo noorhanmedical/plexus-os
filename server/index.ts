@@ -1,16 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerHealthRoutes } from "./health";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
 const app = express();
 const httpServer = createServer(app);
-
-// HARD API PROOF ROUTES (must be before everything)
-app.get("/api/version", (_req, res) => res.status(200).json({ ok: true, proof: "REV-PROOF-" + Date.now() }));
-app.get("/api/health", (_req, res) => res.status(200).json({ ok: true, service: "plexus-os-api" }));
-
 
 declare module "http" {
   interface IncomingMessage {
@@ -39,6 +33,7 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+// Request logger
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -64,17 +59,25 @@ app.use((req, res, next) => {
   next();
 });
 
-registerHealthRoutes(app);
-
 (async () => {
+  // Register the rest of your API routes
   await registerRoutes(httpServer, app);
 
-  // 🔥 IMPORTANT: register AFTER registerRoutes so frontend doesn’t swallow it
-  // 🔥 AND mount under /api so it bypasses the SPA catch-all
+  // HARD OVERRIDE AFTER registerRoutes (so nothing can override this)
+  app.use((req, res, next) => {
+    if (req.path === "/api/health") {
+      return res.status(200).json({ ok: true, service: "plexus-os-api" });
+    }
+    if (req.path === "/api/version") {
+      return res.status(200).json({ ok: true, stamp: "REV-" + Date.now() });
+    }
+    next();
+  });
 
+  // Error handler (do NOT throw)
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const status = err?.status || err?.statusCode || 500;
+    const message = err?.message || "Internal Server Error";
     res.status(status).json({ message });
   });
 
@@ -97,5 +100,3 @@ registerHealthRoutes(app);
     },
   );
 })();
-
-
