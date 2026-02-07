@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { ANCILLARY_CATALOG, type AncillaryService } from "../shared/ancillaryCatalog";
-import type { PatientProfile } from "../shared/patientProfile";
+import { ANCILLARY_CATALOG, type AncillaryService } from "../shared/ancillaryCatalog.js";
+import type { PatientProfile } from "../shared/patientProfile.js";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
