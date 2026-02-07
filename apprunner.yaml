@@ -1,20 +1,18 @@
 version: 1.0
 runtime: nodejs18
+
 build:
   commands:
     build:
       - npm ci
       - npm run build
+
 run:
-  runtime-version: 18
   command: npm start
   network:
     port: 5000
-    env:
-      - name: NODE_ENV
-        value: "production"
-      - name: OPENAI_API_KEY
-        value-from:
-          type: secret
-          name: plexus-os-openai-key
-          key: OPENAI_API_KEY
+  env:
+    - name: NODE_ENV
+      value: production
+    - name: OPENAI_API_KEY
+      value: PLACEHOLDER_WILL_CONFIGURE_IN_CONSOLE
