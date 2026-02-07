@@ -10,3 +10,11 @@ run:
   command: npm start
   network:
     port: 5000
+    env:
+      - name: NODE_ENV
+        value: "production"
+      - name: OPENAI_API_KEY
+        value-from:
+          type: secret
+          name: plexus-os-openai-key
+          key: OPENAI_API_KEY
