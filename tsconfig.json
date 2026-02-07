@@ -9,5 +9,13 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["server"]
+  "include": [
+    "server"
+  ],
+  "exclude": [
+    "client/**",
+    "dist/**",
+    "server/localData.ts",
+    "server/vite.ts"
+  ]
 }
