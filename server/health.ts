@@ -1,39 +1,20 @@
-import type { Express } from "express";
+import { Router } from "express";
+import { getPool } from "./db.js";
 
-export function registerHealthRoutes(app: Express) {
-  // Simple health check - no external dependencies
-  app.get("/api/health", (_req, res) => {
-    res.status(200).json({ ok: true, service: "plexus-os-api" });
-  });
+const router = Router();
 
-  // Version endpoint with timestamp
-  app.get("/api/version", (_req, res) => {
-    res.json({
-      ok: true,
-      version: "2.0",
-      timestamp: new Date().toISOString()
-    });
-  });
-
-  // Database health - hardened against crashes
-  app.get("/api/db-health", async (_req, res) => {
-    try {
-      if (!process.env.DATABASE_URL) {
-        return res.status(500).json({ ok: false, error: "DATABASE_URL missing" });
-      }
-
-      const { Pool } = await import("pg");
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-      });
-
-      const result = await pool.query("SELECT NOW()");
-      await pool.end();
-
-      res.json({ ok: true, database: "connected", timestamp: result.rows[0].now });
-    } catch (error: any) {
-      res.status(500).json({ ok: false, error: error?.message || "db-health failed" });
+router.get("/health", async (_req, res) => {
+  try {
+    const pool = getPool();
+    if (!pool) {
+      return res.json({ status: "ok", db: "not_configured" });
     }
-  });
-}
+
+    await pool.query("SELECT 1");
+    return res.json({ status: "ok", db: "ok" });
+  } catch (err) {
+    return res.status(500).json({ status: "db_error", error: String(err) });
+  }
+});
+
+export default router;

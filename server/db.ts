@@ -1,24 +1,20 @@
-import { Pool } from "pg";
+import pg from "pg";
+const { Pool } = pg;
 
-let pool: Pool | null = null;
+let _pool: InstanceType<typeof Pool> | null = null;
 
 export function getPool() {
-  if (!pool) {
-    if (!process.env.DATABASE_URL) {
-      throw new Error("DATABASE_URL is missing");
-    }
+  if (_pool) return _pool;
 
-    pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-      max: 5,
-    });
-  }
-  return pool;
-}
+  const url = process.env.DATABASE_URL;
+  if (!url) return null;
 
-export async function dbHealthCheck() {
-  const p = getPool();
-  const result = await p.query("SELECT 1 as ok");
-  return result.rows?.[0]?.ok === 1;
+  _pool = new Pool({
+    connectionString: url,
+    ssl: process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
+  });
+
+  return _pool;
 }
