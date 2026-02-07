@@ -7,13 +7,14 @@ router.get("/health", async (_req, res) => {
   try {
     const pool = getPool();
     if (!pool) {
-      return res.json({ status: "ok", db: "not_configured" });
+      return res.status(200).json({ status: "ok", db: "not_configured" });
     }
 
     await pool.query("SELECT 1");
-    return res.json({ status: "ok", db: "ok" });
+    return res.status(200).json({ status: "ok", db: "ok" });
   } catch (err) {
-    return res.status(500).json({ status: "db_error", error: String(err) });
+    // IMPORTANT: keep status 200 so App Runner doesn't kill the service during startup
+    return res.status(200).json({ status: "ok", db: "down", error: String(err) });
   }
 });
 
