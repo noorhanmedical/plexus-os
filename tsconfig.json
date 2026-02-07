@@ -4,18 +4,17 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "dist",
-    "rootDir": "server",
-    "strict": true,
+    "rootDir": ".",
+    "strict": false,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
-  "include": [
-    "server"
-  ],
+  "include": ["server/**/*.ts", "shared/**/*.ts"],
   "exclude": [
     "client/**",
     "dist/**",
-    "server/localData.ts",
-    "server/vite.ts"
+    "server/vite.ts",
+    "**/*.config.ts"
   ]
 }
