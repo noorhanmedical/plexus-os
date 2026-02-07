@@ -1,19 +1,31 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "dist",
     "rootDir": ".",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "target": "ES2022",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noImplicitAny": false,
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["shared/*"]
-    }
+    "strict": false,
+    "noImplicitAny": false
   },
-  "include": ["server/**/*.ts", "shared/**/*.ts"],
-  "exclude": ["client", "node_modules", "dist"]
+  "include": [
+    "server/**/*.ts",
+    "shared/**/*.ts"
+  ],
+  "exclude": [
+    "client/**",
+    "dist/**",
+    "node_modules/**",
+
+    "vite.config.ts",
+    "**/*.config.ts",
+
+    "server/vite.ts",
+    "server/localData.ts",
+    "server/replit_integrations/**",
+
+    "shared/models/**"
+  ]
 }
